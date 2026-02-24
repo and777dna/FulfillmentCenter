@@ -1,0 +1,23 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+
+# Build Folders
+bin/
+obj/
+
+# Rider / JetBrains
+.idea/
+
+# User-specific files
+*.user
+*.suo
+*.cache
+
+# Logs
+*.log
+
+# Database files
+*.db
