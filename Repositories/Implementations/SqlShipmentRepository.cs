@@ -1,5 +1,6 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
 
 namespace FulfillmentCenter.Repositories.Implementations;
@@ -23,7 +24,7 @@ public class SqlShipmentRepository : IShipmentRepository
         _context.SaveChanges();
     }
 
-    public void Delete(Guid id)
+    public void Delete(Guid id)//TODO: to specify id more precisely
     {
         var shipmentToDelete = _context.Shipments.FirstOrDefault(shipment => shipment.Id == id);
         _context.Shipments.Remove(shipmentToDelete);
@@ -39,5 +40,28 @@ public class SqlShipmentRepository : IShipmentRepository
 
         return Shipments;
     }
-    public void UpdateShipment(){}
+
+    //public delegate void updateShip();
+
+    public void UpdateShipment<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, Action<TUpdateParameter, Shipment> up)//TUpdateParameter
+    {
+        var shipmentToUpdate = _context.Shipments.FirstOrDefault(shipment => shipment.Id == id);
+        up(updateParameter, shipmentToUpdate);
+        _context.SaveChanges();
+    }
+
+    public void UpdateShipmentStatus(Guid id, ShipmentStatus status)
+    {
+        UpdateShipment(id, status, (shipmentStatus, shipment) => shipment.Status = status);
+    }
+    /*public void UpdateField<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, UpdateShipment<TUpdateParameter> up)
+    {
+        up(id, updateParameter);
+    }*/
+    
+    
+    /*public void UpdateShipment(Guid id)
+    {
+        UpdateShipmentDelegate(id, (shipmentID, updateParams) => );
+    }*/
 }
