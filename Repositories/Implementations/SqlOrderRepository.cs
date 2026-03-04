@@ -1,5 +1,6 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Implementations;
 
@@ -41,5 +42,10 @@ public class SqlOrderRepository : IOrderRepository
 
         return Orders;
     }
-    public void UpdateOrder(){}
+    
+    public void UpdateOrder<TUpdateParam>(TUpdateParam updateParam,Guid orderId, Action<Order, TUpdateParam> up)
+    {
+        var orderToUpdate = _context.Orders.FirstOrDefault(order => order.Id == orderId);
+        up(orderToUpdate, updateParam);
+    }
 }

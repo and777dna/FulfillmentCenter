@@ -21,7 +21,7 @@ public class ShipmentsController(ShipmentService shipmentService) : Controller
     }
     
     
-    [HttpPut]
+    [HttpPut("${id}/status")]
     public void UpdateShipmentStatus(Guid shipmentId, ShipmentStatus status)
     {
         _shipmentService.UpdateShipmentStatus(shipmentId, status);

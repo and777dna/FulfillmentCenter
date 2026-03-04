@@ -48,4 +48,10 @@ public class OrderService : IOrder
         var findedOrder = orders.Find(order => order.Id == orderId);
         return findedOrder;
     }
+    
+    public void UpdateOrderStatus(OrderStatus orderStatus, Guid Id)
+    {
+        _sqlOrderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
+    }
+
 }
