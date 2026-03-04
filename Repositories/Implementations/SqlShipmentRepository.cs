@@ -42,18 +42,19 @@ public class SqlShipmentRepository : IShipmentRepository
     }
 
     //public delegate void updateShip();
-
+    
+    public void UpdateShipmentStatus(Guid id, ShipmentStatus status)
+    {
+        UpdateShipment(id, status, (shipmentStatus, shipment) => shipment.Status = shipmentStatus);
+    }
+    
     public void UpdateShipment<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, Action<TUpdateParameter, Shipment> up)//TUpdateParameter
     {
         var shipmentToUpdate = _context.Shipments.FirstOrDefault(shipment => shipment.Id == id);
         up(updateParameter, shipmentToUpdate);
         _context.SaveChanges();
     }
-
-    public void UpdateShipmentStatus(Guid id, ShipmentStatus status)
-    {
-        UpdateShipment(id, status, (shipmentStatus, shipment) => shipment.Status = status);
-    }
+    
     /*public void UpdateField<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, UpdateShipment<TUpdateParameter> up)
     {
         up(id, updateParameter);

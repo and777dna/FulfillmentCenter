@@ -30,6 +30,21 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
         List<Entities.FulfillmentCenter> fulfillmentCenters = _context.FulfillmentCenters.ToList();
         return fulfillmentCenters;
     }
-    
-    public void UpdateFulfillmentCenter(){}
+
+    public void UpdateInventory(Guid FulfillmentCenterId, Inventory inventory)
+    {
+        UpdateFulfillmentCenter(FulfillmentCenterId, inventory,
+            (inventory, fulfillmentCente) =>
+            {
+                var InventoryToUpdate = fulfillmentCente.Inventory.FirstOrDefault(inventor => inventor.Id == inventory.Id);
+                InventoryToUpdate = inventory; 
+            });
+    }
+
+    public void UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam, Action<TUpdateParam, Entities.FulfillmentCenter> up)
+    {
+        var fulfillmentCenterToUpdate = _context.FulfillmentCenters.FirstOrDefault(center => center.Id == FulfillmentCenterId);
+        up(updateParam, fulfillmentCenterToUpdate);
+        _context.SaveChanges();
+    }
 }
