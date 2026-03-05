@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FulfillmentCenter.Controllers;
 
+//TODO review: same problems as in InventoryController + OrdersController
 [Route("/api/products")]
-public class ProductsController : Controller
+public class ProductsController : Controller //TODO review: should be ControllerBase for a pure API
 {
     private ProductService _productService;
 

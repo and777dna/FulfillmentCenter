@@ -6,5 +6,5 @@ public class Product
     public string Name { get; set; } = string.Empty;
     public string SKU { get; set; } = string.Empty;  // артикул
     public decimal Weight { get; set; }
-    public ICollection<Inventory> Inventory { get; set; } = new List<Inventory>();
+    public ICollection<Inventory> Inventory { get; set; } = new List<Inventory>(); //TODO review: should be Inventories
 }

@@ -9,4 +9,5 @@ public class OrderItem
     public Product Product { get; set; } = null!;
     public int Quantity { get; set; }
     public decimal PricePerUnit { get; set; }
+    //TODO review: it's better to have a computed TotalPrice. PricePerUnit * Quantity is commonly used
 }
