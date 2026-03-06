@@ -1,3 +1,4 @@
+using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Services.Implementations;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,16 @@ public class ProductsController : Controller
     }
     
     [HttpGet]
-    public List<Product> GetProducts()
+    public List<RequestProductDto> GetProducts()
     {
         List<Product> products = _productService.GetProducts();
-        return products;
+        List<RequestProductDto> productsDtos = products.Select(product => new RequestProductDto
+        {
+            Name = product.Name,
+            SKU = product.SKU,
+            Weight = product.Weight
+        }).ToList();
+        return productsDtos;
     }
 
     [HttpPost]

@@ -4,8 +4,6 @@ using FulfillmentCenter.Services.Implementations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FulfillmentCenter.Controllers;
-
-//['/api/shipments']
     
 [Route("/api/shipments")]
 public class ShipmentsController(ShipmentService shipmentService) : Controller
