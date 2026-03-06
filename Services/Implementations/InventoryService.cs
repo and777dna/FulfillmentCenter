@@ -1,25 +1,24 @@
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Implementations;
+using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
-public class InventoryService(SqlInventoryRepository sqlInventoryRepository, SqlFulfillmentCenterRepository sqlFulfillmentCenterRepositor) : IInventory
+public class InventoryService(IInventoryRepository inventoryRepository, IFulfillmentCenterRepository fulfillmentCenterRepository) : IInventoryService
 {
-    private SqlInventoryRepository _sqlInventoryRepository = sqlInventoryRepository;
-    private SqlFulfillmentCenterRepository _sqlFulfillmentCenterRepository = sqlFulfillmentCenterRepositor;
+    private IInventoryRepository _inventoryRepository = inventoryRepository;
+    private IFulfillmentCenterRepository _fulfillmentCenterRepository = fulfillmentCenterRepository;
     
-    public void AddStock(Inventory inventory, Guid fulfillmentCenterId)//пополнить остатки
+    public void AddStock(Inventory inventory, Guid fulfillmentCenterId)
     {
-        //на конкретном складе
-        _sqlFulfillmentCenterRepository.UpdateInventory(fulfillmentCenterId, inventory);
+        _fulfillmentCenterRepository.UpdateInventory(fulfillmentCenterId, inventory);
     }
     
-    ////GET	/api/inventory/{centerId}	Остатки на складе
     public ICollection<Inventory> RemainingsOnTheFulfillmentCenter(Guid centerId)
     { 
-        var fulfillmentCenters = _sqlFulfillmentCenterRepository.Read();
-        var findedCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
-        return findedCenter.Inventory;
+        var fulfillmentCenters = _fulfillmentCenterRepository.Read();
+        var findCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
+        return findCenter.Inventory;
     }
 }

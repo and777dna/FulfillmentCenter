@@ -1,13 +1,15 @@
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Services.Implementations;
+using FulfillmentCenter.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FulfillmentCenter.Controllers;
 
+[ApiController]
 [Route("/api/inventory")]
-public class InventoryController
+public class InventoryController(IInventoryService inventoryService) : ControllerBase
 {
-    private InventoryService _inventoryService;
+    private IInventoryService _inventoryService = inventoryService;
     
     [HttpPost]
     public void AddStock(Inventory inventory, Guid fulfillmentCenterId)

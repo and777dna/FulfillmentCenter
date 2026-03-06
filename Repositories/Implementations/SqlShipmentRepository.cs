@@ -40,8 +40,6 @@ public class SqlShipmentRepository : IShipmentRepository
 
         return Shipments;
     }
-
-    //public delegate void updateShip();
     
     public void UpdateShipmentStatus(Guid id, ShipmentStatus status)
     {
@@ -54,15 +52,4 @@ public class SqlShipmentRepository : IShipmentRepository
         up(updateParameter, shipmentToUpdate);
         _context.SaveChanges();
     }
-    
-    /*public void UpdateField<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, UpdateShipment<TUpdateParameter> up)
-    {
-        up(id, updateParameter);
-    }*/
-    
-    
-    /*public void UpdateShipment(Guid id)
-    {
-        UpdateShipmentDelegate(id, (shipmentID, updateParams) => );
-    }*/
 }

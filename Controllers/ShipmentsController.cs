@@ -1,16 +1,16 @@
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Services.Implementations;
+using FulfillmentCenter.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FulfillmentCenter.Controllers;
-
-//['/api/shipments']
     
+[ApiController]
 [Route("/api/shipments")]
-public class ShipmentsController(ShipmentService shipmentService) : Controller
+public class ShipmentsController(IShipmentService shipmentService) : ControllerBase
 {
-    private ShipmentService _shipmentService = shipmentService;
+    private IShipmentService _shipmentService = shipmentService;
     
     
     [HttpPost]

@@ -1,34 +1,29 @@
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
-using FulfillmentCenter.Repositories.Implementations;
+using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
-public class OrderService : IOrder
+public class OrderService(IOrderRepository orderRepository) : IOrderService
 {
-    private SqlOrderRepository _sqlOrderRepository;
-
-    public OrderService(SqlOrderRepository sqlOrderRepository)
-    {
-        _sqlOrderRepository = sqlOrderRepository;
-    }
+    private IOrderRepository _orderRepository = orderRepository;
     
     public void CreateOrder(Order order)
     {
         if (GetOrderById(order.Id) != null)//TODO: to fix this "Expression is always true according to nullable reference types' annotations"
         {
-            _sqlOrderRepository.Create(order);
+            _orderRepository.Create(order);
         }
     }
 
     public void CancelOrder(Guid orderId)
     {
-        if (_sqlOrderRepository.Orders != null)
+        if (_orderRepository.Read() != null)
         {
             if (GetOrderById(orderId).Status == OrderStatus.Created || GetOrderById(orderId).Status == OrderStatus.Processing)
             {
-                _sqlOrderRepository.Delete(orderId);
+                _orderRepository.Delete(orderId);
             }
 
             //GetOrderById(orderId).Status = OrderStatus.Cancelled;//TODO: to change to this status
@@ -37,21 +32,21 @@ public class OrderService : IOrder
     
     public Order GetOrderById(Guid orderId)
     {
-        var orders = _sqlOrderRepository.Orders;
+        var orders = _orderRepository.Read();
         
-        var findedBook = SearchById(orderId, orders);
-        return findedBook;
+        var findBook = SearchById(orderId, orders);
+        return findBook;
     }
     
     public Order SearchById(Guid orderId, List<Order> orders)
     {
-        var findedOrder = orders.Find(order => order.Id == orderId);
-        return findedOrder;
+        var findOrder = orders.Find(order => order.Id == orderId);
+        return findOrder;
     }
     
     public void UpdateOrderStatus(OrderStatus orderStatus, Guid Id)
     {
-        _sqlOrderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
+        _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
     }
 
 }

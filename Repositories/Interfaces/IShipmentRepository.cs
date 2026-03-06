@@ -1,4 +1,5 @@
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Enums;
 
 namespace FulfillmentCenter.Repositories.Interfaces;
 
@@ -10,4 +11,5 @@ public interface IShipmentRepository
     //public void UpdateShipment(Guid id);
     public void UpdateShipment<TUpdateParameter>(Guid id, TUpdateParameter updateParameter,
         Action<TUpdateParameter, Shipment> up);
+    public void UpdateShipmentStatus(Guid shipmentId, ShipmentStatus status);
 }

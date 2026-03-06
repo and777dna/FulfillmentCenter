@@ -1,26 +1,23 @@
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Implementations;
+using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
-public class ProductService : IProduct
+public class ProductService(IProductRepository productRepository) : IProductService
 {
-    private SqlProductRepository _sqlProductRepository;
-
-    public ProductService(SqlProductRepository sqlProductRepository)
-    {
-        _sqlProductRepository = sqlProductRepository;
-    }
+    private IProductRepository _productRepository = productRepository;
+    
     
     public List<Product> GetProducts()
     {
-        List<Product> products = _sqlProductRepository.Read();
+        List<Product> products = _productRepository.Read();
         return products;
     }
 
     public void CreateProduct(Product product)
     {
-        _sqlProductRepository.Create(product);
+        _productRepository.Create(product);
     }
 }

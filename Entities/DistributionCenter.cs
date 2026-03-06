@@ -1,6 +1,6 @@
 namespace FulfillmentCenter.Entities;
 
-public class FulfillmentCenter
+public class DistributionCenter
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;

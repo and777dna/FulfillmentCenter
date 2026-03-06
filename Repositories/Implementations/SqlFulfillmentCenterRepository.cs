@@ -12,9 +12,9 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
         _context = new FulfillmentCenDbContext();
     }
 
-    public void Create(Entities.FulfillmentCenter fulfillmentCenter)
+    public void Create(Entities.DistributionCenter distributionCenter)
     {
-        _context.FulfillmentCenters.Add(fulfillmentCenter);
+        _context.FulfillmentCenters.Add(distributionCenter);
         _context.SaveChanges();
     }
 
@@ -25,9 +25,9 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
         _context.SaveChanges();
     }
 
-    public List<Entities.FulfillmentCenter> Read()
+    public List<Entities.DistributionCenter> Read()
     {
-        List<Entities.FulfillmentCenter> fulfillmentCenters = _context.FulfillmentCenters.ToList();
+        List<Entities.DistributionCenter> fulfillmentCenters = _context.FulfillmentCenters.ToList();
         return fulfillmentCenters;
     }
 
@@ -41,7 +41,7 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
             });
     }
 
-    public void UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam, Action<TUpdateParam, Entities.FulfillmentCenter> up)
+    public void UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam, Action<TUpdateParam, Entities.DistributionCenter> up)
     {
         var fulfillmentCenterToUpdate = _context.FulfillmentCenters.FirstOrDefault(center => center.Id == FulfillmentCenterId);
         up(updateParam, fulfillmentCenterToUpdate);

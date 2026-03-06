@@ -1,14 +1,16 @@
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Services.Implementations;
+using FulfillmentCenter.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FulfillmentCenter.Controllers;
 
+[ApiController]
 [Route("/api/orders")]
-public class OrdersController : Controller
+public class OrdersController(IOrderService orderService) : ControllerBase
 {
-    private OrderService _orderService;
+    private IOrderService _orderService = orderService;
     
     [HttpPost] //TODO: to understand why we have inside HttpGet Route id, but not inside HttpPost Route
     public void CreateOrder(Order order)
@@ -25,8 +27,8 @@ public class OrdersController : Controller
     [HttpGet("{id}")]
     public Order GetOrders(Guid id)
     {
-        var findedOrderById = _orderService.GetOrderById(id);
-        return findedOrderById;
+        var findOrderById = _orderService.GetOrderById(id);
+        return findOrderById;
     }
     
 }

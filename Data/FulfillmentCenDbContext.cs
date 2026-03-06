@@ -4,7 +4,7 @@ namespace FulfillmentCenter.Data;
 
 public class FulfillmentCenDbContext : DbContext
 {
-    public DbSet<Entities.FulfillmentCenter> FulfillmentCenters { get; set; }
+    public DbSet<Entities.DistributionCenter> FulfillmentCenters { get; set; }
     public DbSet<Entities.Inventory> Inventories { get; set; }
     public DbSet<Entities.Order> Orders { get; set; }
     public DbSet<Entities.OrderItem> OrderItems { get; set; }

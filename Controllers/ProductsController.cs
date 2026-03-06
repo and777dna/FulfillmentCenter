@@ -1,18 +1,16 @@
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Services.Implementations;
+using FulfillmentCenter.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FulfillmentCenter.Controllers;
 
+[ApiController]
 [Route("/api/products")]
-public class ProductsController : Controller
+public class ProductsController(IProductService productService) : ControllerBase
 {
-    private ProductService _productService;
-
-    public ProductsController(ProductService productService)
-    {
-        _productService = productService;
-    }
+    private IProductService _productService = productService;
+    
     
     [HttpGet]
     public List<Product> GetProducts()
