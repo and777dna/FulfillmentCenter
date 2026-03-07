@@ -7,7 +7,7 @@ namespace FulfillmentCenter.Data;
 //Since the full word is used everywhere else, this should be FulfillmentCenterDbContext for consistency
 public class FulfillmentCenDbContext : DbContext
 {
-    public DbSet<Entities.DistributionCenter> FulfillmentCenters { get; set; }
+    public DbSet<Entities.DistributionCenter> DistributionCenters { get; set; }
     public DbSet<Entities.Inventory> Inventories { get; set; }
     public DbSet<Entities.Order> Orders { get; set; }
     public DbSet<Entities.OrderItem> OrderItems { get; set; }

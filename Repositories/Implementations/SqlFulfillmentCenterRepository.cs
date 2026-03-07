@@ -18,22 +18,22 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
         _context = new FulfillmentCenDbContext();
     }
 
-    public void Create(Entities.DistributionCenter distributionCenter)
+    public void Create(DistributionCenter distributionCenter)
     {
-        _context.FulfillmentCenters.Add(distributionCenter);
+        _context.DistributionCenters.Add(distributionCenter);
         _context.SaveChanges();
     }
 
     public void Delete(Guid id)
     {
-        var fulfillmentCenterToDelete = _context.FulfillmentCenters.FirstOrDefault(center => center.Id == id);
-        _context.FulfillmentCenters.Remove(fulfillmentCenterToDelete);
+        var fulfillmentCenterToDelete = _context.DistributionCenters.FirstOrDefault(center => center.Id == id);
+        _context.DistributionCenters.Remove(fulfillmentCenterToDelete);
         _context.SaveChanges();
     }
 
     public List<Entities.DistributionCenter> Read()
     {
-        List<Entities.DistributionCenter> fulfillmentCenters = _context.FulfillmentCenters.ToList();
+        List<Entities.DistributionCenter> fulfillmentCenters = _context.DistributionCenters.ToList();
         return fulfillmentCenters;
     }
 
@@ -49,7 +49,7 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
 
     public void UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam, Action<TUpdateParam, Entities.DistributionCenter> up)
     {
-        var fulfillmentCenterToUpdate = _context.FulfillmentCenters.FirstOrDefault(center => center.Id == FulfillmentCenterId);
+        var fulfillmentCenterToUpdate = _context.DistributionCenters.FirstOrDefault(center => center.Id == FulfillmentCenterId);
         up(updateParam, fulfillmentCenterToUpdate);
         _context.SaveChanges();
     }
