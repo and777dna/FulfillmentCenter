@@ -1,4 +1,5 @@
 using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Services.Implementations;
@@ -26,10 +27,17 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     }
     
     [HttpGet("{id}")]
-    public Order GetOrders(Guid id)
+    public ResponseOrderDto GetOrders(Guid id)
     {
         var findOrderById = _orderService.GetOrderById(id);
-        return findOrderById;
+
+        return new ResponseOrderDto
+        {
+            CustomerName = findOrderById.CustomerName,
+            DeliveryAddress = findOrderById.DeliveryAddress,
+            CreatedAt = findOrderById.CreatedAt,
+            Status = findOrderById.Status
+        };
     }
     
 }
