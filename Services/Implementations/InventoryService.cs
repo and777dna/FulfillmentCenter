@@ -1,3 +1,4 @@
+using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Services.Interfaces;
@@ -9,8 +10,18 @@ public class InventoryService(SqlInventoryRepository sqlInventoryRepository, Sql
     private SqlInventoryRepository _sqlInventoryRepository = sqlInventoryRepository;
     private SqlFulfillmentCenterRepository _sqlFulfillmentCenterRepository = sqlFulfillmentCenterRepositor;
     
-    public void AddStock(Inventory inventory, Guid fulfillmentCenterId)//пополнить остатки
+    public void AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)//пополнить остатки
     {
+        Inventory inventory = new Inventory
+        {
+            Id = Guid.NewGuid(),
+            ProductId = inventoryDto.ProductId,
+            Quantity = inventoryDto.Quantity,
+            Product = inventoryDto.Product,
+            DistributionCenterId = fulfillmentCenterId,
+            FulfillmentCenter = inventoryDto.FulfillmentCenter
+            
+        };
         //на конкретном складе
         _sqlFulfillmentCenterRepository.UpdateInventory(fulfillmentCenterId, inventory);
     }
