@@ -1,3 +1,4 @@
+using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 
 namespace FulfillmentCenter.Services.Interfaces;
@@ -5,5 +6,5 @@ namespace FulfillmentCenter.Services.Interfaces;
 public interface IProductService
 {
     public List<Product> GetProducts();
-    public void CreateProduct(Product product);
+    public void CreateProduct(RequestProductDto product);
 }

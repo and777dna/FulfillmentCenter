@@ -1,8 +1,10 @@
+using FulfillmentCenter.Entities;
+
 namespace FulfillmentCenter.DTOs.Requests;
 
 public class RequestProductDto
 {
-    public string Name { get; set; } = string.Empty;
-    public string SKU { get; set; } = string.Empty;  // артикул
+    public string Name { get; set; }
+    public string SKU { get; set; }
     public decimal Weight { get; set; }
 }

@@ -1,4 +1,5 @@
 using FulfillmentCenter.Data;
+using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
 

@@ -1,3 +1,4 @@
+using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
@@ -9,10 +10,18 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
 {
     private IOrderRepository _orderRepository = orderRepository;
     
-    public void CreateOrder(Order order)
+    public void CreateOrder(RequestOrderDto orderDto)
     {
-        if (GetOrderById(order.Id) != null)//TODO: to fix this "Expression is always true according to nullable reference types' annotations"
+        if (GetOrderById(orderDto.Id) != null)//TODO: to fix this "Expression is always true according to nullable reference types' annotations"
         {
+            Order order = new Order
+            {
+                Id = orderDto.Id,
+                CustomerName = orderDto.CustomerName,
+                DeliveryAddress = orderDto.DeliveryAddress,
+                CreatedAt = orderDto.CreatedAt,
+                Status = orderDto.Status,
+            };
             _orderRepository.Create(order);
         }
     }

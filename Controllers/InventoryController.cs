@@ -1,3 +1,5 @@
+using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Services.Implementations;
 using FulfillmentCenter.Services.Interfaces;
@@ -12,14 +14,21 @@ public class InventoryController(IInventoryService inventoryService) : Controlle
     private IInventoryService _inventoryService = inventoryService;
     
     [HttpPost]
-    public void AddStock(Inventory inventory, Guid fulfillmentCenterId)
+    public void AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)
     {
-        _inventoryService.AddStock(inventory, fulfillmentCenterId);
+        _inventoryService.AddStock(inventoryDto, fulfillmentCenterId);
     }
     
     [HttpGet("{centerId}")]
-    public ICollection<Inventory> InventoryRemaining(Guid centerId)
+    public List<ResponseInventoryDto> InventoryRemaining(Guid centerId)
     {
-        return _inventoryService.RemainingsOnTheFulfillmentCenter(centerId);
+        //return _inventoryService.RemainingsOnTheFulfillmentCenter(centerId);
+        var remainings = _inventoryService.RemainingsOnTheFulfillmentCenter(centerId).ToList();
+        List<ResponseInventoryDto> remainingsPdo = remainings.Select(remain => new ResponseInventoryDto
+        {
+            ProductId = remain.ProductId,
+            Quantity = remain.Quantity
+        }).ToList();
+        return remainingsPdo;
     }
 }

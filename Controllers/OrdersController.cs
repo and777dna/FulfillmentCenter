@@ -1,3 +1,4 @@
+using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Services.Implementations;
@@ -13,9 +14,9 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     private IOrderService _orderService = orderService;
     
     [HttpPost] //TODO: to understand why we have inside HttpGet Route id, but not inside HttpPost Route
-    public void CreateOrder(Order order)
+    public void CreateOrder(RequestOrderDto orderDto)
     {
-        _orderService.CreateOrder(order);
+        _orderService.CreateOrder(orderDto);
     }
     
     [HttpPut("{id}/status")]

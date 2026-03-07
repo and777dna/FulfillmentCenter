@@ -1,3 +1,5 @@
+using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Services.Implementations;
 using FulfillmentCenter.Services.Interfaces;
@@ -13,16 +15,22 @@ public class ProductsController(IProductService productService) : ControllerBase
     
     
     [HttpGet]
-    public List<Product> GetProducts()
+    public List<ResponseProductDto> GetProducts()
     {
         List<Product> products = _productService.GetProducts();
-        return products;
+        List<ResponseProductDto> productsDtos = products.Select(product => new ResponseProductDto
+        {
+            Name = product.Name,
+            SKU = product.SKU,
+            Weight = product.Weight
+        }).ToList();
+        return productsDtos;
     }
 
     [HttpPost]
-    public void AddProduct(Product product)
+    public void AddProduct(RequestProductDto productDto)
     {
-        _productService.CreateProduct(product);
+        _productService.CreateProduct(productDto);
     }
 
 }

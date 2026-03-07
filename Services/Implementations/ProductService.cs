@@ -1,3 +1,4 @@
+using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
@@ -16,8 +17,15 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         return products;
     }
 
-    public void CreateProduct(Product product)
+    public void CreateProduct(RequestProductDto productDto)
     {
+        Product product = new Product
+        {
+            Id = Guid.NewGuid(),
+            Name = productDto.Name,
+            SKU = productDto.SKU,
+            Weight = productDto.Weight
+        };
         _productRepository.Create(product);
     }
 }
