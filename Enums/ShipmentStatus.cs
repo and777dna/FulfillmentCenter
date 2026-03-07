@@ -7,4 +7,5 @@ public enum ShipmentStatus
     InTransit,
     Delivered,
     Failed
+    //TODO review: Cancelled
 }
