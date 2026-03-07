@@ -2,7 +2,7 @@ namespace FulfillmentCenter.DTOs.Responses;
 
 public class ResponseProductDto
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    public string SKU { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string SKU { get; set; } = string.Empty;  // артикул
+    public decimal Weight { get; set; }
 }

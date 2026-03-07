@@ -1,4 +1,5 @@
 using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Services.Implementations;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +17,10 @@ public class ProductsController : Controller
     }
     
     [HttpGet]
-    public List<RequestProductDto> GetProducts()
+    public List<ResponseProductDto> GetProducts()
     {
         List<Product> products = _productService.GetProducts();
-        List<RequestProductDto> productsDtos = products.Select(product => new RequestProductDto
+        List<ResponseProductDto> productsDtos = products.Select(product => new ResponseProductDto
         {
             Name = product.Name,
             SKU = product.SKU,
@@ -29,9 +30,9 @@ public class ProductsController : Controller
     }
 
     [HttpPost]
-    public void AddProduct(Product product)
+    public void AddProduct(RequestProductDto productDto)
     {
-        _productService.CreateProduct(product);
+        _productService.CreateProduct(productDto);
     }
 
 }
