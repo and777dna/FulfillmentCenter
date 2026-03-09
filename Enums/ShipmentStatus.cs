@@ -2,10 +2,10 @@ namespace FulfillmentCenter.Enums;
 
 public enum ShipmentStatus
 {
-    Pending,
-    Shipped,
-    InTransit,
-    Delivered,
-    Failed
+    Pending = 0,
+    Shipped = 1,
+    InTransit = 2,
+    Delivered = 3,
+    Failed = 4
     //TODO review: Cancelled
 }
