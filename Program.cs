@@ -1,9 +1,18 @@
+using FulfillmentCenter;
+using FulfillmentCenter.Controllers;
+using FulfillmentCenter.Data;
+using FulfillmentCenter.Repositories.Implementations;
+using FulfillmentCenter.Repositories.Interfaces;
+using FulfillmentCenter.Services.Implementations;
+using FulfillmentCenter.Services.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
@@ -14,34 +23,28 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
 
+var container = new Container();
 
+container.Register<IInventoryService, InventoryService>();
+container.Register<IOrderService, OrderService>();
+container.Register<IProductService, ProductService>();
+container.Register<IShipmentService, ShipmentService>();
 
+container.Register<IFulfillmentCenterRepository, SqlFulfillmentCenterRepository>();
+container.Register<IInventoryRepository, SqlInventoryRepository>();
+container.Register<IOrderItemRepository, SqlOrderItemRepository>();
+container.Register<IOrderRepository, SqlOrderRepository>();
+container.Register<IProductRepository, SqlProductRepository>();
+container.Register<IShipmentRepository, SqlShipmentRepository>();
+
+container.Register<InventoryController, InventoryController>();
+container.Register<OrdersController, OrdersController>();
+container.Register<ProductsController, ProductsController>();
+container.Register<ShipmentsController, ShipmentsController>();
+
+container.Register<FulfillmentCenDbContext, FulfillmentCenDbContext>();

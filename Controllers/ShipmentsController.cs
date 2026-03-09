@@ -18,7 +18,8 @@ public class ShipmentsController(IShipmentService shipmentService) : ControllerB
     {
         _shipmentService.CreateShipment(shipment);
         //TODO review: this invokes the controller action as a plain C# method, bypassing the HTTP pipeline entirely. Should be to call _shipmentService.UpdateShipmentStatus(...) directly instead
-        UpdateShipmentStatus(shipment.Id, ShipmentStatus.Shipped);
+        //TODO: to understand why cant we bypass the HTTP pipeline entirely
+        _shipmentService.UpdateShipmentStatus(shipment.Id, ShipmentStatus.Shipped);
     }
     
     //TODO review: you don't need to use $ in the route. It's not valid

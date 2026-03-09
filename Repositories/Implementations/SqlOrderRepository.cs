@@ -47,5 +47,6 @@ public class SqlOrderRepository : IOrderRepository
     {
         var orderToUpdate = _context.Orders.FirstOrDefault(order => order.Id == orderId);
         up(orderToUpdate, updateParam);
+        _context.SaveChanges();
     }
 }

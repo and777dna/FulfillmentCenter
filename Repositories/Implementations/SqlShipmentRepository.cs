@@ -13,9 +13,9 @@ public class SqlShipmentRepository : IShipmentRepository
     
     public SqlShipmentRepository()
     {
+        _context = new FulfillmentCenDbContext();
         Shipments = Read();
         _isCached = true;
-        _context = new FulfillmentCenDbContext();
     }
 
     public void Create(Shipment shipment)

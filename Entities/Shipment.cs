@@ -5,9 +5,9 @@ namespace FulfillmentCenter.Entities;
 public class Shipment
 {
     public Guid Id { get; set; }
-    public int OrderId { get; set; }
+    public Guid OrderId { get; set; }
     public Order Order { get; set; } = null!;
-    public int DistributionCenterId { get; set; }
+    public Guid DistributionCenterId { get; set; }
     public DistributionCenter DistributionCenter { get; set; } = null!;
     public ShipmentStatus Status { get; set; } = ShipmentStatus.Pending;
     public DateTime? ShippedAt { get; set; }

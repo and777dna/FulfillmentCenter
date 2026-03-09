@@ -32,7 +32,7 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
         {
             if (GetOrderById(orderId).Status == OrderStatus.Created || GetOrderById(orderId).Status == OrderStatus.Processing)
             {
-                _orderRepository.Delete(orderId);
+                UpdateOrderStatus(OrderStatus.Cancelled, orderId);
             }
 
             //GetOrderById(orderId).Status = OrderStatus.Cancelled;//TODO: to change to this status
