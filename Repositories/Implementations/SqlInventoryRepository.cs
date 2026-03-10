@@ -10,9 +10,9 @@ public class SqlInventoryRepository : IInventoryRepository
     public List<Inventory> Inventories;
     private bool isCached;
     
-    public SqlInventoryRepository()
+    public SqlInventoryRepository(FulfillmentCenDbContext context)
     {
-        _context = new FulfillmentCenDbContext();
+        _context = context;
         Inventories = Read();
         isCached = true;
     }

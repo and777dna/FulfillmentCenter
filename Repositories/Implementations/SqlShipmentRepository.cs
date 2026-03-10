@@ -11,9 +11,9 @@ public class SqlShipmentRepository : IShipmentRepository
     private bool _isCached;
     private FulfillmentCenDbContext _context;
     
-    public SqlShipmentRepository()
+    public SqlShipmentRepository(FulfillmentCenDbContext context)
     {
-        _context = new FulfillmentCenDbContext();
+        _context = context;
         Shipments = Read();
         _isCached = true;
     }

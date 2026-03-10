@@ -10,9 +10,9 @@ public class SqlOrderItemRepository : IOrderItemRepository
     public List<OrderItem> OrderItems;
     private bool isCached;
     
-    public SqlOrderItemRepository()
+    public SqlOrderItemRepository(FulfillmentCenDbContext context)
     {
-        _context = new FulfillmentCenDbContext();
+        _context = context;
         OrderItems = Read();
         isCached = true;
     }

@@ -13,9 +13,9 @@ namespace FulfillmentCenter.Repositories.Implementations;
 public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
 {
     private FulfillmentCenDbContext _context;
-    public SqlFulfillmentCenterRepository()
+    public SqlFulfillmentCenterRepository(FulfillmentCenDbContext context)
     {
-        _context = new FulfillmentCenDbContext();
+        _context = context;
     }
 
     public void Create(DistributionCenter distributionCenter)

@@ -9,9 +9,9 @@ public class SqlProductRepository : IProductRepository
 {
     private FulfillmentCenDbContext _context;
 
-    public SqlProductRepository()
+    public SqlProductRepository(FulfillmentCenDbContext context)
     {
-        _context = new FulfillmentCenDbContext();
+        _context = context;
     }
 
     public void Create(Product product)

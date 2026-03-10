@@ -1,7 +1,5 @@
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
-using FulfillmentCenter.Entities;
-using FulfillmentCenter.Services.Implementations;
 using FulfillmentCenter.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

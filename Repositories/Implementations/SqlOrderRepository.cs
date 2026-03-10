@@ -12,9 +12,9 @@ public class SqlOrderRepository : IOrderRepository
     public List<Order> Orders;
     private bool isCached;
     
-    public SqlOrderRepository()
+    public SqlOrderRepository(FulfillmentCenDbContext context)
     {
-        _context = new FulfillmentCenDbContext();
+        _context = context;
         Orders = Read();
         isCached = true;
     }
