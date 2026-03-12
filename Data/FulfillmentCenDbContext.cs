@@ -1,3 +1,4 @@
+using FulfillmentCenter.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Data;
@@ -12,12 +13,17 @@ public class FulfillmentCenDbContext : DbContext
     {
     }
     
-    public DbSet<Entities.DistributionCenter> DistributionCenters { get; set; }
-    public DbSet<Entities.Inventory> Inventories { get; set; }
-    public DbSet<Entities.Order> Orders { get; set; }
-    public DbSet<Entities.OrderItem> OrderItems { get; set; }
-    public DbSet<Entities.Product> Products { get; set; }
-    public DbSet<Entities.Shipment> Shipments { get; set; }
+    public DbSet<DistributionCenter> DistributionCenters { get; set; }
+    public DbSet<Inventory> Inventories { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
+    public DbSet<Product> Products { get; set; }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Product>().HasKey(product => product.SKU);
+    }
+    public DbSet<Shipment> Shipments { get; set; }
     
     /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

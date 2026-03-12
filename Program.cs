@@ -32,6 +32,7 @@ if (app.Environment.IsDevelopment())
 app.Run();
 
 
+
 builder.Services.AddSingleton<IInventoryService, InventoryService>();
 builder.Services.AddSingleton<IOrderService, OrderService>();
 builder.Services.AddSingleton<IProductService, ProductService>();
