@@ -30,7 +30,7 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
     {
         if (_orderRepository.Read() != null)
         {
-            if (GetOrderById(orderId).Status == OrderStatus.Created || GetOrderById(orderId).Status == OrderStatus.Processing)
+            if (GetOrderById(orderId).Result.Status == OrderStatus.Created || GetOrderById(orderId).Result.Status == OrderStatus.Processing)
             {
                 UpdateOrderStatus(OrderStatus.Cancelled, orderId);
             }
@@ -39,9 +39,9 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
         }
     }
     
-    public Order GetOrderById(Guid orderId)
+    public async Task<Order> GetOrderById(Guid orderId)
     {
-        var orders = _orderRepository.Read();
+        var orders = await _orderRepository.Read();
         
         var findBook = SearchById(orderId, orders);
         return findBook;

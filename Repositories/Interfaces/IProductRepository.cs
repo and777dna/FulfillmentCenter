@@ -6,6 +6,6 @@ public interface IProductRepository
 {
     public void Create(Product product);
     public void Delete(Guid id);
-    public List<Product> Read();
+    public Task<List<Product>> Read();
     public void UpdateProduct();
 }

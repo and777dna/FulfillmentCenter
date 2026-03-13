@@ -28,9 +28,9 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
     }
     
     ////GET	/api/inventory/{centerId}	Остатки на складе
-    public ICollection<Inventory> RemainingsOnTheFulfillmentCenter(Guid centerId)
+    public async Task<ICollection<Inventory>> RemainingsOnTheFulfillmentCenter(Guid centerId)
     { 
-        var fulfillmentCenters = _fulfillmentCenterRepositor.Read();
+        var fulfillmentCenters = await _fulfillmentCenterRepositor.Read();
         var findCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
         return findCenter.Inventory;
     }

@@ -6,7 +6,7 @@ public interface IFulfillmentCenterRepository
 {
     public void Create(Entities.DistributionCenter distributionCenter);
     public void Delete(Guid id);
-    public List<DistributionCenter> Read();
+    public Task<List<DistributionCenter>> Read();
 
     public void UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam,
         Action<TUpdateParam, Entities.DistributionCenter> up);

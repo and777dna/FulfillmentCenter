@@ -17,7 +17,7 @@ public class ProductsController(IProductService productService) : ControllerBase
     [HttpGet]
     public List<ResponseProductDto> GetProducts()
     {
-        List<Product> products = _productService.GetProducts();
+        List<Product> products = _productService.GetProducts().Result;
         List<ResponseProductDto> productsDtos = products.Select(product => new ResponseProductDto
         {
             Name = product.Name,

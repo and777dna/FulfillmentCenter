@@ -2,6 +2,7 @@ using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
@@ -14,23 +15,23 @@ public class SqlProductRepository : IProductRepository
         _context = context;
     }
 
-    public void Create(Product product)
+    public async void Create(Product product)
     {
-        _context.Products.Add(product);
-        _context.SaveChanges();
+        await _context.Products.AddAsync(product);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(Guid id)
+    public async void Delete(Guid id)
     {
-        var productToDelete = _context.Products.FirstOrDefault(product => product.Id == id);
+        var productToDelete = await _context.Products.FirstOrDefaultAsync(product => product.Id == id);
         _context.Products.Remove(productToDelete);
         //TODO: to return Result
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public List<Product> Read()
+    public async Task<List<Product>> Read()
     {
-        List<Product> products = _context.Products.ToList();
+        List<Product> products = await _context.Products.ToListAsync();
         return products;
     }
 

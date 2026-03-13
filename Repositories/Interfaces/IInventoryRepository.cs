@@ -6,6 +6,6 @@ public interface IInventoryRepository
 {
     public void Create(Inventory inventory);
     public void Delete(Guid id);
-    public List<Inventory> Read();
+    public Task<List<Inventory>> Read();
     public void UpdateInventory();
 }

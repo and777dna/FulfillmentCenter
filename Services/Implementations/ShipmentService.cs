@@ -39,7 +39,7 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
         //Shipment.Order ICollection<OrderItem> Items => 
         //
         //var sufficientAmountOfInventory = _inventoryService.CheckSufficientAmountOfInventory(remainingsOnTheFulfillmentCenter, shipment.Order.Items);
-        if (CheckSufficientAmountOfInventoryToShipment(_inventoryService.ReturnProductAmount(remainingsOnTheFulfillmentCenter), ReturnShipmentAmount(shipment.Order.Items)))
+        if (CheckSufficientAmountOfInventoryToShipment(_inventoryService.ReturnProductAmount(remainingsOnTheFulfillmentCenter.Result), ReturnShipmentAmount(shipment.Order.Items)))
         {
             _shipmentRepository.Create(shipment);
         }

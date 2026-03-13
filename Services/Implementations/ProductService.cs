@@ -11,9 +11,9 @@ public class ProductService(IProductRepository productRepository) : IProductServ
     private IProductRepository _productRepository = productRepository;
     
     
-    public List<Product> GetProducts()
+    public async Task<List<Product>> GetProducts()
     {
-        List<Product> products = _productRepository.Read();
+        List<Product> products = await _productRepository.Read();
         return products;
     }
 

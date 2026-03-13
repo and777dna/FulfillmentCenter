@@ -3,6 +3,7 @@ using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Implementations;
+using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
@@ -15,27 +16,27 @@ public class SqlOrderRepository : IOrderRepository
     public SqlOrderRepository(FulfillmentCenDbContext context)
     {
         _context = context;
-        Orders = Read();
+        Orders = Read().Result;
         isCached = true;
     }
-    public void Create(Order order)
+    public async void Create(Order order)
     {
-        _context.Orders.Add(order);
-        _context.SaveChanges();
+        await _context.Orders.AddAsync(order);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(Guid id)
+    public async void Delete(Guid id)
     {
-        var orderToDelete = _context.Orders.FirstOrDefault(order => order.Id == id);
+        var orderToDelete = await _context.Orders.FirstOrDefaultAsync(order => order.Id == id);
         _context.Orders.Remove(orderToDelete);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public List<Order> Read()
+    public async Task<List<Order>> Read()
     {
         if (isCached == false)
         {
-            List<Order> orders = _context.Orders.ToList();
+            List<Order> orders = await _context.Orders.ToListAsync();
             isCached = true;
             return orders;
         }
@@ -43,10 +44,10 @@ public class SqlOrderRepository : IOrderRepository
         return Orders;
     }
     
-    public void UpdateOrder<TUpdateParam>(TUpdateParam updateParam,Guid orderId, Action<Order, TUpdateParam> up)
+    public async void UpdateOrder<TUpdateParam>(TUpdateParam updateParam,Guid orderId, Action<Order, TUpdateParam> up)
     {
-        var orderToUpdate = _context.Orders.FirstOrDefault(order => order.Id == orderId);
+        var orderToUpdate = await _context.Orders.FirstOrDefaultAsync(order => order.Id == orderId);
         up(orderToUpdate, updateParam);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }

@@ -5,6 +5,6 @@ namespace FulfillmentCenter.Services.Interfaces;
 
 public interface IProductService
 {
-    public List<Product> GetProducts();
+    public Task<List<Product>> GetProducts();
     public void CreateProduct(RequestProductDto product);
 }

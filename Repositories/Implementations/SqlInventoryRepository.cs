@@ -1,6 +1,7 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
@@ -13,28 +14,28 @@ public class SqlInventoryRepository : IInventoryRepository
     public SqlInventoryRepository(FulfillmentCenDbContext context)
     {
         _context = context;
-        Inventories = Read();
+        Inventories = Read().Result;
         isCached = true;
     }
 
-    public void Create(Inventory inventory)
+    public async void Create(Inventory inventory)
     {
-        _context.Inventories.Add(inventory);
-        _context.SaveChanges();
+        await _context.Inventories.AddAsync(inventory);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(Guid id)
+    public async void Delete(Guid id)
     {
-        var inventoryToDelete = _context.Inventories.FirstOrDefault(inventory => inventory.Id == id);
+        var inventoryToDelete = await _context.Inventories.FirstOrDefaultAsync(inventory => inventory.Id == id);
         _context.Inventories.Remove(inventoryToDelete);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public List<Inventory> Read()
+    public async Task<List<Inventory>> Read()
     {
         if (isCached == false)
         {
-            List<Inventory> inventories = _context.Inventories.ToList();
+            List<Inventory> inventories = await _context.Inventories.ToListAsync();
             isCached = true;
             return inventories;
         }

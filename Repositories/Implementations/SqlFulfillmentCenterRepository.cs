@@ -1,6 +1,7 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
@@ -18,26 +19,26 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
         _context = context;
     }
 
-    public void Create(DistributionCenter distributionCenter)
+    public async void Create(DistributionCenter distributionCenter)
     {
-        _context.DistributionCenters.Add(distributionCenter);
-        _context.SaveChanges();
+        await _context.DistributionCenters.AddAsync(distributionCenter);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(Guid id)
+    public async void Delete(Guid id)
     {
-        var fulfillmentCenterToDelete = _context.DistributionCenters.FirstOrDefault(center => center.Id == id);
+        var fulfillmentCenterToDelete = await _context.DistributionCenters.FirstOrDefaultAsync(center => center.Id == id);
         _context.DistributionCenters.Remove(fulfillmentCenterToDelete);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public List<Entities.DistributionCenter> Read()
+    public async Task<List<DistributionCenter>> Read()
     {
-        List<Entities.DistributionCenter> fulfillmentCenters = _context.DistributionCenters.ToList();
+        List<Entities.DistributionCenter> fulfillmentCenters = await _context.DistributionCenters.ToListAsync();
         return fulfillmentCenters;
     }
 
-    public void UpdateInventory(Guid FulfillmentCenterId, Inventory inventory)
+    public async void UpdateInventory(Guid FulfillmentCenterId, Inventory inventory)
     {
         UpdateFulfillmentCenter(FulfillmentCenterId, inventory,
             (inventory, fulfillmentCente) =>
@@ -47,10 +48,10 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
             });
     }
 
-    public void UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam, Action<TUpdateParam, Entities.DistributionCenter> up)
+    public async void UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam, Action<TUpdateParam, Entities.DistributionCenter> up)
     {
-        var fulfillmentCenterToUpdate = _context.DistributionCenters.FirstOrDefault(center => center.Id == FulfillmentCenterId);
+        var fulfillmentCenterToUpdate = await _context.DistributionCenters.FirstOrDefaultAsync(center => center.Id == FulfillmentCenterId);
         up(updateParam, fulfillmentCenterToUpdate);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }

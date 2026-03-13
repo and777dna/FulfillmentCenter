@@ -21,7 +21,7 @@ public class InventoryController(IInventoryService inventoryService) : Controlle
     public List<ResponseInventoryDto> InventoryRemaining(Guid centerId)
     {
         //return _inventoryService.RemainingsOnTheFulfillmentCenter(centerId);
-        var remainings = _inventoryService.RemainingsOnTheFulfillmentCenter(centerId).ToList();
+        var remainings = _inventoryService.RemainingsOnTheFulfillmentCenter(centerId).Result;
         List<ResponseInventoryDto> remainingsPdo = remainings.Select(remain => new ResponseInventoryDto
         {
             ProductId = remain.ProductId,

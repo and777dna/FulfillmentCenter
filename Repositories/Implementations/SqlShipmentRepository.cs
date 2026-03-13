@@ -2,6 +2,7 @@ using FulfillmentCenter.Data;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
@@ -14,28 +15,28 @@ public class SqlShipmentRepository : IShipmentRepository
     public SqlShipmentRepository(FulfillmentCenDbContext context)
     {
         _context = context;
-        Shipments = Read();
+        Shipments = Read().Result;
         _isCached = true;
     }
 
-    public void Create(Shipment shipment)
+    public async void Create(Shipment shipment)
     {
-        _context.Shipments.Add(shipment);
-        _context.SaveChanges();
+        await _context.Shipments.AddAsync(shipment);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(Guid id)//TODO: to specify id more precisely
+    public async void Delete(Guid id)//TODO: to specify id more precisely
     {
-        var shipmentToDelete = _context.Shipments.FirstOrDefault(shipment => shipment.Id == id);
+        var shipmentToDelete = await _context.Shipments.FirstOrDefaultAsync(shipment => shipment.Id == id);
         _context.Shipments.Remove(shipmentToDelete);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public List<Shipment> Read()
+    public async Task<List<Shipment>> Read()
     {
         if (!_isCached)
         {
-            Shipments = _context.Shipments.ToList();
+            Shipments = await _context.Shipments.ToListAsync();
         }
 
         return Shipments;
@@ -46,10 +47,10 @@ public class SqlShipmentRepository : IShipmentRepository
         UpdateShipment(id, status, (shipmentStatus, shipment) => shipment.Status = shipmentStatus);
     }
     
-    public void UpdateShipment<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, Action<TUpdateParameter, Shipment> up)//TUpdateParameter
+    public async void UpdateShipment<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, Action<TUpdateParameter, Shipment> up)//TUpdateParameter
     {
-        var shipmentToUpdate = _context.Shipments.FirstOrDefault(shipment => shipment.Id == id);
+        var shipmentToUpdate = await _context.Shipments.FirstOrDefaultAsync(shipment => shipment.Id == id);
         up(updateParameter, shipmentToUpdate);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }

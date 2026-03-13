@@ -10,7 +10,7 @@ public interface IOrderService
     public void CancelOrder(Guid orderId);
     public void UpdateOrderStatus(OrderStatus status,Guid id);
 
-    public Order GetOrderById(Guid orderId);
+    public Task<Order> GetOrderById(Guid orderId);
 
     public Order SearchById(Guid orderId, List<Order> orders);
 }

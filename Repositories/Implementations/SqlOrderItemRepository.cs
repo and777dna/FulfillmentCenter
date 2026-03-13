@@ -1,6 +1,7 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
@@ -13,28 +14,28 @@ public class SqlOrderItemRepository : IOrderItemRepository
     public SqlOrderItemRepository(FulfillmentCenDbContext context)
     {
         _context = context;
-        OrderItems = Read();
+        OrderItems = Read().Result;
         isCached = true;
     }
 
-    public void Create(OrderItem orderItem)
+    public async void Create(OrderItem orderItem)
     {
-        _context.OrderItems.Add(orderItem);
-        _context.SaveChanges();
+        await _context.OrderItems.AddAsync(orderItem);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(Guid id)
+    public async void Delete(Guid id)
     {
-        var orderItemToDelete = _context.OrderItems.FirstOrDefault(order => order.Id == id);
+        var orderItemToDelete = await _context.OrderItems.FirstOrDefaultAsync(order => order.Id == id);
         _context.OrderItems.Remove(orderItemToDelete);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public List<OrderItem> Read()
+    public async Task<List<OrderItem>> Read()
     {
         if (isCached == false)
         {
-            List<OrderItem> orderItems = _context.OrderItems.ToList();
+            List<OrderItem> orderItems = await _context.OrderItems.ToListAsync();
             isCached = true;
             return orderItems;
         }

@@ -29,7 +29,7 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     [HttpGet("{id}")]
     public ResponseOrderDto GetOrders(Guid id)
     {
-        var findOrderById = _orderService.GetOrderById(id);
+        var findOrderById = _orderService.GetOrderById(id).Result;
 
         return new ResponseOrderDto
         {
