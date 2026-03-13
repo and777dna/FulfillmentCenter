@@ -1,4 +1,5 @@
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Data;
@@ -22,6 +23,15 @@ public class FulfillmentCenDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Product>().HasKey(product => product.SKU);
+        modelBuilder.Entity<Order>()
+            .Property(e => e.Status)
+            .HasConversion(v => v.ToString(),
+            v => (OrderStatus)Enum.Parse(typeof(OrderStatus), v));
+        
+        modelBuilder.Entity<Shipment>()
+            .Property(e => e.Status)
+            .HasConversion(v => v.ToString(),
+                v => (ShipmentStatus)Enum.Parse(typeof(ShipmentStatus), v));
     }
     public DbSet<Shipment> Shipments { get; set; }
     
