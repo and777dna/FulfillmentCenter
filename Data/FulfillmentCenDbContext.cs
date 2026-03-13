@@ -32,6 +32,12 @@ public class FulfillmentCenDbContext : DbContext
             .Property(e => e.Status)
             .HasConversion(v => v.ToString(),
                 v => (ShipmentStatus)Enum.Parse(typeof(ShipmentStatus), v));
+
+        modelBuilder.Entity<OrderItem>()
+            .HasOne(e => e.Order)
+            .WithMany(e => e.Items)
+            .HasForeignKey(e => e.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
     public DbSet<Shipment> Shipments { get; set; }
     
