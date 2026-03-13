@@ -23,6 +23,7 @@ public class FulfillmentCenDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Product>().HasKey(product => product.SKU);
+        
         modelBuilder.Entity<Order>()
             .Property(e => e.Status)
             .HasConversion(v => v.ToString(),
@@ -39,6 +40,7 @@ public class FulfillmentCenDbContext : DbContext
             .HasForeignKey(e => e.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
     }
+    
     public DbSet<Shipment> Shipments { get; set; }
     
     /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -15,7 +15,7 @@ public class ProductsController(IProductService productService) : ControllerBase
     
     
     [HttpGet]
-    public List<ResponseProductDto> GetProducts()
+    public IActionResult GetProducts()
     {
         List<Product> products = _productService.GetProducts().Result;
         List<ResponseProductDto> productsDtos = products.Select(product => new ResponseProductDto
@@ -24,13 +24,14 @@ public class ProductsController(IProductService productService) : ControllerBase
             SKU = product.SKU,
             Weight = product.Weight
         }).ToList();
-        return productsDtos;
+        return Ok(productsDtos);
     }
 
     [HttpPost]
-    public void AddProduct(RequestProductDto productDto)
+    public IActionResult AddProduct([FromBody] RequestProductDto productDto)
     {
         _productService.CreateProduct(productDto);
+        return Ok("New product has been added.");
     }
 
 }

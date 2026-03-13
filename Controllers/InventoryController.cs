@@ -11,14 +11,16 @@ public class InventoryController(IInventoryService inventoryService) : Controlle
 {
     private IInventoryService _inventoryService = inventoryService;
     
+    
     [HttpPost]
-    public void AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)
+    public IActionResult AddStock([FromBody] RequestInventoryDto inventoryDto,[FromBody] Guid fulfillmentCenterId)
     {
         _inventoryService.AddStock(inventoryDto, fulfillmentCenterId);
+        return Ok("New stock has been added.");
     }
     
     [HttpGet("{centerId}")]
-    public List<ResponseInventoryDto> InventoryRemaining(Guid centerId)
+    public IActionResult InventoryRemaining([FromQuery] Guid centerId)
     {
         //return _inventoryService.RemainingsOnTheFulfillmentCenter(centerId);
         var remainings = _inventoryService.RemainingsOnTheFulfillmentCenter(centerId).Result;
@@ -27,6 +29,6 @@ public class InventoryController(IInventoryService inventoryService) : Controlle
             ProductId = remain.ProductId,
             Quantity = remain.Quantity
         }).ToList();
-        return remainingsPdo;
+        return Ok(remainingsPdo);
     }
 }
