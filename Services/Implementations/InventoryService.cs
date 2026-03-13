@@ -3,6 +3,7 @@ using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace FulfillmentCenter.Services.Implementations;
 
@@ -30,7 +31,29 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
     public ICollection<Inventory> RemainingsOnTheFulfillmentCenter(Guid centerId)
     { 
         var fulfillmentCenters = _fulfillmentCenterRepositor.Read();
-        var findedCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
-        return findedCenter.Inventory;
+        var findCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
+        return findCenter.Inventory;
     }
+
+    public Dictionary<Guid, int> ReturnProductAmount(ICollection<Inventory> inventories)
+    {
+        Dictionary<Guid, int> openWith = new Dictionary<Guid, int>();
+        foreach (var product in inventories)
+        {
+            openWith.Add(product.Id, product.Quantity);
+        }
+
+        return openWith;
+    }
+    
+    /*public bool CheckSufficientAmountOfInventory(ICollection<Inventory> remainingsOnTheFulfillmentCenter, ICollection<OrderItem> items)
+    {
+        //TODO: to create for each remainingsOnTheFulfillmentCenter,items hash to compare them.
+        foreach (var inventory in remainingsOnTheFulfillmentCenter)
+        {
+            
+        }
+
+        return true;
+    }*/
 }
