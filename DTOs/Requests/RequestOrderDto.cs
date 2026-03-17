@@ -2,7 +2,7 @@ using FulfillmentCenter.Enums;
 
 namespace FulfillmentCenter.DTOs.Requests;
 
-public class RequestOrderDto
+public record RequestOrderDto
 {
     public Guid Id { get; set; }
     public string CustomerName { get; set; }

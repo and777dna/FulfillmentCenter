@@ -1,3 +1,4 @@
+using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Implementations;
@@ -32,13 +33,24 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
         return true;
     }
     
-    public void CreateShipment(Shipment shipment)
+    public void CreateShipment(RequestShipmentDto requestShipmentDto)
     {//na FulfillmentCenter достаточно товара для каждой позиции Order
-        var remainingsOnTheFulfillmentCenter = _inventoryService.RemainingsOnTheFulfillmentCenter(shipment.DistributionCenterId);
+        var remainingsOnTheFulfillmentCenter = _inventoryService.RemainingsOnTheFulfillmentCenter(requestShipmentDto.DistributionCenterId);
         //Inventory.DistributionCenterId .Inventory => forEach()
         //Shipment.Order ICollection<OrderItem> Items => 
         //
         //var sufficientAmountOfInventory = _inventoryService.CheckSufficientAmountOfInventory(remainingsOnTheFulfillmentCenter, shipment.Order.Items);
+        var shipment =
+            new Shipment {
+                Id = requestShipmentDto.Id,
+                OrderId = requestShipmentDto.OrderId,
+                Order = requestShipmentDto.Order,
+                DistributionCenterId = requestShipmentDto.DistributionCenterId,
+                DistributionCenter = requestShipmentDto.DistributionCenter,
+                Status = requestShipmentDto.Status,
+                ShippedAt = requestShipmentDto.ShippedAt,
+                EstimatedDelivery = requestShipmentDto.EstimatedDelivery
+            };
         if (CheckSufficientAmountOfInventoryToShipment(_inventoryService.ReturnProductAmount(remainingsOnTheFulfillmentCenter.Result), ReturnShipmentAmount(shipment.Order.Items)))
         {
             _shipmentRepository.Create(shipment);

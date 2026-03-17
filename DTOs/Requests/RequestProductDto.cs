@@ -1,8 +1,6 @@
-using FulfillmentCenter.Entities;
-
 namespace FulfillmentCenter.DTOs.Requests;
 
-public class RequestProductDto
+public record RequestProductDto
 {
     public string Name { get; set; }
     public string SKU { get; set; }

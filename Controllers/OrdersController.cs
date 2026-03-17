@@ -10,24 +10,24 @@ namespace FulfillmentCenter.Controllers;
 [Route("/api/orders")]
 public class OrdersController(IOrderService orderService) : ControllerBase
 {
-    private IOrderService _orderService = orderService;
+    private readonly IOrderService _orderService = orderService;
     
     [HttpPost]
     public IActionResult CreateOrder([FromBody] RequestOrderDto orderDto)
     {
         _orderService.CreateOrder(orderDto);
-        return Ok("New order has been created.");
+        return Ok();
     }
     
     [HttpPut("{id}/status")]
-    public IActionResult ChangeOrderStatus([FromQuery] Guid id,[FromQuery] OrderStatus status)
+    public IActionResult ChangeOrderStatus([FromRoute] Guid id,[FromQuery] OrderStatus status)
     {
         _orderService.UpdateOrderStatus(status, id);
-        return Ok("Order status has been created.");
+        return NoContent();
     }
     
     [HttpGet("{id}")]
-    public IActionResult GetOrders([FromQuery] Guid id)
+    public IActionResult GetOrder([FromRoute] Guid id)
     {
         var findOrderById = _orderService.GetOrderById(id).Result;
 

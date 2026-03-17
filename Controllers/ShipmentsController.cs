@@ -1,6 +1,6 @@
+using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
-using FulfillmentCenter.Services.Implementations;
 using FulfillmentCenter.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,19 +14,19 @@ public class ShipmentsController(IShipmentService shipmentService) : ControllerB
     
     
     [HttpPost]
-    public IActionResult CreateShipment([FromBody] Shipment shipment)
+    public IActionResult CreateShipment([FromBody] RequestShipmentDto shipmentDto)
     {
-        _shipmentService.CreateShipment(shipment);
+        _shipmentService.CreateShipment(shipmentDto);
         //TODO review: this invokes the controller action as a plain C# method, bypassing the HTTP pipeline entirely. Should be to call _shipmentService.UpdateShipmentStatus(...) directly instead
         //TODO: to understand why cant we bypass the HTTP pipeline entirely
-        _shipmentService.UpdateShipmentStatus(shipment.Id, ShipmentStatus.Shipped);
+        _shipmentService.UpdateShipmentStatus(shipmentDto.Id, ShipmentStatus.Shipped);
         return Ok("Shipment has been created.");
     }
     
     //TODO review: you don't need to use $ in the route. It's not valid
     //The route template uses {id} but the method parameter is named shipmentId. These must match for route binding to work. It should be either {shipmentId} in the route or Guid id in the parameter
-    [HttpPut("{id}/status")]
-    public IActionResult UpdateShipmentStatus([FromQuery] Guid shipmentId,[FromQuery] ShipmentStatus status)
+    [HttpPut("{shipmentId}/status")]
+    public IActionResult UpdateShipmentStatus([FromRoute] Guid shipmentId,[FromQuery] ShipmentStatus status)
     {
         _shipmentService.UpdateShipmentStatus(shipmentId, status);
         return Ok("Shipment status has been updated.");

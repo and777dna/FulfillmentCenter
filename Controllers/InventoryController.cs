@@ -9,8 +9,7 @@ namespace FulfillmentCenter.Controllers;
 [Route("/api/inventory")]
 public class InventoryController(IInventoryService inventoryService) : ControllerBase
 {
-    private IInventoryService _inventoryService = inventoryService;
-    
+    private readonly IInventoryService _inventoryService = inventoryService;
     
     [HttpPost]
     public IActionResult AddStock([FromBody] RequestInventoryDto inventoryDto,[FromBody] Guid fulfillmentCenterId)
@@ -20,15 +19,15 @@ public class InventoryController(IInventoryService inventoryService) : Controlle
     }
     
     [HttpGet("{centerId}")]
-    public IActionResult InventoryRemaining([FromQuery] Guid centerId)
+    public async Task<List<ResponseInventoryDto>> InventoryRemaining([FromRoute] Guid centerId)
     {
         //return _inventoryService.RemainingsOnTheFulfillmentCenter(centerId);
-        var remainings = _inventoryService.RemainingsOnTheFulfillmentCenter(centerId).Result;
+        var remainings = await _inventoryService.RemainingsOnTheFulfillmentCenter(centerId);
         List<ResponseInventoryDto> remainingsPdo = remainings.Select(remain => new ResponseInventoryDto
         {
             ProductId = remain.ProductId,
             Quantity = remain.Quantity
         }).ToList();
-        return Ok(remainingsPdo);
+        return remainingsPdo;
     }
 }
