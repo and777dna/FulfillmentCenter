@@ -14,10 +14,35 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
+
+var connectionString = builder.Configuration.GetConnectionString("FulfilmentCenterDatabase");
+builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseSqlServer(connectionString));
+
+//builder.Services.AddControllers();
+
+builder.Services.AddTransient<IInventoryService, InventoryService>();
+builder.Services.AddTransient<IOrderService, OrderService>();
+builder.Services.AddTransient<IProductService, ProductService>();
+
+builder.Services.AddTransient<IShipmentService, ShipmentService>();
+
+builder.Services.AddTransient<IFulfillmentCenterRepository, SqlFulfillmentCenterRepository>();
+builder.Services.AddTransient<IInventoryRepository, SqlInventoryRepository>();
+builder.Services.AddTransient<IOrderItemRepository, SqlOrderItemRepository>();
+builder.Services.AddTransient<IOrderRepository, SqlOrderRepository>();
+builder.Services.AddTransient<IProductRepository, SqlProductRepository>();
+builder.Services.AddTransient<IShipmentRepository, SqlShipmentRepository>();
+
+builder.Services.AddTransient<InventoryController, InventoryController>();
+builder.Services.AddTransient<OrdersController, OrdersController>();
+builder.Services.AddTransient<ProductsController, ProductsController>();
+builder.Services.AddTransient<ShipmentsController, ShipmentsController>();
+
+builder.Services.AddScoped<DbContext, FulfillmentCenDbContext>();//TODO: to check if this is okay, because i need to register interface first
+
+
 var app = builder.Build();
 
-var connectionString = builder.Configuration.GetConnectionString("ConnectionStrings");
-builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseSqlServer(connectionString));
 //DbContextOptions
 
 // Configure the HTTP request pipeline.
@@ -27,27 +52,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapGet("/testing", () => "TESTING");
+app.MapGet("/api/products", (IProductService productService) => productService.GetProducts());
+
+
+/*app.MapGet("/api/orders/{id}", () =>
+{
+    
+});*/
 
 
 app.Run();
-
-
-
-builder.Services.AddSingleton<IInventoryService, InventoryService>();
-builder.Services.AddSingleton<IOrderService, OrderService>();
-builder.Services.AddSingleton<IProductService, ProductService>();
-builder.Services.AddSingleton<IShipmentService, ShipmentService>();
-
-builder.Services.AddSingleton<IFulfillmentCenterRepository, SqlFulfillmentCenterRepository>();
-builder.Services.AddSingleton<IInventoryRepository, SqlInventoryRepository>();
-builder.Services.AddSingleton<IOrderItemRepository, SqlOrderItemRepository>();
-builder.Services.AddSingleton<IOrderRepository, SqlOrderRepository>();
-builder.Services.AddSingleton<IProductRepository, SqlProductRepository>();
-builder.Services.AddSingleton<IShipmentRepository, SqlShipmentRepository>();
-
-builder.Services.AddSingleton<InventoryController, InventoryController>();
-builder.Services.AddSingleton<OrdersController, OrdersController>();
-builder.Services.AddSingleton<ProductsController, ProductsController>();
-builder.Services.AddSingleton<ShipmentsController, ShipmentsController>();
-
-builder.Services.AddSingleton<DbContext, FulfillmentCenDbContext>();//TODO: to check if this is okay, because i need to register interface first
