@@ -12,10 +12,15 @@ public class InventoryController(IInventoryService inventoryService) : Controlle
     private readonly IInventoryService _inventoryService = inventoryService;
     
     [HttpPost]
-    public IActionResult AddStock([FromBody] RequestInventoryDto inventoryDto,[FromBody] Guid fulfillmentCenterId)
+    public IActionResult AddStock([FromBody] RequestInventoryDto? inventoryDto)
     {
-        _inventoryService.AddStock(inventoryDto, fulfillmentCenterId);
-        return Ok("New stock has been added.");
+        if (inventoryDto != null)
+        {
+            _inventoryService.AddStock(inventoryDto, inventoryDto.DistributionCenterId);
+            return Ok();
+        }
+
+        return BadRequest();
     }
     
     [HttpGet("{centerId}")]

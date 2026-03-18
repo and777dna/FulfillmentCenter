@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Implementations;
@@ -27,5 +28,17 @@ public class ProductService(IProductRepository productRepository) : IProductServ
             Weight = productDto.Weight
         };
         _productRepository.Create(product);
+    }
+
+    public async Task<Product> FindProduct(Guid productId)
+    {
+        var products = await _productRepository.Read();
+        var product = products.FirstOrDefault(product => product.Id == productId);
+        if (product != null)
+        {
+            return product;
+        }
+
+        throw new ValidationException();
     }
 }

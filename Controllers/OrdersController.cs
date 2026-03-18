@@ -13,10 +13,15 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     private readonly IOrderService _orderService = orderService;
     
     [HttpPost]
-    public IActionResult CreateOrder([FromBody] RequestOrderDto orderDto)
+    public IActionResult CreateOrder([FromBody] RequestOrderDto? orderDto)
     {
-        _orderService.CreateOrder(orderDto);
-        return Ok();
+        if (orderDto != null)
+        {
+            _orderService.CreateOrder(orderDto);
+            return Ok();
+        }
+
+        return BadRequest();
     }
     
     [HttpPut("{id}/status")]
@@ -29,15 +34,15 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetOrder([FromRoute] Guid id)
     {
-        var findOrderById = _orderService.GetOrderById(id).Result;
+        var order = _orderService.GetOrderById(id).Result;
 
         return Ok(
             new ResponseOrderDto
         {
-            CustomerName = findOrderById.CustomerName,
-            DeliveryAddress = findOrderById.DeliveryAddress,
-            CreatedAt = findOrderById.CreatedAt,
-            Status = findOrderById.Status
+            CustomerName = order.CustomerName,
+            DeliveryAddress = order.DeliveryAddress,
+            CreatedAt = order.CreatedAt,
+            Status = order.Status
         }
         );
     }

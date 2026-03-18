@@ -31,7 +31,6 @@ public class ProductsController(IProductService productService) : ControllerBase
     {
         _productService.CreateProduct(productDto);
         return CreatedAtAction(nameof(AddProduct), new {productDto.SKU});
-        //return Ok("New product has been added.");
     }
 
 }

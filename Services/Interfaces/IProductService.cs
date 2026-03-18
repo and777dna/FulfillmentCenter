@@ -7,4 +7,5 @@ public interface IProductService
 {
     public Task<List<Product>> GetProducts();
     public void CreateProduct(RequestProductDto product);
+    public Task<Product> FindProduct(Guid productId);
 }

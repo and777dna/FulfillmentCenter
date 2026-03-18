@@ -1,27 +1,31 @@
+using System.ComponentModel.DataAnnotations;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
-using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace FulfillmentCenter.Services.Implementations;
 
-public class InventoryService(IInventoryRepository inventoryRepository, IFulfillmentCenterRepository fulfillmentCenterRepositor) : IInventoryService
+public class InventoryService(IInventoryRepository inventoryRepository, IFulfillmentCenterRepository fulfillmentCenterRepositor, IFulfillmentCenterService fulfillmentCenterService, IProductService productService) : IInventoryService
 {
     private IInventoryRepository _inventoryRepository = inventoryRepository;
     private IFulfillmentCenterRepository _fulfillmentCenterRepositor = fulfillmentCenterRepositor;
+    private IFulfillmentCenterService _fulfillmentCenterService = fulfillmentCenterService;
+    private IProductService _productService = productService;
     
-    public void AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)//пополнить остатки
+    public async void AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)//пополнить остатки
     {
+        var distributionCenter = await _fulfillmentCenterService.FindFulfillmentCenter(fulfillmentCenterId);
+        var product = await _productService.FindProduct(inventoryDto.ProductId);
+        
         Inventory inventory = new Inventory
         {
             Id = Guid.NewGuid(),
             ProductId = inventoryDto.ProductId,
             Quantity = inventoryDto.Quantity,
-            Product = inventoryDto.Product,
+            Product = product,
             DistributionCenterId = fulfillmentCenterId,
-            DistributionCenter = inventoryDto.DistributionCenter
+            DistributionCenter = distributionCenter
         };
         //на конкретном складе
         _fulfillmentCenterRepositor.UpdateInventory(fulfillmentCenterId, inventory);
@@ -32,7 +36,12 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
     { 
         var fulfillmentCenters = await _fulfillmentCenterRepositor.Read();
         var findCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
-        return findCenter.Inventory;
+        if (findCenter != null)
+        {
+            return findCenter.Inventory;
+        }
+
+        throw new ValidationException();
     }
 
     public Dictionary<Guid, int> ReturnProductAmount(ICollection<Inventory> inventories)

@@ -49,8 +49,13 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
     
     public Order SearchById(Guid orderId, List<Order> orders)
     {
-        var findOrder = orders.Find(order => order.Id == orderId);
-        return findOrder;
+        var findOrder = orders.FirstOrDefault(order => order.Id == orderId);
+        if (findOrder != null)
+        {
+            return findOrder;
+        }
+
+        throw new ArgumentNullException();
     }
     
     public void UpdateOrderStatus(OrderStatus orderStatus, Guid Id)
