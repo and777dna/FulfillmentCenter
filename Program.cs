@@ -56,6 +56,8 @@ app.MapGet("/testing", () => "TESTING");
 app.MapGet("/api/products", (IProductService productService) => productService.GetProducts());
 
 
+//app.MapGet("/api/inventory/{centerId}", (InventoryController inventoryController) => inventoryController.InventoryRemaining());
+
 /*app.MapGet("/api/orders/{id}", () =>
 {
     
