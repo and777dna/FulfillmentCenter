@@ -1,11 +1,11 @@
 using FulfillmentCenter.Controllers;
 using FulfillmentCenter.Data;
+using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Implementations;
 using FulfillmentCenter.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +17,6 @@ builder.Services.AddSwaggerGen();
 
 
 var connectionString = builder.Configuration.GetConnectionString("FulfilmentCenterDatabase");
-//builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseSqlServer(connectionString));
-
 builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseMySql(connectionString, 
     ServerVersion.AutoDetect(connectionString)));
 //builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseSqlServer(connectionString));
@@ -43,26 +41,10 @@ builder.Services.AddTransient<InventoryController, InventoryController>();
 builder.Services.AddTransient<OrdersController, OrdersController>();
 builder.Services.AddTransient<ProductsController, ProductsController>();
 builder.Services.AddTransient<ShipmentsController, ShipmentsController>();
-//builder.Services.AddControllers();
 
 /*
-builder.Services.AddTransient<IInventoryService, InventoryService>();
-builder.Services.AddTransient<IOrderService, OrderService>();
-builder.Services.AddTransient<IProductService, ProductService>();
-
-builder.Services.AddTransient<IShipmentService, ShipmentService>();
-
-builder.Services.AddTransient<IFulfillmentCenterRepository, SqlFulfillmentCenterRepository>();
-builder.Services.AddTransient<IInventoryRepository, SqlInventoryRepository>();
-builder.Services.AddTransient<IOrderItemRepository, SqlOrderItemRepository>();
-builder.Services.AddTransient<IOrderRepository, SqlOrderRepository>();
-builder.Services.AddTransient<IProductRepository, SqlProductRepository>();
-builder.Services.AddTransient<IShipmentRepository, SqlShipmentRepository>();
-
-builder.Services.AddTransient<InventoryController, InventoryController>();
-builder.Services.AddTransient<OrdersController, OrdersController>();
-builder.Services.AddTransient<ProductsController, ProductsController>();
-builder.Services.AddTransient<ShipmentsController, ShipmentsController>();
+builder.Services.AddSingleton<FulfillmentCenDbContext>();
+builder.Services.AddSingleton<DbContext,FulfillmentCenDbContext>();
 
 builder.Services.AddScoped<DbContext, FulfillmentCenDbContext>();//TODO: to check if this is okay, because i need to register interface first
 */
@@ -80,7 +62,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/testing", () => "TESTING");
-//app.MapGet("/api/products", (IProductService productService) => productService.GetProducts());
 app.MapGet("/db-test", async (FulfillmentCenDbContext db) =>
 {
     var canConnect = await db.Database.CanConnectAsync();
@@ -88,12 +69,29 @@ app.MapGet("/db-test", async (FulfillmentCenDbContext db) =>
     return canConnect ? "Database connection OK ✅" : "Database connection FAILED ❌";
 });
 
-//app.MapGet("/api/inventory/{centerId}", (InventoryController inventoryController) => inventoryController.InventoryRemaining());
+//app.MapGet("/api/products", (IProductService productService) => productService.GetProducts());
 
-/*app.MapGet("/api/orders/{id}", () =>
+//app.MapGet("/api/products", (ProductsController productController) => productController.GetProducts());
+//DONE
+app.MapGet("/api/products", (ProductsController productController) => productController.GetProducts());
+
+app.MapPost("/api/products", (ProductsController productController) => productController.AddProduct(new RequestProductDto
 {
-    
-});*/
+    Name = "a",
+    SKU = "2",
+    Weight = 0
+}));
+
+//app.MapGet("/api/inventory/{centerId}", (InventoryController inventoryController) => inventoryController.InventoryRemaining());
+//app.MapPost("/api/inventory", (InventoryController inventoryController) => inventoryController.AddStock());
+/*
+app.MapPost("/api/orders", (OrdersController ordersController) => ordersController.CreateOrder());
+app.MapPut("/api/orders/{id}", (OrdersController ordersController) => ordersController.ChangeOrderStatus());
+app.MapGet("/api/orders/{id}/status", (OrdersController ordersController) => ordersController.GetOrder);
+
+app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipmentsController.CreateShipment());
+app.MapPut("/api/shipments/{id}/status", (ShipmentsController shipmentsController) => shipmentsController.UpdateShipmentStatus);
+*/
 
 
 app.Run();
