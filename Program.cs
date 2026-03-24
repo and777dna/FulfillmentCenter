@@ -1,6 +1,7 @@
 using FulfillmentCenter.Controllers;
 using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Implementations;
@@ -82,16 +83,41 @@ app.MapPost("/api/products", (ProductsController productController) => productCo
     Weight = 0
 }));
 
-//app.MapGet("/api/inventory/{centerId}", (InventoryController inventoryController) => inventoryController.InventoryRemaining());
-//app.MapPost("/api/inventory", (InventoryController inventoryController) => inventoryController.AddStock());
-/*
-app.MapPost("/api/orders", (OrdersController ordersController) => ordersController.CreateOrder());
-app.MapPut("/api/orders/{id}", (OrdersController ordersController) => ordersController.ChangeOrderStatus());
-app.MapGet("/api/orders/{id}/status", (OrdersController ordersController) => ordersController.GetOrder);
 
-app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipmentsController.CreateShipment());
-app.MapPut("/api/shipments/{id}/status", (ShipmentsController shipmentsController) => shipmentsController.UpdateShipmentStatus);
-*/
+app.MapGet("/api/inventory/{centerId}", (InventoryController inventoryController) => inventoryController.InventoryRemaining(Guid.NewGuid()));
+
+app.MapPost("/api/inventory", (InventoryController inventoryController) => inventoryController.AddStock(new RequestInventoryDto()
+{//TODO: this one is workable
+    DistributionCenterId = Guid.NewGuid(),
+    ProductId = Guid.NewGuid(),
+    Quantity = 3
+}));
+
+app.MapPost("/api/orders", (OrdersController ordersController) => ordersController.CreateOrder(new RequestOrderDto()
+{
+    CustomerName = "ANDREI",
+    DeliveryAddress = "Pražská 636/38b, 642 00 Brno",
+    Status = OrderStatus.Created
+}));
+
+//TODO: to fix this
+app.MapPut("/api/orders/{id}", (OrdersController ordersController) => ordersController.ChangeOrderStatus(Guid.NewGuid(), OrderStatus.Processing));
+
+//[FromRoute] Guid id  //TODO: to see if i need to fix it to make it "[FromRoute] Guid id"
+app.MapGet("/api/orders/{id}/status", (OrdersController ordersController) => ordersController.GetOrder(Guid.NewGuid()));
+
+
+app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipmentsController.CreateShipment(new RequestShipmentDto()
+{
+    DistributionCenterId = Guid.NewGuid(),
+    EstimatedDelivery = DateTime.Now,
+    Id = Guid.NewGuid(),
+    OrderId = Guid.NewGuid(),
+    ShippedAt = DateTime.Today,
+    Status = ShipmentStatus.Shipped
+}));
+
+app.MapPut("/api/shipments/{id}/status", (ShipmentsController shipmentsController) => shipmentsController.UpdateShipmentStatus(Guid.NewGuid(), ShipmentStatus.Pending));
 
 
 app.Run();

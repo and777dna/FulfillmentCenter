@@ -20,14 +20,14 @@ public class SqlInventoryRepository : IInventoryRepository
 
     public async void Create(Inventory inventory)
     {
-        await _context.Inventories.AddAsync(inventory);
+        await _context.Inventory.AddAsync(inventory);
         await _context.SaveChangesAsync();
     }
 
     public async void Delete(Guid id)
     {
-        var inventoryToDelete = await _context.Inventories.FirstOrDefaultAsync(inventory => inventory.Id == id);
-        _context.Inventories.Remove(inventoryToDelete);
+        var inventoryToDelete = await _context.Inventory.FirstOrDefaultAsync(inventory => inventory.Id == id);
+        _context.Inventory.Remove(inventoryToDelete);
         await _context.SaveChangesAsync();
     }
 
@@ -35,7 +35,7 @@ public class SqlInventoryRepository : IInventoryRepository
     {
         if (isCached == false)
         {
-            List<Inventory> inventories = await _context.Inventories.ToListAsync();
+            List<Inventory> inventories = await _context.Inventory.ToListAsync();
             isCached = true;
             return inventories;
         }

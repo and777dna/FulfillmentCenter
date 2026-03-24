@@ -16,10 +16,10 @@ public class FulfillmentCenDbContext : DbContext
     }
     
     public DbSet<DistributionCenter> DistributionCenters { get; set; }
-    public DbSet<Inventory> Inventories { get; set; }
+    public DbSet<Inventory> Inventory { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
-    public DbSet<Product> Products { get; set; }
+    public DbSet<Product> Product { get; set; }
     public DbSet<Shipment> Shipments { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
