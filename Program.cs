@@ -53,8 +53,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/testing", () => "TESTING");
-app.MapGet("/api/products", (IProductService productService) => productService.GetProducts());
+//app.MapGet("/api/products", (IProductService productService) => productService.GetProducts());
+app.MapGet("/db-test", async (FulfillmentCenDbContext db) =>
+{
+    var canConnect = await db.Database.CanConnectAsync();
 
+    return canConnect ? "Database connection OK ✅" : "Database connection FAILED ❌";
+});
 
 //app.MapGet("/api/inventory/{centerId}", (InventoryController inventoryController) => inventoryController.InventoryRemaining());
 
