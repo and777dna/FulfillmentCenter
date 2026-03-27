@@ -15,7 +15,7 @@ public class SqlProductRepository : IProductRepository
         _context = context;
     }
 
-    public async void Create(Product product)
+    public async Task Create(Product product)
     {
         await _context.Product.AddAsync(product);
         await _context.SaveChangesAsync();

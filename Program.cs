@@ -74,31 +74,40 @@ app.MapGet("/db-test", async (FulfillmentCenDbContext db) =>
 
 //app.MapGet("/api/products", (ProductsController productController) => productController.GetProducts());
 //DONE
-app.MapGet("/api/products", (ProductsController productController) => productController.GetProducts());
-
+app.MapGet("/api/products", async (ProductsController productController) => 
+    await productController.GetProducts());
+//DONE
 app.MapPost("/api/products", (ProductsController productController) => productController.AddProduct(new RequestProductDto
 {
-    Name = "a",
-    SKU = "2",
+    Name = "AirPods 10",
+    SKU = "33",
     Weight = 0
 }));
 
+//app.MapGet("/api/inventory/{centerId}", (InventoryController inventoryController) => inventoryController.InventoryRemaining(Guid.Parse( "0f8fad5b-d9cb-469f-a165-70867728950e")));
+app.MapGet("/api/inventory/{centerId}", async (InventoryController inventoryController) =>
+    await inventoryController.InventoryRemaining(Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e")));
 
-app.MapGet("/api/inventory/{centerId}", (InventoryController inventoryController) => inventoryController.InventoryRemaining(Guid.NewGuid()));
 
-app.MapPost("/api/inventory", (InventoryController inventoryController) => inventoryController.AddStock(new RequestInventoryDto()
-{//TODO: this one is workable
-    DistributionCenterId = Guid.NewGuid(),
-    ProductId = Guid.NewGuid(),
-    Quantity = 3
-}));
-
-app.MapPost("/api/orders", (OrdersController ordersController) => ordersController.CreateOrder(new RequestOrderDto()
+app.MapPost("/api/orders", (OrdersController ordersController) => ordersController.CreateOrder(new RequestOrderDto
 {
     CustomerName = "ANDREI",
     DeliveryAddress = "Pražská 636/38b, 642 00 Brno",
     Status = OrderStatus.Created
 }));
+
+
+
+
+app.MapPost("/api/inventory", (InventoryController inventoryController) => inventoryController.AddStock(new RequestInventoryDto
+{//TODO: this one is TOUGH TOUGH TOUGH
+    DistributionCenterId = Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e"),
+    ProductId = Guid.Parse("550e8400-e29b-41d4-a716-446655440000"),
+    Quantity = 2
+}));
+
+
+
 
 //TODO: to fix this
 app.MapPut("/api/orders/{id}", (OrdersController ordersController) => ordersController.ChangeOrderStatus(Guid.NewGuid(), OrderStatus.Processing));
@@ -107,7 +116,7 @@ app.MapPut("/api/orders/{id}", (OrdersController ordersController) => ordersCont
 app.MapGet("/api/orders/{id}/status", (OrdersController ordersController) => ordersController.GetOrder(Guid.NewGuid()));
 
 
-app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipmentsController.CreateShipment(new RequestShipmentDto()
+app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipmentsController.CreateShipment(new RequestShipmentDto
 {
     DistributionCenterId = Guid.NewGuid(),
     EstimatedDelivery = DateTime.Now,

@@ -24,7 +24,17 @@ public class FulfillmentCenDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Product>().HasKey(product => product.SKU);
+        modelBuilder.Entity<Product>().HasKey(product => product.SKU);//TODO: because of this LOC /api/inventory/{centerId} doesnt work
+        
+        modelBuilder.Entity<Product>()
+            .HasAlternateKey(p => p.Id);
+
+        modelBuilder.Entity<Inventory>()
+            .HasOne(i => i.Product)
+            .WithMany(p => p.Inventory)
+            .HasForeignKey(i => i.ProductId)
+            .HasPrincipalKey(p => p.Id);
+        
         
         modelBuilder.Entity<Order>()
             .Property(e => e.Status)

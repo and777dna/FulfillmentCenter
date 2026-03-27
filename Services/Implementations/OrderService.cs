@@ -12,7 +12,7 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
     
     public void CreateOrder(RequestOrderDto orderDto)
     {
-        if (GetOrderById(orderDto.Id) != null)//TODO: to fix this "Expression is always true according to nullable reference types' annotations"
+        /*if (GetOrderById(orderDto.Id) != null)//TODO: to fix this "Expression is always true according to nullable reference types' annotations"
         {
             Order order = new Order
             {
@@ -21,9 +21,20 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
                 DeliveryAddress = orderDto.DeliveryAddress,
                 CreatedAt = orderDto.CreatedAt,
                 Status = orderDto.Status,
+                //TODO: to add shippment here, by finding it in db
             };
             _orderRepository.Create(order);
-        }
+        }*/
+        Order order = new Order
+        {
+            Id = orderDto.Id,
+            CustomerName = orderDto.CustomerName,
+            DeliveryAddress = orderDto.DeliveryAddress,
+            CreatedAt = orderDto.CreatedAt,
+            Status = orderDto.Status,
+            //TODO: to add shippment here, by finding it in db
+        };
+        _orderRepository.Create(order);
     }
 
     public void CancelOrder(Guid orderId)

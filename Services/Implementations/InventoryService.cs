@@ -27,18 +27,19 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
             DistributionCenterId = fulfillmentCenterId,
             DistributionCenter = distributionCenter
         };
-        //на конкретном складе
+        //на конкретном складе//TODO: the update should be inside Inventory entity
         _fulfillmentCenterRepositor.UpdateInventory(fulfillmentCenterId, inventory);
     }
     
     ////GET	/api/inventory/{centerId}	Остатки на складе
     public async Task<ICollection<Inventory>> RemainingsOnTheFulfillmentCenter(Guid centerId)
     { 
-        var fulfillmentCenters = await _fulfillmentCenterRepositor.Read();
-        var findCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
-        if (findCenter != null)
+        var inventories = await _inventoryRepository.Read();
+        var findInventoriesFromCenter = inventories.FindAll(inventory => inventory.DistributionCenterId == centerId);
+        //var findCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
+        if (findInventoriesFromCenter != null)
         {
-            return findCenter.Inventory;
+            return findInventoriesFromCenter;
         }
 
         throw new ValidationException();
