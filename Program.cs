@@ -19,29 +19,33 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("FulfilmentCenterDatabase");
 builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseMySql(connectionString, 
-    ServerVersion.AutoDetect(connectionString)));
+    ServerVersion.AutoDetect(connectionString))
+        .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information)
+        .EnableSensitiveDataLogging() // покажет параметры
+);
 //builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseSqlServer(connectionString));
 
 //builder.Services.AddControllers();
 
 builder.Services.AddTransient<IInventoryService, InventoryService>();
-builder.Services.AddTransient<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IFulfillmentCenterService, FulfillmentCenterService>();
-
 builder.Services.AddTransient<IShipmentService, ShipmentService>();
 
 builder.Services.AddTransient<IFulfillmentCenterRepository, SqlFulfillmentCenterRepository>();
 builder.Services.AddTransient<IInventoryRepository, SqlInventoryRepository>();
-builder.Services.AddTransient<IOrderItemRepository, SqlOrderItemRepository>();
-builder.Services.AddTransient<IOrderRepository, SqlOrderRepository>();
+builder.Services.AddScoped<IOrderItemRepository, SqlOrderItemRepository>();
+builder.Services.AddScoped<IOrderRepository, SqlOrderRepository>();
 builder.Services.AddTransient<IProductRepository, SqlProductRepository>();
 builder.Services.AddTransient<IShipmentRepository, SqlShipmentRepository>();
 
-builder.Services.AddTransient<InventoryController, InventoryController>();
-builder.Services.AddTransient<OrdersController, OrdersController>();
-builder.Services.AddTransient<ProductsController, ProductsController>();
-builder.Services.AddTransient<ShipmentsController, ShipmentsController>();
+//builder.Services.AddControllers();
+
+builder.Services.AddScoped<InventoryController, InventoryController>();
+builder.Services.AddScoped<OrdersController, OrdersController>();
+builder.Services.AddScoped<ProductsController, ProductsController>();
+builder.Services.AddScoped<ShipmentsController, ShipmentsController>();
 
 /*
 builder.Services.AddSingleton<FulfillmentCenDbContext>();
@@ -83,12 +87,9 @@ app.MapPost("/api/products", (ProductsController productController) => productCo
     SKU = "33",
     Weight = 0
 }));
-
-//app.MapGet("/api/inventory/{centerId}", (InventoryController inventoryController) => inventoryController.InventoryRemaining(Guid.Parse( "0f8fad5b-d9cb-469f-a165-70867728950e")));
 app.MapGet("/api/inventory/{centerId}", async (InventoryController inventoryController) =>
     await inventoryController.InventoryRemaining(Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e")));
-
-
+//DONE
 app.MapPost("/api/orders", (OrdersController ordersController) => ordersController.CreateOrder(new RequestOrderDto
 {
     CustomerName = "ANDREI",

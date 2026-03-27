@@ -1,6 +1,7 @@
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FulfillmentCenter.Data;
 
@@ -40,6 +41,15 @@ public class FulfillmentCenDbContext : DbContext
             .Property(e => e.Status)
             .HasConversion(v => v.ToString(),
             v => (OrderStatus)Enum.Parse(typeof(OrderStatus), v));
+
+        /*modelBuilder.Entity<Order>()
+            .Property(s => s.CreatedAt)*/
+        /*modelBuilder.Entity<Order>()
+            .Property(o => o.CreatedAt)
+            .HasConversion(
+                v => v.ToString("yyyy-MM-dd HH:mm:ss"), // сохраняем как string в MySQL DATETIME
+                v => DateTime.Parse(v)
+            );*/
         
         modelBuilder.Entity<Shipment>()
             .Property(e => e.Status)

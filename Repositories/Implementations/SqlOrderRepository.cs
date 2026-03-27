@@ -10,19 +10,36 @@ namespace FulfillmentCenter.Repositories.Implementations;
 public class SqlOrderRepository : IOrderRepository
 {
     private FulfillmentCenDbContext _context;
-    public List<Order> Orders;
-    private bool isCached;
+    //public List<Order> Orders;
+    //private bool isCached;
     
     public SqlOrderRepository(FulfillmentCenDbContext context)
     {
         _context = context;
-        Orders = Read().Result;
-        isCached = true;
+        //Orders = Read().Result;
+        //isCached = true;
     }
-    public async void Create(Order order)
+    public async Task Create(Order order)
     {
-        await _context.Orders.AddAsync(order);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.Orders.AddAsync(order);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async void Delete(Guid id)
@@ -34,14 +51,14 @@ public class SqlOrderRepository : IOrderRepository
 
     public async Task<List<Order>> Read()
     {
-        if (isCached == false)
-        {
+        //if (isCached == false)
+        //{
             List<Order> orders = await _context.Orders.ToListAsync();
-            isCached = true;
+            //isCached = true;
             return orders;
-        }
+        //}
 
-        return Orders;
+        //return Orders;
     }
     
     public async void UpdateOrder<TUpdateParam>(TUpdateParam updateParam,Guid orderId, Action<Order, TUpdateParam> up)

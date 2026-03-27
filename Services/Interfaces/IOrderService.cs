@@ -6,7 +6,7 @@ namespace FulfillmentCenter.Services.Interfaces;
 
 public interface IOrderService
 {
-    public void CreateOrder(RequestOrderDto orderDto);
+    public Task CreateOrder(RequestOrderDto orderDto);
     public void CancelOrder(Guid orderId);
     public void UpdateOrderStatus(OrderStatus status,Guid id);
 

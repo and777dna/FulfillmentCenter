@@ -13,11 +13,11 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     private readonly IOrderService _orderService = orderService;
     
     [HttpPost]
-    public IActionResult CreateOrder([FromBody] RequestOrderDto? orderDto)
+    public async Task<IActionResult> CreateOrder([FromBody] RequestOrderDto? orderDto)
     {
         if (orderDto != null)
         {
-            _orderService.CreateOrder(orderDto);
+            await _orderService.CreateOrder(orderDto);
             return Ok();
         }
 
@@ -41,7 +41,7 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         {
             CustomerName = order.CustomerName,
             DeliveryAddress = order.DeliveryAddress,
-            CreatedAt = order.CreatedAt,
+            //CreatedAt = order.CreatedAt,
             Status = order.Status
         }
         );
