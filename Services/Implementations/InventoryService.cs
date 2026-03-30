@@ -9,26 +9,58 @@ namespace FulfillmentCenter.Services.Implementations;
 public class InventoryService(IInventoryRepository inventoryRepository, IFulfillmentCenterRepository fulfillmentCenterRepositor, IFulfillmentCenterService fulfillmentCenterService, IProductService productService) : IInventoryService
 {
     private IInventoryRepository _inventoryRepository = inventoryRepository;
+   
+    
     private IFulfillmentCenterRepository _fulfillmentCenterRepositor = fulfillmentCenterRepositor;
     private IFulfillmentCenterService _fulfillmentCenterService = fulfillmentCenterService;
     private IProductService _productService = productService;
     
-    public async void AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)//пополнить остатки
+    public async Task AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)//пополнить остатки
     {
-        var distributionCenter = await _fulfillmentCenterService.FindFulfillmentCenter(fulfillmentCenterId);
-        var product = await _productService.FindProduct(inventoryDto.ProductId);
+        //TODO: if "fulfillmentCenterId" exist -> should be BOOL THIS ONE to delete?????
+        //var fulfillmentCenter = await FindProduct(fulfillmentCenterId, inventoryDto.ProductId);
+        //TODO: if "productId" exist -> should be BOOL 
+        //var productOnfulfillmentCenter = await FindProduct(fulfillmentCenterId, inventoryDto.ProductId);//TODO: to add then number of products if exists
+        
         
         Inventory inventory = new Inventory
         {
             Id = Guid.NewGuid(),
             ProductId = inventoryDto.ProductId,
-            Quantity = inventoryDto.Quantity,
-            Product = product,
+            Quantity = inventoryDto.Quantity,//to add +1 or to create with label 1
             DistributionCenterId = fulfillmentCenterId,
-            DistributionCenter = distributionCenter
         };
+        //if(fulfillmentCenterId == true && product == true){to update inventory}
+        /*if (productOnfulfillmentCenter != null)
+        {
+            await _inventoryRepository.UpdateInventory(inventory);
+        }*/
+        try
+        {
+            await _inventoryRepository.Create(inventory);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        //if(product == false){to create inventory}
         //на конкретном складе//TODO: the update should be inside Inventory entity
-        _fulfillmentCenterRepositor.UpdateInventory(fulfillmentCenterId, inventory);
+    }
+    /*Id CHAR(36) PRIMARY KEY NOT NULL,
+       ProductId CHAR(36),
+       DistributionCenterId CHAR(36),
+       Quantity INT,*/
+
+    private async Task<bool> FindProduct(Guid fulfillmentCenterId,Guid productId)
+    {
+        var inventories = await _inventoryRepository.Read();
+        bool productWasFound = false;
+        inventories.Find(inventory =>
+        {
+            return productWasFound = inventory.DistributionCenterId == fulfillmentCenterId && inventory.ProductId == productId;
+        });
+        return productWasFound;
     }
     
     ////GET	/api/inventory/{centerId}	Остатки на складе

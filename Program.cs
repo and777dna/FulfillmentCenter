@@ -103,7 +103,7 @@ app.MapPost("/api/orders", (OrdersController ordersController) => ordersControll
 app.MapPost("/api/inventory", (InventoryController inventoryController) => inventoryController.AddStock(new RequestInventoryDto
 {//TODO: this one is TOUGH TOUGH TOUGH
     DistributionCenterId = Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e"),
-    ProductId = Guid.Parse("550e8400-e29b-41d4-a716-446655440000"),
+    ProductId = Guid.Parse("f732dd31-bdc8-40a2-91dc-748606190f79"),
     Quantity = 2
 }));
 

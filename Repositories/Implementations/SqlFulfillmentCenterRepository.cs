@@ -38,7 +38,7 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
         return fulfillmentCenters;
     }
 
-    public async void UpdateInventory(Guid FulfillmentCenterId, Inventory inventory)
+    /*public async void UpdateInventory(Guid FulfillmentCenterId, Inventory inventory)
     {
         UpdateFulfillmentCenter(FulfillmentCenterId, inventory,
             (inventory, fulfillmentCente) =>
@@ -46,7 +46,7 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
                 var InventoryToUpdate = fulfillmentCente.Inventory.FirstOrDefault(inventor => inventor.Id == inventory.Id);
                 InventoryToUpdate = inventory; 
             });
-    }
+    }*/
 
     public async void UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam, Action<TUpdateParam, Entities.DistributionCenter> up)
     {

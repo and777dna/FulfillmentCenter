@@ -11,5 +11,5 @@ public interface IFulfillmentCenterRepository
     public void UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam,
         Action<TUpdateParam, Entities.DistributionCenter> up);
 
-    public void UpdateInventory(Guid FulfillmentCenterId, Inventory inventory);
+    //public void UpdateInventory(Guid FulfillmentCenterId, Inventory inventory);
 }

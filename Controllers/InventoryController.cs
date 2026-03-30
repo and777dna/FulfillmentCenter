@@ -12,11 +12,11 @@ public class InventoryController(IInventoryService inventoryService) : Controlle
     private readonly IInventoryService _inventoryService = inventoryService;
     
     [HttpPost]
-    public IActionResult AddStock([FromBody] RequestInventoryDto? inventoryDto)
+    public async Task<IActionResult> AddStock([FromBody] RequestInventoryDto? inventoryDto)
     {
         if (inventoryDto != null)
         {
-            _inventoryService.AddStock(inventoryDto, inventoryDto.DistributionCenterId);
+            await _inventoryService.AddStock(inventoryDto, inventoryDto.DistributionCenterId);
             return Ok();
         }
 
