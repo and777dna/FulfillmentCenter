@@ -94,17 +94,29 @@ app.MapPost("/api/orders", (OrdersController ordersController) => ordersControll
 {
     CustomerName = "ANDREI",
     DeliveryAddress = "Pražská 636/38b, 642 00 Brno",
-    Status = OrderStatus.Created
+    Status = OrderStatus.ReadyToShip
 }));
-
+//[FromRoute] Guid id  //TODO: to see if i need to fix it to make it "[FromRoute] Guid id"
+//DONE
+app.MapGet("/api/orders/{id}/status", (OrdersController ordersController) => ordersController.GetOrder(Guid.Parse("619550e6-d4a8-4a17-8069-5203ad823c72")));
+//DONE
+app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipmentsController.CreateShipment(new RequestShipmentDto
+{
+    DistributionCenterId = Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e"),
+    EstimatedDelivery = DateTime.Now,
+    Id = Guid.NewGuid(),
+    OrderId = Guid.Parse("619550e6-d4a8-4a17-8069-5203ad823c72"),
+    ShippedAt = DateTime.Today,
+    Status = ShipmentStatus.Shipped
+}));
 
 
 
 app.MapPost("/api/inventory", (InventoryController inventoryController) => inventoryController.AddStock(new RequestInventoryDto
 {//TODO: this one is TOUGH TOUGH TOUGH
     DistributionCenterId = Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e"),
-    ProductId = Guid.Parse("f732dd31-bdc8-40a2-91dc-748606190f79"),
-    Quantity = 2
+    ProductId = Guid.Parse("550e8400-e29b-41d4-a716-446655440000"),
+    Quantity = 8
 }));
 
 
@@ -113,19 +125,6 @@ app.MapPost("/api/inventory", (InventoryController inventoryController) => inven
 //TODO: to fix this
 app.MapPut("/api/orders/{id}", (OrdersController ordersController) => ordersController.ChangeOrderStatus(Guid.NewGuid(), OrderStatus.Processing));
 
-//[FromRoute] Guid id  //TODO: to see if i need to fix it to make it "[FromRoute] Guid id"
-app.MapGet("/api/orders/{id}/status", (OrdersController ordersController) => ordersController.GetOrder(Guid.NewGuid()));
-
-
-app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipmentsController.CreateShipment(new RequestShipmentDto
-{
-    DistributionCenterId = Guid.NewGuid(),
-    EstimatedDelivery = DateTime.Now,
-    Id = Guid.NewGuid(),
-    OrderId = Guid.NewGuid(),
-    ShippedAt = DateTime.Today,
-    Status = ShipmentStatus.Shipped
-}));
 
 app.MapPut("/api/shipments/{id}/status", (ShipmentsController shipmentsController) => shipmentsController.UpdateShipmentStatus(Guid.NewGuid(), ShipmentStatus.Pending));
 

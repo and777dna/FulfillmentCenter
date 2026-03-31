@@ -21,20 +21,20 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
 
     public async void Create(DistributionCenter distributionCenter)
     {
-        await _context.DistributionCenters.AddAsync(distributionCenter);
+        await _context.DistributionCenter.AddAsync(distributionCenter);
         await _context.SaveChangesAsync();
     }
 
     public async void Delete(Guid id)
     {
-        var fulfillmentCenterToDelete = await _context.DistributionCenters.FirstOrDefaultAsync(center => center.Id == id);
-        _context.DistributionCenters.Remove(fulfillmentCenterToDelete);
+        var fulfillmentCenterToDelete = await _context.DistributionCenter.FirstOrDefaultAsync(center => center.Id == id);
+        _context.DistributionCenter.Remove(fulfillmentCenterToDelete);
         await _context.SaveChangesAsync();
     }
 
     public async Task<List<DistributionCenter>> Read()
     {
-        List<Entities.DistributionCenter> fulfillmentCenters = await _context.DistributionCenters.ToListAsync();
+        List<Entities.DistributionCenter> fulfillmentCenters = await _context.DistributionCenter.ToListAsync();
         return fulfillmentCenters;
     }
 
@@ -50,7 +50,7 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
 
     public async void UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam, Action<TUpdateParam, Entities.DistributionCenter> up)
     {
-        var fulfillmentCenterToUpdate = await _context.DistributionCenters.FirstOrDefaultAsync(center => center.Id == FulfillmentCenterId);
+        var fulfillmentCenterToUpdate = await _context.DistributionCenter.FirstOrDefaultAsync(center => center.Id == FulfillmentCenterId);
         up(updateParam, fulfillmentCenterToUpdate);
         await _context.SaveChangesAsync();
     }

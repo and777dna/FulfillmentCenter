@@ -19,16 +19,24 @@ public class SqlShipmentRepository : IShipmentRepository
         _isCached = true;
     }
 
-    public async void Create(Shipment shipment)
+    public async Task Create(Shipment shipment)
     {
-        await _context.Shipments.AddAsync(shipment);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.Shipment.AddAsync(shipment);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async void Delete(Guid id)//TODO: to specify id more precisely
     {
-        var shipmentToDelete = await _context.Shipments.FirstOrDefaultAsync(shipment => shipment.Id == id);
-        _context.Shipments.Remove(shipmentToDelete);
+        var shipmentToDelete = await _context.Shipment.FirstOrDefaultAsync(shipment => shipment.Id == id);
+        _context.Shipment.Remove(shipmentToDelete);
         await _context.SaveChangesAsync();
     }
 
@@ -36,7 +44,7 @@ public class SqlShipmentRepository : IShipmentRepository
     {
         if (!_isCached)
         {
-            Shipments = await _context.Shipments.ToListAsync();
+            Shipments = await _context.Shipment.ToListAsync();
         }
 
         return Shipments;
@@ -49,7 +57,7 @@ public class SqlShipmentRepository : IShipmentRepository
     
     public async void UpdateShipment<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, Action<TUpdateParameter, Shipment> up)//TUpdateParameter
     {
-        var shipmentToUpdate = await _context.Shipments.FirstOrDefaultAsync(shipment => shipment.Id == id);
+        var shipmentToUpdate = await _context.Shipment.FirstOrDefaultAsync(shipment => shipment.Id == id);
         up(updateParameter, shipmentToUpdate);
         await _context.SaveChangesAsync();
     }

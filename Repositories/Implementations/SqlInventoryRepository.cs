@@ -52,16 +52,29 @@ public class SqlInventoryRepository : IInventoryRepository
     }
     public async Task UpdateInventory(Inventory inventory)
     {
-        /*UpdateInventoryQuantity(FulfillmentCenterId, inventory,
+        try
+        {
+            var inventoryToUpdate = await _context.Inventory.FirstOrDefaultAsync(inv =>
+                inv.ProductId == inventory.ProductId && inv.DistributionCenterId == inventory.DistributionCenterId);
+            inventoryToUpdate.Quantity += 1;
+
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        /*UpdateInventoryQuantity(fulfillmentCenterId, inventory,
             (inventory, fulfillmentCente) =>
             {
-                var InventoryToUpdate = fulfillmentCente.Inventory.FirstOrDefault(inventor => inventor.Id == inventory.Id);
-                InventoryToUpdate = inventory; 
+                var InventoryToUpdate = _context.Inventory.FirstOrDefault(inventor => { return inventor.Id == inventory.Id && inventor.DistributionCenter == inventory. } );
+                InventoryToUpdate = inventory;
             });*/
     }
 
-    public async Task UpdateInventoryQuantity()
+    public async Task UpdateInventoryQuantity(Inventory inventory)
     {
-        
+        _context.SaveChangesAsync();
     }
 }

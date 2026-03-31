@@ -20,7 +20,7 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
         //TODO: if "fulfillmentCenterId" exist -> should be BOOL THIS ONE to delete?????
         //var fulfillmentCenter = await FindProduct(fulfillmentCenterId, inventoryDto.ProductId);
         //TODO: if "productId" exist -> should be BOOL 
-        //var productOnfulfillmentCenter = await FindProduct(fulfillmentCenterId, inventoryDto.ProductId);//TODO: to add then number of products if exists
+        var productOnFulfillmentCenter = await FindProduct(fulfillmentCenterId, inventoryDto.ProductId);//TODO: to add then number of products if exists
         
         
         Inventory inventory = new Inventory
@@ -31,10 +31,10 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
             DistributionCenterId = fulfillmentCenterId,
         };
         //if(fulfillmentCenterId == true && product == true){to update inventory}
-        /*if (productOnfulfillmentCenter != null)
+        if (productOnFulfillmentCenter != null)
         {
             await _inventoryRepository.UpdateInventory(inventory);
-        }*/
+        }
         try
         {
             await _inventoryRepository.Create(inventory);
@@ -55,7 +55,7 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
     private async Task<bool> FindProduct(Guid fulfillmentCenterId,Guid productId)
     {
         var inventories = await _inventoryRepository.Read();
-        bool productWasFound = false;
+        bool productWasFound = true;
         inventories.Find(inventory =>
         {
             return productWasFound = inventory.DistributionCenterId == fulfillmentCenterId && inventory.ProductId == productId;

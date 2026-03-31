@@ -32,16 +32,16 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     }
     
     [HttpGet("{id}")]
-    public IActionResult GetOrder([FromRoute] Guid id)
+    public async Task<IActionResult> GetOrder([FromRoute] Guid id)
     {
-        var order = _orderService.GetOrderById(id).Result;
+        var order = await _orderService.GetOrderById(id);
 
         return Ok(
             new ResponseOrderDto
         {
             CustomerName = order.CustomerName,
             DeliveryAddress = order.DeliveryAddress,
-            //CreatedAt = order.CreatedAt,
+            CreatedAt = order.CreatedAt,
             Status = order.Status
         }
         );

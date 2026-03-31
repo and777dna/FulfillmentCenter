@@ -35,9 +35,10 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
         return true;
     }
     
-    public async void CreateShipment(RequestShipmentDto requestShipmentDto)
+    public async Task CreateShipment(RequestShipmentDto requestShipmentDto)
     {//na FulfillmentCenter достаточно товара для каждой позиции Order
-        var remainingsOnTheFulfillmentCenter = _inventoryService.RemainingsOnTheFulfillmentCenter(requestShipmentDto.DistributionCenterId);
+        //TODO: to update remainingsOnTheFulfillmentCenter
+        //var remainingsOnTheFulfillmentCenter = _inventoryService.RemainingsOnTheFulfillmentCenter(requestShipmentDto.DistributionCenterId);
         //Inventory.DistributionCenterId .Inventory => forEach()
         //Shipment.Order ICollection<OrderItem> Items => 
         //
@@ -57,11 +58,11 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
                 EstimatedDelivery = requestShipmentDto.EstimatedDelivery
             };
         
-        if (CheckSufficientAmountOfInventoryToShipment(_inventoryService.ReturnProductAmount(remainingsOnTheFulfillmentCenter.Result), ReturnShipmentAmount(shipment.Order.Items)))
+        /*if (CheckSufficientAmountOfInventoryToShipment(_inventoryService.ReturnProductAmount(remainingsOnTheFulfillmentCenter.Result), ReturnShipmentAmount(shipment.Order.Items)))
         {
             _shipmentRepository.Create(shipment);
-        }
-        _shipmentRepository.Create(shipment);
+        }*/
+        await _shipmentRepository.Create(shipment);
     }
     
     

@@ -1,8 +1,6 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.Entities;
-using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
-using FulfillmentCenter.Services.Implementations;
 using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
@@ -53,10 +51,18 @@ public class SqlOrderRepository : IOrderRepository
     {
         //if (isCached == false)
         //{
+        try
+        {
             List<Order> orders = await _context.Orders.ToListAsync();
             //isCached = true;
             return orders;
-        //}
+            //}
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
 
         //return Orders;
     }
