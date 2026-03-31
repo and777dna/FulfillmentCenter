@@ -67,10 +67,18 @@ public class SqlOrderRepository : IOrderRepository
         //return Orders;
     }
     
-    public async void UpdateOrder<TUpdateParam>(TUpdateParam updateParam,Guid orderId, Action<Order, TUpdateParam> up)
-    {
-        var orderToUpdate = await _context.Orders.FirstOrDefaultAsync(order => order.Id == orderId);
-        up(orderToUpdate, updateParam);
-        await _context.SaveChangesAsync();
+    public async Task UpdateOrder<TUpdateParam>(TUpdateParam updateParam,Guid orderId, Action<Order, TUpdateParam> up)
+    {//.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
+        try
+        {
+            var orderToUpdate = await _context.Orders.FirstOrDefaultAsync(order => order.Id == orderId);
+            up(orderToUpdate, updateParam);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }

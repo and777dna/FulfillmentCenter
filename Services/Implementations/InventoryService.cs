@@ -31,19 +31,15 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
             DistributionCenterId = fulfillmentCenterId,
         };
         //if(fulfillmentCenterId == true && product == true){to update inventory}
-        if (productOnFulfillmentCenter != null)
+        if (productOnFulfillmentCenter)
         {
             await _inventoryRepository.UpdateInventory(inventory);
         }
-        try
+        else
         {
             await _inventoryRepository.Create(inventory);
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+
         //if(product == false){to create inventory}
         //на конкретном складе//TODO: the update should be inside Inventory entity
     }
@@ -55,12 +51,17 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
     private async Task<bool> FindProduct(Guid fulfillmentCenterId,Guid productId)
     {
         var inventories = await _inventoryRepository.Read();
-        bool productWasFound = true;
-        inventories.Find(inventory =>
+        bool productWasFound = false;
+        var productOnFulfilCen = inventories.FirstOrDefault(inventory =>
         {
-            return productWasFound = inventory.DistributionCenterId == fulfillmentCenterId && inventory.ProductId == productId;
+            return inventory.DistributionCenterId == fulfillmentCenterId && inventory.ProductId == productId;
         });
-        return productWasFound;
+        if (productOnFulfilCen == null)
+        {
+            return false;
+        }
+
+        return true;
     }
     
     ////GET	/api/inventory/{centerId}	Остатки на складе

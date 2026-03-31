@@ -10,16 +10,21 @@ namespace FulfillmentCenter.Services.Implementations;
 public class ProductService(IProductRepository productRepository) : IProductService
 {
     private IProductRepository _productRepository = productRepository;
-    
-    
+
+
     public async Task<List<Product>> GetProducts()
     {
         List<Product> products = await _productRepository.Read();
         return products;
     }
 
-    public void CreateProduct(RequestProductDto productDto)
+    public async Task CreateProduct(RequestProductDto productDto)
     {
+        var productAlreadyExist = await CheckProductExist(productDto.SKU);
+        if (productAlreadyExist)
+        {
+            throw new InvalidOperationException("Запись с таким SKU уже существует в базе данных.");
+        }
         Product product = new Product
         {
             Id = Guid.NewGuid(),
@@ -27,7 +32,13 @@ public class ProductService(IProductRepository productRepository) : IProductServ
             SKU = productDto.SKU,
             Weight = productDto.Weight
         };
-        _productRepository.Create(product);
+        await _productRepository.Create(product);
+    }
+
+    private async Task<bool> CheckProductExist(string productSKU)
+    {
+        var products = await _productRepository.Read();
+        return products.Any(product => product.SKU == productSKU);
     }
 
     public async Task<Product> FindProduct(Guid productId)

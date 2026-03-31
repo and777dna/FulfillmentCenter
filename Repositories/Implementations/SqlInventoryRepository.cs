@@ -41,9 +41,18 @@ public class SqlInventoryRepository : IInventoryRepository
 
     public async Task<List<Inventory>> Read()
     {
+        List<Inventory> inventories;
         //if (isCached == false)
         //{
-            List<Inventory> inventories = await _context.Inventory.ToListAsync();
+        try
+        {
+            inventories = await _context.Inventory.ToListAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
             //isCached = true;
             return inventories;
         //}

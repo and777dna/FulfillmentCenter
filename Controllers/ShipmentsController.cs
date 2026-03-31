@@ -28,7 +28,7 @@ public class ShipmentsController(IShipmentService shipmentService) : ControllerB
     [HttpPut("{shipmentId}/status")]
     public async Task<IActionResult> UpdateShipmentStatus([FromRoute] Guid shipmentId,[FromQuery] ShipmentStatus status)
     {
-        _shipmentService.UpdateShipmentStatus(shipmentId, status);
+        await _shipmentService.UpdateShipmentStatus(shipmentId, status);
         return Ok("Shipment status has been updated.");
     }
     

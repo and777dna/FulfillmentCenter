@@ -17,8 +17,16 @@ public class SqlProductRepository : IProductRepository
 
     public async Task Create(Product product)
     {
-        await _context.Product.AddAsync(product);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.Product.AddAsync(product);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async void Delete(Guid id)
@@ -31,12 +39,16 @@ public class SqlProductRepository : IProductRepository
 
     public async Task<List<Product>> Read()
     {
-        List<Product> products = await _context.Product.ToListAsync();
+        List<Product> products;
+        try
+        {
+            products = await _context.Product.ToListAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
         return products;
-    }
-
-    public void UpdateProduct()
-    {
-        
     }
 }

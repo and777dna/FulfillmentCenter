@@ -12,4 +12,5 @@ public class Shipment
     public ShipmentStatus Status { get; set; } = ShipmentStatus.Pending;
     public DateTime? ShippedAt { get; set; }
     public DateTime? EstimatedDelivery { get; set; }
+    public bool IsDeleted { get; set; } = false;
 }

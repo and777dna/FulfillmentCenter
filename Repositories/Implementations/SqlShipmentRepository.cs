@@ -33,11 +33,21 @@ public class SqlShipmentRepository : IShipmentRepository
         }
     }
 
-    public async void Delete(Guid id)//TODO: to specify id more precisely
+    public async Task Delete(Guid id)//TODO: to specify id more precisely
     {
         var shipmentToDelete = await _context.Shipment.FirstOrDefaultAsync(shipment => shipment.Id == id);
-        _context.Shipment.Remove(shipmentToDelete);
-        await _context.SaveChangesAsync();
+        if(shipmentToDelete != null){shipmentToDelete.IsDeleted = true;}
+        
+        //_context.Shipment.Remove(shipmentToDelete);
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async Task<List<Shipment>> Read()
@@ -50,15 +60,36 @@ public class SqlShipmentRepository : IShipmentRepository
         return Shipments;
     }
     
-    public void UpdateShipmentStatus(Guid id, ShipmentStatus status)
+    public async Task UpdateShipmentStatus(Guid id, ShipmentStatus status)
     {
-        UpdateShipment(id, status, (shipmentStatus, shipment) => shipment.Status = shipmentStatus);
+        if(status == ShipmentStatus.Cancelled)
+        {
+            await Delete(id);
+            await UpdateShipment(id, status, (shipmentStatus, shipment) => shipment.Status = shipmentStatus);
+        }else if (status == ShipmentStatus.Failed) {
+            //TODO: to fill this one
+        }
+        else
+        {
+            await UpdateShipment(id, status, (shipmentStatus, shipment) => shipment.Status = shipmentStatus);
+        }
+        
     }
     
-    public async void UpdateShipment<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, Action<TUpdateParameter, Shipment> up)//TUpdateParameter
+    /*Failed = 4,
+       Cancelled = 5*/
+    public async Task UpdateShipment<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, Action<TUpdateParameter, Shipment> up)
     {
-        var shipmentToUpdate = await _context.Shipment.FirstOrDefaultAsync(shipment => shipment.Id == id);
-        up(updateParameter, shipmentToUpdate);
-        await _context.SaveChangesAsync();
+        try
+        {
+            var shipmentToUpdate = await _context.Shipment.FirstOrDefaultAsync(shipment => shipment.Id == id);
+            up(updateParameter, shipmentToUpdate);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }

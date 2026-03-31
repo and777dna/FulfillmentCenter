@@ -25,8 +25,6 @@ builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseMyS
 );
 //builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseSqlServer(connectionString));
 
-//builder.Services.AddControllers();
-
 builder.Services.AddTransient<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddTransient<IProductService, ProductService>();
@@ -74,9 +72,6 @@ app.MapGet("/db-test", async (FulfillmentCenDbContext db) =>
     return canConnect ? "Database connection OK ✅" : "Database connection FAILED ❌";
 });
 
-//app.MapGet("/api/products", (IProductService productService) => productService.GetProducts());
-
-//app.MapGet("/api/products", (ProductsController productController) => productController.GetProducts());
 //DONE
 app.MapGet("/api/products", async (ProductsController productController) => 
     await productController.GetProducts());
@@ -89,6 +84,14 @@ app.MapPost("/api/products", (ProductsController productController) => productCo
 }));
 app.MapGet("/api/inventory/{centerId}", async (InventoryController inventoryController) =>
     await inventoryController.InventoryRemaining(Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e")));
+//[FromRoute] Guid id  //TODO: to see if i need to fix it to make it "[FromRoute] Guid id"
+//DONE
+app.MapGet("/api/orders/{id}/status", (OrdersController ordersController) => 
+    ordersController.GetOrder(Guid.Parse("619550e6-d4a8-4a17-8069-5203ad823c72")));
+app.MapPut("/api/shipments/{id}/status", (ShipmentsController shipmentsController) =>//TODO: ShipmentStatus.Failed 
+    shipmentsController.UpdateShipmentStatus(Guid.Parse("8a5c1f2a-7f4b-4c7f-bf1e-5b9b7a0d03a8"), ShipmentStatus.Cancelled));
+
+
 //DONE
 app.MapPost("/api/orders", (OrdersController ordersController) => ordersController.CreateOrder(new RequestOrderDto
 {
@@ -96,9 +99,6 @@ app.MapPost("/api/orders", (OrdersController ordersController) => ordersControll
     DeliveryAddress = "Pražská 636/38b, 642 00 Brno",
     Status = OrderStatus.ReadyToShip
 }));
-//[FromRoute] Guid id  //TODO: to see if i need to fix it to make it "[FromRoute] Guid id"
-//DONE
-app.MapGet("/api/orders/{id}/status", (OrdersController ordersController) => ordersController.GetOrder(Guid.Parse("619550e6-d4a8-4a17-8069-5203ad823c72")));
 //DONE
 app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipmentsController.CreateShipment(new RequestShipmentDto
 {
@@ -109,7 +109,10 @@ app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipm
     ShippedAt = DateTime.Today,
     Status = ShipmentStatus.Shipped
 }));
-
+//TODO: to fix this
+app.MapPut("/api/orders/{id}", (OrdersController ordersController) => 
+    ordersController.ChangeOrderStatus(Guid.Parse("8a5c1f2a-7f4b-4c7f-bf1e-5b9b7a0d03a3"), OrderStatus.Processing));
+//"statusCode": 204
 
 
 app.MapPost("/api/inventory", (InventoryController inventoryController) => inventoryController.AddStock(new RequestInventoryDto
@@ -121,12 +124,6 @@ app.MapPost("/api/inventory", (InventoryController inventoryController) => inven
 
 
 
-
-//TODO: to fix this
-app.MapPut("/api/orders/{id}", (OrdersController ordersController) => ordersController.ChangeOrderStatus(Guid.NewGuid(), OrderStatus.Processing));
-
-
-app.MapPut("/api/shipments/{id}/status", (ShipmentsController shipmentsController) => shipmentsController.UpdateShipmentStatus(Guid.NewGuid(), ShipmentStatus.Pending));
 
 
 app.Run();

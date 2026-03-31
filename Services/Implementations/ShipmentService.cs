@@ -67,8 +67,8 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
     
     
 
-    public void UpdateShipmentStatus(Guid shipmentId, ShipmentStatus status)
+    public async Task UpdateShipmentStatus(Guid shipmentId, ShipmentStatus status)
     {
-        _shipmentRepository.UpdateShipmentStatus(shipmentId, status);
+        await _shipmentRepository.UpdateShipmentStatus(shipmentId, status);
     }
 }

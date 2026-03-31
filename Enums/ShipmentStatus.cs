@@ -6,6 +6,6 @@ public enum ShipmentStatus
     Shipped = 1,
     InTransit = 2,
     Delivered = 3,
-    Failed = 4
-    //TODO review: Cancelled
+    Failed = 4,
+    Cancelled = 5
 }

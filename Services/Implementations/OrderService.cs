@@ -70,9 +70,9 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
         throw new ArgumentNullException();
     }
     
-    public void UpdateOrderStatus(OrderStatus orderStatus, Guid Id)
+    public async Task UpdateOrderStatus(OrderStatus orderStatus, Guid Id)
     {
-        _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
+        await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
     }
 
 }

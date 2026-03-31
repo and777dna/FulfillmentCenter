@@ -8,5 +8,5 @@ public interface IShipmentService
 {
     public Task CreateShipment(RequestShipmentDto requestShipmentDto);
 
-    public void UpdateShipmentStatus(Guid shipmentId, ShipmentStatus status);
+    public Task UpdateShipmentStatus(Guid shipmentId, ShipmentStatus status);
 }

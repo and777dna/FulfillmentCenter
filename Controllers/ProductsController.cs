@@ -12,7 +12,6 @@ public class ProductsController(IProductService productService) : ControllerBase
 {
     private readonly IProductService _productService = productService;
     
-    
     [HttpGet]
     public async Task<List<ResponseProductDto>> GetProducts()
     {

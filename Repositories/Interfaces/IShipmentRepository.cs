@@ -6,10 +6,10 @@ namespace FulfillmentCenter.Repositories.Interfaces;
 public interface IShipmentRepository
 {
     public Task Create(Shipment shipment);
-    public void Delete(Guid id);
+    public Task Delete(Guid id);
     public Task<List<Shipment>> Read();
     //public void UpdateShipment(Guid id);
-    public void UpdateShipment<TUpdateParameter>(Guid id, TUpdateParameter updateParameter,
+    public Task UpdateShipment<TUpdateParameter>(Guid id, TUpdateParameter updateParameter,
         Action<TUpdateParameter, Shipment> up);
-    public void UpdateShipmentStatus(Guid shipmentId, ShipmentStatus status);
+    public Task UpdateShipmentStatus(Guid shipmentId, ShipmentStatus status);
 }

@@ -25,9 +25,9 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     }
     
     [HttpPut("{id}/status")]
-    public IActionResult ChangeOrderStatus([FromRoute] Guid id,[FromQuery] OrderStatus status)
+    public async Task<IActionResult> ChangeOrderStatus([FromRoute] Guid id,[FromQuery] OrderStatus status)
     {
-        _orderService.UpdateOrderStatus(status, id);
+        await _orderService.UpdateOrderStatus(status, id);
         return NoContent();
     }
     
