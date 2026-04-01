@@ -40,11 +40,20 @@ public class SqlOrderRepository : IOrderRepository
         }
     }
 
-    public async void Delete(Guid id)
+    public async Task Delete(Guid id)
     {
         var orderToDelete = await _context.Orders.FirstOrDefaultAsync(order => order.Id == id);
-        _context.Orders.Remove(orderToDelete);
-        await _context.SaveChangesAsync();
+        if(orderToDelete != null){orderToDelete.IsDeleted = true;}
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async Task<List<Order>> Read()

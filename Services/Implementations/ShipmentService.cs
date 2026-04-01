@@ -50,9 +50,7 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
             new Shipment {
                 Id = requestShipmentDto.Id,
                 OrderId = requestShipmentDto.OrderId,
-                Order = order,
                 DistributionCenterId = requestShipmentDto.DistributionCenterId,
-                DistributionCenter = distributionCenter,
                 Status = requestShipmentDto.Status,
                 ShippedAt = requestShipmentDto.ShippedAt,
                 EstimatedDelivery = requestShipmentDto.EstimatedDelivery

@@ -69,6 +69,10 @@ public class SqlShipmentRepository : IShipmentRepository
         }else if (status == ShipmentStatus.Failed) {
             //TODO: to fill this one
         }
+        else if (status == ShipmentStatus.Delivered)
+        {
+            //await OrderStatus.Delivered TO IsDeleted = true
+        }
         else
         {
             await UpdateShipment(id, status, (shipmentStatus, shipment) => shipment.Status = shipmentStatus);

@@ -82,23 +82,6 @@ app.MapPost("/api/products", (ProductsController productController) => productCo
     SKU = "33",
     Weight = 0
 }));
-app.MapGet("/api/inventory/{centerId}", async (InventoryController inventoryController) =>
-    await inventoryController.InventoryRemaining(Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e")));
-//[FromRoute] Guid id  //TODO: to see if i need to fix it to make it "[FromRoute] Guid id"
-//DONE
-app.MapGet("/api/orders/{id}/status", (OrdersController ordersController) => 
-    ordersController.GetOrder(Guid.Parse("619550e6-d4a8-4a17-8069-5203ad823c72")));
-app.MapPut("/api/shipments/{id}/status", (ShipmentsController shipmentsController) =>//TODO: ShipmentStatus.Failed 
-    shipmentsController.UpdateShipmentStatus(Guid.Parse("8a5c1f2a-7f4b-4c7f-bf1e-5b9b7a0d03a8"), ShipmentStatus.Cancelled));
-
-
-//DONE
-app.MapPost("/api/orders", (OrdersController ordersController) => ordersController.CreateOrder(new RequestOrderDto
-{
-    CustomerName = "ANDREI",
-    DeliveryAddress = "Pražská 636/38b, 642 00 Brno",
-    Status = OrderStatus.ReadyToShip
-}));
 //DONE
 app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipmentsController.CreateShipment(new RequestShipmentDto
 {
@@ -109,10 +92,27 @@ app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipm
     ShippedAt = DateTime.Today,
     Status = ShipmentStatus.Shipped
 }));
-//TODO: to fix this
+app.MapGet("/api/inventory/{centerId}", async (InventoryController inventoryController) =>
+    await inventoryController.InventoryRemaining(Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e")));
+//[FromRoute] Guid id  //TODO: to see if i need to fix it to make it "[FromRoute] Guid id"
+//DONE
+app.MapGet("/api/orders/{id}/status", (OrdersController ordersController) => 
+    ordersController.GetOrder(Guid.Parse("619550e6-d4a8-4a17-8069-5203ad823c72")));
+app.MapPut("/api/shipments/{id}/status", (ShipmentsController shipmentsController) =>//TODO: ShipmentStatus.Failed 
+    shipmentsController.UpdateShipmentStatus(Guid.Parse("8a5c1f2a-7f4b-4c7f-bf1e-5b9b7a0d03a8"), ShipmentStatus.Cancelled));
+//DONE
+app.MapPost("/api/orders", (OrdersController ordersController) => ordersController.CreateOrder(new RequestOrderDto
+{
+    CustomerName = "IVAN",
+    DeliveryAddress = "not prazska, 642 00 Brno",
+    Status = OrderStatus.Created
+}));//TODO: to reduce/add quantity of products from inventory(orderItem), to add relation to DistributionCenter
 app.MapPut("/api/orders/{id}", (OrdersController ordersController) => 
     ordersController.ChangeOrderStatus(Guid.Parse("8a5c1f2a-7f4b-4c7f-bf1e-5b9b7a0d03a3"), OrderStatus.Processing));
 //"statusCode": 204
+
+
+
 
 
 app.MapPost("/api/inventory", (InventoryController inventoryController) => inventoryController.AddStock(new RequestInventoryDto

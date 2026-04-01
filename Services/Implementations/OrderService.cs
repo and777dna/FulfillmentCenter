@@ -6,9 +6,10 @@ using FulfillmentCenter.Services.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
-public class OrderService(IOrderRepository orderRepository) : IOrderService
+public class OrderService(IOrderRepository orderRepository, IShipmentRepository shipmentRepository) : IOrderService
 {
     private IOrderRepository _orderRepository = orderRepository;
+    private IShipmentRepository _shipmentRepository = shipmentRepository;
     
     public async Task CreateOrder(RequestOrderDto orderDto)
     {
@@ -25,6 +26,10 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
             };
             _orderRepository.Create(order);
         }*/
+        if (orderDto.Status != OrderStatus.Created)
+        {
+            throw new ArgumentException("first status of order should be Created");
+        }
         Order order = new Order
         {
             Id = Guid.NewGuid(),
@@ -72,7 +77,22 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
     
     public async Task UpdateOrderStatus(OrderStatus orderStatus, Guid Id)
     {
-        await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
+        switch (orderStatus)
+        {
+            //case OrderStatus.ReadyToShip: shipmentRepository.Create(); return;//TODO: to create shipment;
+            case OrderStatus.Delivered: 
+                await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
+                await _orderRepository.Delete(Id); 
+                return;//TODO: to delete order with soft delete
+            case OrderStatus.Cancelled: 
+                await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
+                await _orderRepository.Delete(Id);
+                //await _shipmentRepository.UpdateShipmentStatus(,ShipmentStatus.Cancelled);
+                return;//TODO: to delete order && to delete shipment if exist
+            case OrderStatus.Processing: 
+                await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
+                return;
+            case OrderStatus.Created: throw new ArgumentException("order has been already Created.");}
     }
 
 }

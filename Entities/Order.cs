@@ -22,6 +22,7 @@ public class Order
     [Required]
     [MaxLength(200)]
     public OrderStatus Status { get; set; } = OrderStatus.Created;
+    public bool IsDeleted { get; set; } = false;
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
     public Shipment? Shipment { get; set; }
 }

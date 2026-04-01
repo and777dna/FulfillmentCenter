@@ -19,7 +19,7 @@ public class ShipmentsController(IShipmentService shipmentService) : ControllerB
         await _shipmentService.CreateShipment(shipmentDto);
         //TODO review: this invokes the controller action as a plain C# method, bypassing the HTTP pipeline entirely. Should be to call _shipmentService.UpdateShipmentStatus(...) directly instead
         //TODO: to understand why cant we bypass the HTTP pipeline entirely
-        _shipmentService.UpdateShipmentStatus(shipmentDto.Id, ShipmentStatus.Shipped);
+        //_shipmentService.UpdateShipmentStatus(shipmentDto.Id, ShipmentStatus.Shipped);
         return Ok("Shipment has been created.");
     }
     
