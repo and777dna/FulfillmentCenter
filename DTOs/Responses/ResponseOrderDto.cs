@@ -6,7 +6,7 @@ namespace FulfillmentCenter.DTOs.Responses;
 public class ResponseOrderDto
 {
     [Required]
-    public string CustomerName { get; set; }
+    public Guid CustomerId { get; set; }
     [Required]
     public string DeliveryAddress { get; set; }
     [Required]

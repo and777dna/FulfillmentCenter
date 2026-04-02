@@ -39,7 +39,7 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(
             new ResponseOrderDto
         {
-            CustomerName = order.CustomerName,
+            CustomerId = order.CustomerId,
             DeliveryAddress = order.DeliveryAddress,
             CreatedAt = order.CreatedAt,
             Status = order.Status

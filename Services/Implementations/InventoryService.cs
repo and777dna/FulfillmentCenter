@@ -6,28 +6,34 @@ using FulfillmentCenter.Services.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
-public class InventoryService(IInventoryRepository inventoryRepository, IFulfillmentCenterRepository fulfillmentCenterRepositor, IFulfillmentCenterService fulfillmentCenterService, IProductService productService) : IInventoryService
+public class InventoryService(
+    IInventoryRepository inventoryRepository,
+    IFulfillmentCenterRepository fulfillmentCenterRepositor,
+    IFulfillmentCenterService fulfillmentCenterService,
+    IProductService productService) : IInventoryService
 {
     private IInventoryRepository _inventoryRepository = inventoryRepository;
-   
-    
+
+
     private IFulfillmentCenterRepository _fulfillmentCenterRepositor = fulfillmentCenterRepositor;
     private IFulfillmentCenterService _fulfillmentCenterService = fulfillmentCenterService;
     private IProductService _productService = productService;
-    
-    public async Task AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)//пополнить остатки
+
+    public async Task AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId) //пополнить остатки
     {
         //TODO: if "fulfillmentCenterId" exist -> should be BOOL THIS ONE to delete?????
         //var fulfillmentCenter = await FindProduct(fulfillmentCenterId, inventoryDto.ProductId);
         //TODO: if "productId" exist -> should be BOOL 
-        var productOnFulfillmentCenter = await FindProduct(fulfillmentCenterId, inventoryDto.ProductId);//TODO: to add then number of products if exists
-        
-        
+        var productOnFulfillmentCenter =
+            await FindProduct(fulfillmentCenterId,
+                inventoryDto.ProductId); //TODO: to add then number of products if exists
+
+
         Inventory inventory = new Inventory
         {
             Id = Guid.NewGuid(),
             ProductId = inventoryDto.ProductId,
-            Quantity = inventoryDto.Quantity,//to add +1 or to create with label 1
+            Quantity = inventoryDto.Quantity, //to add +1 or to create with label 1
             DistributionCenterId = fulfillmentCenterId,
         };
         //if(fulfillmentCenterId == true && product == true){to update inventory}
@@ -37,6 +43,7 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
         }
         else
         {
+            //TODO: to check if SKU is unique, because SKU is the PK
             await _inventoryRepository.Create(inventory);
         }
 
@@ -48,7 +55,7 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
        DistributionCenterId CHAR(36),
        Quantity INT,*/
 
-    private async Task<bool> FindProduct(Guid fulfillmentCenterId,Guid productId)
+    private async Task<bool> FindProduct(Guid fulfillmentCenterId, Guid productId)
     {
         var inventories = await _inventoryRepository.Read();
         bool productWasFound = false;
@@ -63,10 +70,10 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
 
         return true;
     }
-    
+
     ////GET	/api/inventory/{centerId}	Остатки на складе
     public async Task<ICollection<Inventory>> RemainingsOnTheFulfillmentCenter(Guid centerId)
-    { 
+    {
         var inventories = await _inventoryRepository.Read();
         var findInventoriesFromCenter = inventories.FindAll(inventory => inventory.DistributionCenterId == centerId);
         //var findCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
@@ -88,15 +95,26 @@ public class InventoryService(IInventoryRepository inventoryRepository, IFulfill
 
         return openWith;
     }
-    
-    /*public bool CheckSufficientAmountOfInventory(ICollection<Inventory> remainingsOnTheFulfillmentCenter, ICollection<OrderItem> items)
-    {
-        //TODO: to create for each remainingsOnTheFulfillmentCenter,items hash to compare them.
-        foreach (var inventory in remainingsOnTheFulfillmentCenter)
-        {
-            
-        }
 
-        return true;
-    }*/
+    public async Task UpdateInventoryProduct(Guid productId, int quantity)
+    {
+        var updatedInventory = new UpdateInventoryDto()
+        {
+            ProductId = productId,
+            Quantity = quantity
+        };
+
+        await _inventoryRepository.UpdateInventoryQuantity(updatedInventory);
+    }
+
+/*public bool CheckSufficientAmountOfInventory(ICollection<Inventory> remainingsOnTheFulfillmentCenter, ICollection<OrderItem> items)
+{
+    //TODO: to create for each remainingsOnTheFulfillmentCenter,items hash to compare them.
+    foreach (var inventory in remainingsOnTheFulfillmentCenter)
+    {
+
+    }
+
+    return true;
+}*/
 }

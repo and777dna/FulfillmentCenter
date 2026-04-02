@@ -9,38 +9,63 @@ public class SqlOrderItemRepository : IOrderItemRepository
 {
     private FulfillmentCenDbContext _context;
     public List<OrderItem> OrderItems;
-    private bool isCached;
+    private bool _isCached;//TODO: to remember this is the In-Memory Cache techique
     
     public SqlOrderItemRepository(FulfillmentCenDbContext context)
     {
         _context = context;
         OrderItems = Read().Result;
-        isCached = true;
+        _isCached = true;
     }
 
-    public async void Create(OrderItem orderItem)
+    public async Task Create(OrderItem orderItem)
     {
-        await _context.OrderItems.AddAsync(orderItem);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.OrderItems.AddAsync(orderItem);
+            await _context.SaveChangesAsync();
+            _isCached = false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
-    public async void Delete(Guid id)
+    public async Task Delete(Guid id)
     {
         var orderItemToDelete = await _context.OrderItems.FirstOrDefaultAsync(order => order.Id == id);
-        _context.OrderItems.Remove(orderItemToDelete);
-        await _context.SaveChangesAsync();
+        if(orderItemToDelete == null)
+        {
+            throw new ArgumentNullException();
+        }
+
+        try
+        {
+            _context.OrderItems.Remove(orderItemToDelete);
+            await _context.SaveChangesAsync();
+            _isCached = false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async Task<List<OrderItem>> Read()
     {
-        if (isCached == false)
-        {
+        if (_isCached == false)
+        {//TODO: to add .Where(orderItem => order.orderItem != true)
+         // order.Status != OrderStatus.Cancelled)
             List<OrderItem> orderItems = await _context.OrderItems.ToListAsync();
-            isCached = true;
+            _isCached = true;
             return orderItems;
         }
 
         return OrderItems;
     }
-    public void UpdateOrderItem(){}
+
+    public async Task UpdateOrderItem(){}
 }

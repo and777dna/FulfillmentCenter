@@ -36,20 +36,10 @@ public class FulfillmentCenDbContext : DbContext
             .HasForeignKey(i => i.ProductId)
             .HasPrincipalKey(p => p.Id);
         
-        
         modelBuilder.Entity<Order>()
             .Property(e => e.Status)
             .HasConversion(v => v.ToString(),
             v => (OrderStatus)Enum.Parse(typeof(OrderStatus), v));
-
-        /*modelBuilder.Entity<Order>()
-            .Property(s => s.CreatedAt)*/
-        /*modelBuilder.Entity<Order>()
-            .Property(o => o.CreatedAt)
-            .HasConversion(
-                v => v.ToString("yyyy-MM-dd HH:mm:ss"), // сохраняем как string в MySQL DATETIME
-                v => DateTime.Parse(v)
-            );*/
         
         modelBuilder.Entity<Shipment>()
             .Property(e => e.Status)
@@ -62,10 +52,4 @@ public class FulfillmentCenDbContext : DbContext
             .HasForeignKey(e => e.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
     }
-    
-    /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        //TODO review: this is a hardcoded connection string - it's not secure. It should be read from appsettings.json (or environment variables) and passed in via the constructor using DbContextOptions<T>
-        optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=EFCoreExampleDB;Trusted_Connection=True;");
-    }*/
 }
