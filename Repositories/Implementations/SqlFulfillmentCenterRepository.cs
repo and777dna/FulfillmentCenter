@@ -19,30 +19,36 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
         _context = context;
     }
 
-    public async Task Create(DistributionCenter distributionCenter)
+    public async void Create(DistributionCenter distributionCenter)
     {
         await _context.DistributionCenter.AddAsync(distributionCenter);
         await _context.SaveChangesAsync();
     }
 
-    public async Task Delete(Guid id)
+    public async void Delete(Guid id)
     {
         var fulfillmentCenterToDelete = await _context.DistributionCenter.FirstOrDefaultAsync(center => center.Id == id);
-        if(fulfillmentCenterToDelete == null)
-        {
-            throw new ArgumentNullException();
-        }
         _context.DistributionCenter.Remove(fulfillmentCenterToDelete);
         await _context.SaveChangesAsync();
     }
 
     public async Task<List<DistributionCenter>> Read()
-    {//All Read() methods load the entire table into memory as a List<T>. No filtering, no Where, no pagination. This will not scale
-        List<DistributionCenter> fulfillmentCenters = await _context.DistributionCenter.ToListAsync();
+    {
+        List<Entities.DistributionCenter> fulfillmentCenters = await _context.DistributionCenter.ToListAsync();
         return fulfillmentCenters;
     }
 
-    public async Task UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam, Action<TUpdateParam, Entities.DistributionCenter> up)
+    /*public async void UpdateInventory(Guid FulfillmentCenterId, Inventory inventory)
+    {
+        UpdateFulfillmentCenter(FulfillmentCenterId, inventory,
+            (inventory, fulfillmentCente) =>
+            {
+                var InventoryToUpdate = fulfillmentCente.Inventory.FirstOrDefault(inventor => inventor.Id == inventory.Id);
+                InventoryToUpdate = inventory; 
+            });
+    }*/
+
+    public async void UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam, Action<TUpdateParam, Entities.DistributionCenter> up)
     {
         var fulfillmentCenterToUpdate = await _context.DistributionCenter.FirstOrDefaultAsync(center => center.Id == FulfillmentCenterId);
         up(updateParam, fulfillmentCenterToUpdate);

@@ -11,4 +11,6 @@ public record RequestInventoryDto
     public int Quantity { get; set; }
     [Required]
     public Guid DistributionCenterId { get; set; }
+    //[Required]
+    //public DistributionCenter DistributionCenter { get; set; }
 }

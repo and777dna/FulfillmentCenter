@@ -26,7 +26,6 @@ builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseMyS
 //builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddTransient<IInventoryService, InventoryService>();
-builder.Services.AddTransient<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IFulfillmentCenterService, FulfillmentCenterService>();
@@ -40,7 +39,7 @@ builder.Services.AddTransient<IProductRepository, SqlProductRepository>();
 builder.Services.AddTransient<IShipmentRepository, SqlShipmentRepository>();
 
 //builder.Services.AddControllers();
-builder.Services.AddScoped<OrderItemController, OrderItemController>();
+
 builder.Services.AddScoped<InventoryController, InventoryController>();
 builder.Services.AddScoped<OrdersController, OrdersController>();
 builder.Services.AddScoped<ProductsController, ProductsController>();
@@ -101,32 +100,30 @@ app.MapGet("/api/orders/{id}/status", (OrdersController ordersController) =>
     ordersController.GetOrder(Guid.Parse("619550e6-d4a8-4a17-8069-5203ad823c72")));
 app.MapPut("/api/shipments/{id}/status", (ShipmentsController shipmentsController) =>//TODO: ShipmentStatus.Failed 
     shipmentsController.UpdateShipmentStatus(Guid.Parse("8a5c1f2a-7f4b-4c7f-bf1e-5b9b7a0d03a8"), ShipmentStatus.Cancelled));
+//DONE
+app.MapPost("/api/orders", (OrdersController ordersController) => ordersController.CreateOrder(new RequestOrderDto
+{
+    CustomerName = "IVAN",
+    DeliveryAddress = "not prazska, 642 00 Brno",
+    Status = OrderStatus.Created
+}));//TODO: to reduce/add quantity of products from inventory(orderItem), to add relation to DistributionCenter
+app.MapPut("/api/orders/{id}", (OrdersController ordersController) => 
+    ordersController.ChangeOrderStatus(Guid.Parse("8a5c1f2a-7f4b-4c7f-bf1e-5b9b7a0d03a3"), OrderStatus.Processing));
+//"statusCode": 204
+
+
+
+
+
 app.MapPost("/api/inventory", (InventoryController inventoryController) => inventoryController.AddStock(new RequestInventoryDto
 {//TODO: this one is TOUGH TOUGH TOUGH
     DistributionCenterId = Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e"),
     ProductId = Guid.Parse("550e8400-e29b-41d4-a716-446655440000"),
     Quantity = 8
 }));
-app.MapPut("/api/orders/{id}", (OrdersController ordersController) => 
-    ordersController.ChangeOrderStatus(Guid.Parse("8a5c1f2a-7f4b-4c7f-bf1e-5b9b7a0d03a3"), OrderStatus.Processing));
-//"statusCode": 204
 
 
-//DONE
-app.MapPost("/api/orders", (OrdersController ordersController) => ordersController.CreateOrder(new RequestOrderDto
-{
-    CustomerId = Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e"),
-    DeliveryAddress = "not prazska, 642 00 Brno",
-    Status = OrderStatus.Created
-}));//TODO: to reduce/add quantity of products from inventory(orderItem), to add relation to DistributionCenter
 
-
-app.MapPost("/api/order-item", (OrderItemController orderItemController) => orderItemController.AddOrderItemToOrder(
-    new RequestOrderItemDto
-    {
-        
-    }
-    ));
 
 
 app.Run();

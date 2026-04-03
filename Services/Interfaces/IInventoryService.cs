@@ -7,6 +7,6 @@ public interface IInventoryService
 {
     public Task AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId);
     public Task<ICollection<Inventory>> RemainingsOnTheFulfillmentCenter(Guid centerId);
+
     public Dictionary<Guid, int> ReturnProductAmount(ICollection<Inventory> inventories);
-    public Task UpdateInventoryProduct(Guid productId, int quantity);
 }

@@ -25,7 +25,6 @@ public class SqlShipmentRepository : IShipmentRepository
         {
             await _context.Shipment.AddAsync(shipment);
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {
@@ -38,16 +37,11 @@ public class SqlShipmentRepository : IShipmentRepository
     {
         var shipmentToDelete = await _context.Shipment.FirstOrDefaultAsync(shipment => shipment.Id == id);
         if(shipmentToDelete != null){shipmentToDelete.IsDeleted = true;}
-        else
-        {
-            throw new ArgumentNullException();
-        }
         
         //_context.Shipment.Remove(shipmentToDelete);
         try
         {
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {
@@ -60,9 +54,7 @@ public class SqlShipmentRepository : IShipmentRepository
     {
         if (!_isCached)
         {
-            //Shipments = await _context.Shipment.ToListAsync();
-            Shipments = await _context.Shipment.Where(shipment => shipment.IsDeleted != true && shipment.Status !=
-                ShipmentStatus.Cancelled && shipment.Status != ShipmentStatus.Failed).ToListAsync();
+            Shipments = await _context.Shipment.ToListAsync();
         }
 
         return Shipments;
@@ -97,7 +89,6 @@ public class SqlShipmentRepository : IShipmentRepository
             var shipmentToUpdate = await _context.Shipment.FirstOrDefaultAsync(shipment => shipment.Id == id);
             up(updateParameter, shipmentToUpdate);
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
 
