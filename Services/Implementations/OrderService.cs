@@ -33,7 +33,7 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
         Order order = new Order
         {
             Id = Guid.NewGuid(),
-            CustomerId = orderDto.CustomerId,
+            CustomerName = orderDto.CustomerName,
             DeliveryAddress = orderDto.DeliveryAddress,
             CreatedAt = orderDto.CreatedAt,
             //CreatedAt = DateTime.SpecifyKind(orderDto.CreatedAt, DateTimeKind.Unspecified),
@@ -43,7 +43,7 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
         await _orderRepository.Create(order);
     }
 
-    public async Task CancelOrder(Guid orderId)
+    public void CancelOrder(Guid orderId)
     {
         if (_orderRepository.Read() != null)
         {

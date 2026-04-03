@@ -1,6 +1,5 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.Entities;
-using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,14 +8,14 @@ namespace FulfillmentCenter.Repositories.Implementations;
 public class SqlOrderRepository : IOrderRepository
 {
     private FulfillmentCenDbContext _context;
-    public List<Order> Orders;
-    private bool _isCached;
+    //public List<Order> Orders;
+    //private bool isCached;
     
     public SqlOrderRepository(FulfillmentCenDbContext context)
     {
         _context = context;
-        Orders = Read().Result;
-        _isCached = true;
+        //Orders = Read().Result;
+        //isCached = true;
     }
     public async Task Create(Order order)
     {
@@ -33,7 +32,6 @@ public class SqlOrderRepository : IOrderRepository
         try
         {
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {
@@ -46,15 +44,10 @@ public class SqlOrderRepository : IOrderRepository
     {
         var orderToDelete = await _context.Orders.FirstOrDefaultAsync(order => order.Id == id);
         if(orderToDelete != null){orderToDelete.IsDeleted = true;}
-        else
-        {
-            throw new ArgumentNullException();
-        }
 
         try
         {
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {
@@ -65,24 +58,22 @@ public class SqlOrderRepository : IOrderRepository
 
     public async Task<List<Order>> Read()
     {
-        if (_isCached == false)
+        //if (isCached == false)
+        //{
+        try
         {
-            try
-            {
-                List<Order> orders = await _context.Orders.Where(order => order.IsDeleted != true &&
-                                                                          order.Status != OrderStatus.Cancelled)
-                    .ToListAsync();
-                _isCached = true;
-                return orders;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            List<Order> orders = await _context.Orders.ToListAsync();
+            //isCached = true;
+            return orders;
+            //}
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
 
-        return Orders;
+        //return Orders;
     }
     
     public async Task UpdateOrder<TUpdateParam>(TUpdateParam updateParam,Guid orderId, Action<Order, TUpdateParam> up)
@@ -92,7 +83,6 @@ public class SqlOrderRepository : IOrderRepository
             var orderToUpdate = await _context.Orders.FirstOrDefaultAsync(order => order.Id == orderId);
             up(orderToUpdate, updateParam);
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {

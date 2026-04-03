@@ -29,13 +29,9 @@ public class SqlProductRepository : IProductRepository
         }
     }
 
-    public async Task Delete(Guid id)
+    public async void Delete(Guid id)
     {
         var productToDelete = await _context.Product.FirstOrDefaultAsync(product => product.Id == id);
-        if(productToDelete == null)
-        {
-            throw new ArgumentNullException();
-        }
         _context.Product.Remove(productToDelete);
         //TODO: to return Result
         await _context.SaveChangesAsync();
