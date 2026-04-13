@@ -77,7 +77,7 @@ public class InventoryService(
         var inventories = await _inventoryRepository.Read();
         var findInventoriesFromCenter = inventories.FindAll(inventory => inventory.DistributionCenterId == centerId);
         //var findCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
-        if (findInventoriesFromCenter != null)
+        if (findInventoriesFromCenter.Count > 0)
         {
             return findInventoriesFromCenter;
         }

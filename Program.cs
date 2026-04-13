@@ -18,34 +18,43 @@ builder.Services.AddSwaggerGen();
 
 
 var connectionString = builder.Configuration.GetConnectionString("FulfilmentCenterDatabase");
-builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseMySql(connectionString, 
-    ServerVersion.AutoDetect(connectionString))
-        .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information)
-        .EnableSensitiveDataLogging() // покажет параметры
+builder.Services.AddDbContext<FulfillmentCenDbContext>(options =>
+    {
+        {
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+
+            if (builder.Environment.IsDevelopment())
+            {
+                options.LogTo(Console.WriteLine, LogLevel.Information)
+                    .EnableSensitiveDataLogging();
+            }
+        }
+    }
 );
 //builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services.AddTransient<IInventoryService, InventoryService>();
-builder.Services.AddTransient<IOrderItemService, OrderItemService>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddTransient<IProductService, ProductService>();
-builder.Services.AddTransient<IFulfillmentCenterService, FulfillmentCenterService>();
-builder.Services.AddTransient<IShipmentService, ShipmentService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IFulfillmentCenterService, FulfillmentCenterService>();
+builder.Services.AddScoped<IShipmentService, ShipmentService>();
 
-builder.Services.AddTransient<IFulfillmentCenterRepository, SqlFulfillmentCenterRepository>();
-builder.Services.AddTransient<IInventoryRepository, SqlInventoryRepository>();
+builder.Services.AddScoped<IFulfillmentCenterRepository, SqlFulfillmentCenterRepository>();
+builder.Services.AddScoped<IInventoryRepository, SqlInventoryRepository>();
 builder.Services.AddScoped<IOrderItemRepository, SqlOrderItemRepository>();
 builder.Services.AddScoped<IOrderRepository, SqlOrderRepository>();
-builder.Services.AddTransient<IProductRepository, SqlProductRepository>();
-builder.Services.AddTransient<IShipmentRepository, SqlShipmentRepository>();
+builder.Services.AddScoped<IProductRepository, SqlProductRepository>();
+builder.Services.AddScoped<IShipmentRepository, SqlShipmentRepository>();
 
-//builder.Services.AddControllers();
-builder.Services.AddScoped<OrderItemController, OrderItemController>();
+builder.Services.AddControllers();
+/*builder.Services.AddScoped<OrderItemController, OrderItemController>();
 builder.Services.AddScoped<InventoryController, InventoryController>();
 builder.Services.AddScoped<OrdersController, OrdersController>();
 builder.Services.AddScoped<ProductsController, ProductsController>();
-builder.Services.AddScoped<ShipmentsController, ShipmentsController>();
+builder.Services.AddScoped<ShipmentsController, ShipmentsController>();*/
 
+builder.Services.AddProblemDetails();
 /*
 builder.Services.AddSingleton<FulfillmentCenDbContext>();
 builder.Services.AddSingleton<DbContext,FulfillmentCenDbContext>();
@@ -63,15 +72,21 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
+    app.MapGet("/testing", () => "TESTING");
+    app.MapGet("/db-test", async (FulfillmentCenDbContext db) =>
+    {
+        var canConnect = await db.Database.CanConnectAsync();
+
+        return canConnect ? "Database connection OK ✅" : "Database connection FAILED ❌";
+    });
 }
 
-app.MapGet("/testing", () => "TESTING");
-app.MapGet("/db-test", async (FulfillmentCenDbContext db) =>
-{
-    var canConnect = await db.Database.CanConnectAsync();
 
-    return canConnect ? "Database connection OK ✅" : "Database connection FAILED ❌";
-});
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler();
+}
 
 //DONE
 app.MapGet("/api/products", async (ProductsController productController) => 
@@ -87,10 +102,7 @@ app.MapPost("/api/products", (ProductsController productController) => productCo
 app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipmentsController.CreateShipment(new RequestShipmentDto
 {
     DistributionCenterId = Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e"),
-    EstimatedDelivery = DateTime.Now,
-    Id = Guid.NewGuid(),
     OrderId = Guid.Parse("619550e6-d4a8-4a17-8069-5203ad823c72"),
-    ShippedAt = DateTime.Today,
     Status = ShipmentStatus.Shipped
 }));
 app.MapGet("/api/inventory/{centerId}", async (InventoryController inventoryController) =>

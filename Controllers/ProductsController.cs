@@ -13,7 +13,8 @@ public class ProductsController(IProductService productService) : ControllerBase
     private readonly IProductService _productService = productService;
     
     [HttpGet]
-    public async Task<List<ResponseProductDto>> GetProducts()
+    public async Task<IActionResult> GetProducts()
+    //public async Task<IActionResult<List<ResponseProductDto>>> GetProducts()
     {
         List<Product> products = await _productService.GetProducts();
         List<ResponseProductDto> productsDtos = products.Select(product => new ResponseProductDto
@@ -22,7 +23,7 @@ public class ProductsController(IProductService productService) : ControllerBase
             SKU = product.SKU,
             Weight = product.Weight
         }).ToList();
-        return productsDtos;
+        return Ok(productsDtos);
     }
 
     [HttpPost]

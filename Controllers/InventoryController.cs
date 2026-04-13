@@ -24,7 +24,7 @@ public class InventoryController(IInventoryService inventoryService) : Controlle
     }
     
     [HttpGet("{centerId}")]
-    public async Task<List<ResponseInventoryDto>> InventoryRemaining([FromRoute] Guid centerId)
+    public async Task<IActionResult> InventoryRemaining([FromRoute] Guid centerId)
     {
         var remainings = await _inventoryService.RemainingsOnTheFulfillmentCenter(centerId);
         List<ResponseInventoryDto> remainingsPdo = remainings.Select(remain => new ResponseInventoryDto
@@ -32,6 +32,6 @@ public class InventoryController(IInventoryService inventoryService) : Controlle
             ProductId = remain.ProductId,
             Quantity = remain.Quantity
         }).ToList();
-        return remainingsPdo;
+        return Ok(remainingsPdo);
     }
 }

@@ -14,7 +14,7 @@ public class OrderItemController(IOrderItemService orderItemService, IInventoryS
     [HttpPost]
     public async Task<IActionResult> AddOrderItemToOrder([FromBody] RequestOrderItemDto? orderItemDto)
     {
-        if (orderItemDto == null) throw new ArgumentNullException();
+        if (orderItemDto == null) throw new ArgumentNullException(nameof(orderItemDto), "OrderItemDto is null");
         await _orderItemService.AddOrderItemToOrder(orderItemDto);
         await _inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity);
         return Ok();

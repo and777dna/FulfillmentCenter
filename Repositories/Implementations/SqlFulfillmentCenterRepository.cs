@@ -21,30 +21,31 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
 
     public async Task Create(DistributionCenter distributionCenter)
     {
-        await _context.DistributionCenter.AddAsync(distributionCenter);
+        await _context.DistributionCenters.AddAsync(distributionCenter);
         await _context.SaveChangesAsync();
     }
 
     public async Task Delete(Guid id)
     {
-        var fulfillmentCenterToDelete = await _context.DistributionCenter.FirstOrDefaultAsync(center => center.Id == id);
+        var fulfillmentCenterToDelete = await _context.DistributionCenters.FirstOrDefaultAsync(center => center.Id == id);
         if(fulfillmentCenterToDelete == null)
         {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException(nameof(id), "no FulfillmentCenter was found");
         }
-        _context.DistributionCenter.Remove(fulfillmentCenterToDelete);
+        _context.DistributionCenters.Remove(fulfillmentCenterToDelete);
         await _context.SaveChangesAsync();
     }
 
     public async Task<List<DistributionCenter>> Read()
     {//All Read() methods load the entire table into memory as a List<T>. No filtering, no Where, no pagination. This will not scale
-        List<DistributionCenter> fulfillmentCenters = await _context.DistributionCenter.ToListAsync();
+        List<DistributionCenter> fulfillmentCenters = await _context.DistributionCenters.ToListAsync();
         return fulfillmentCenters;
     }
 
     public async Task UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam, Action<TUpdateParam, Entities.DistributionCenter> up)
     {
-        var fulfillmentCenterToUpdate = await _context.DistributionCenter.FirstOrDefaultAsync(center => center.Id == FulfillmentCenterId);
+        var fulfillmentCenterToUpdate = await _context.DistributionCenters.FirstOrDefaultAsync(center => center.Id == FulfillmentCenterId);
+        if(fulfillmentCenterToUpdate == null)throw new NullReferenceException("fulfillmentCenterToUpdate wasnt found");
         up(updateParam, fulfillmentCenterToUpdate);
         await _context.SaveChangesAsync();
     }

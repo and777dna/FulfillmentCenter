@@ -27,6 +27,10 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     [HttpPut("{id}/status")]
     public async Task<IActionResult> ChangeOrderStatus([FromRoute] Guid id,[FromQuery] OrderStatus status)
     {
+        if (!Enum.IsDefined(typeof(OrderStatus), status))
+        {
+            return BadRequest("Недопустимый статус заказа");
+        }
         await _orderService.UpdateOrderStatus(status, id);
         return NoContent();
     }

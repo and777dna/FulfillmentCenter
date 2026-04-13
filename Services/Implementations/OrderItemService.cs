@@ -13,7 +13,7 @@ public class OrderItemService(IOrderItemRepository orderItemRepository) : IOrder
     {
         if (orderItemDto == null)
         {
-            throw new ArgumentNullException(nameof(orderItemDto));
+            throw new ArgumentNullException(nameof(orderItemDto), "orderItemDto is null");
         }
 
         OrderItem orderItem = new OrderItem

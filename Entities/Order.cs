@@ -7,10 +7,8 @@ public class Order
 {
     [Key]
     [Required]
-    [MaxLength(36)]
     public Guid Id { get; set; }
     [Required]
-    [MaxLength(200)]
     public Guid CustomerId { get; set; } // TODO review: No CustomerId. Customer should be an entity with its own ID and relationships to Orders
     [Required]
     [MaxLength(200)]
@@ -26,4 +24,5 @@ public class Order
     public bool IsDeleted { get; set; } = false;
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
     public Shipment? Shipment { get; set; }
+    public Customer? Customer { get; set; }
 }

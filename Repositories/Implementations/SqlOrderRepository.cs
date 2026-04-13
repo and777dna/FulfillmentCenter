@@ -9,14 +9,10 @@ namespace FulfillmentCenter.Repositories.Implementations;
 public class SqlOrderRepository : IOrderRepository
 {
     private FulfillmentCenDbContext _context;
-    public List<Order> Orders;
-    private bool _isCached;
     
     public SqlOrderRepository(FulfillmentCenDbContext context)
     {
         _context = context;
-        Orders = Read().Result;
-        _isCached = true;
     }
     public async Task Create(Order order)
     {
@@ -33,7 +29,6 @@ public class SqlOrderRepository : IOrderRepository
         try
         {
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {
@@ -48,13 +43,12 @@ public class SqlOrderRepository : IOrderRepository
         if(orderToDelete != null){orderToDelete.IsDeleted = true;}
         else
         {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException(nameof(id), "no Order was found");
         }
 
         try
         {
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {
@@ -65,14 +59,13 @@ public class SqlOrderRepository : IOrderRepository
 
     public async Task<List<Order>> Read()
     {
-        if (_isCached == false)
-        {
+       
             try
             {
                 List<Order> orders = await _context.Orders.Where(order => order.IsDeleted != true &&
                                                                           order.Status != OrderStatus.Cancelled)
                     .ToListAsync();
-                _isCached = true;
+                if (orders == null) throw new FileNotFoundException();
                 return orders;
             }
             catch (Exception e)
@@ -80,9 +73,7 @@ public class SqlOrderRepository : IOrderRepository
                 Console.WriteLine(e);
                 throw;
             }
-        }
-
-        return Orders;
+        
     }
     
     public async Task UpdateOrder<TUpdateParam>(TUpdateParam updateParam,Guid orderId, Action<Order, TUpdateParam> up)
@@ -90,9 +81,9 @@ public class SqlOrderRepository : IOrderRepository
         try
         {
             var orderToUpdate = await _context.Orders.FirstOrDefaultAsync(order => order.Id == orderId);
+            if (orderToUpdate == null)throw new NullReferenceException("orderToUpdate want found");
             up(orderToUpdate, updateParam);
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {

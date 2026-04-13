@@ -35,7 +35,7 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
             Id = Guid.NewGuid(),
             CustomerId = orderDto.CustomerId,
             DeliveryAddress = orderDto.DeliveryAddress,
-            CreatedAt = orderDto.CreatedAt,
+            CreatedAt = DateTime.UtcNow,
             //CreatedAt = DateTime.SpecifyKind(orderDto.CreatedAt, DateTimeKind.Unspecified),
             Status = orderDto.Status,
             //TODO: to add shippment here, by finding it in db
@@ -45,15 +45,12 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
 
     public async Task CancelOrder(Guid orderId)
     {
-        if (_orderRepository.Read() != null)
-        {
-            if (GetOrderById(orderId).Result.Status == OrderStatus.Created || GetOrderById(orderId).Result.Status == OrderStatus.Processing)
+        var orderToCancelStatus = (await GetOrderById(orderId)).Status;
+            if (orderToCancelStatus == OrderStatus.Created || orderToCancelStatus == OrderStatus.Processing)
             {
-                UpdateOrderStatus(OrderStatus.Cancelled, orderId);
+                await UpdateOrderStatus(OrderStatus.Cancelled, orderId);
             }
-
             //GetOrderById(orderId).Status = OrderStatus.Cancelled;//TODO: to change to this status
-        }
     }
     
     public async Task<Order> GetOrderById(Guid orderId)
@@ -72,7 +69,7 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
             return findOrder;
         }
 
-        throw new ArgumentNullException();
+        throw new ArgumentNullException(nameof(orderId), "Order not found");
     }
     
     public async Task UpdateOrderStatus(OrderStatus orderStatus, Guid Id)

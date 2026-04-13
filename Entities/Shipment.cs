@@ -16,7 +16,7 @@ public class Shipment
     [Required]
     public ShipmentStatus Status { get; set; } = ShipmentStatus.Pending;
     [Required]
-    public DateTime? ShippedAt { get; set; }
+    public DateTime ShippedAt { get; set; }
     [Required]
     public DateTime? EstimatedDelivery { get; set; }
     [Required]

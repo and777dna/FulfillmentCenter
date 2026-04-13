@@ -29,9 +29,9 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
         return openWith;
     }
 
-    public bool CheckSufficientAmountOfInventoryToShipment(Dictionary<Guid, int> ReturnProductAmount, Dictionary<Guid, int> ReturnShipmentAmount)
+    public bool CheckSufficientAmountOfInventoryToShipment(Dictionary<Guid, int> returnProductAmount, Dictionary<Guid, int> returnShipmentAmount)
     {
-        ReturnProductAmount.OrderBy(product => product.Key);
+        returnProductAmount.OrderBy(product => product.Key);
         return true;
     }
     
@@ -48,12 +48,12 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
         
         var shipment =
             new Shipment {
-                Id = requestShipmentDto.Id,
+                Id = Guid.NewGuid(),
                 OrderId = requestShipmentDto.OrderId,
                 DistributionCenterId = requestShipmentDto.DistributionCenterId,
                 Status = requestShipmentDto.Status,
-                ShippedAt = requestShipmentDto.ShippedAt,
-                EstimatedDelivery = requestShipmentDto.EstimatedDelivery
+                ShippedAt = DateTime.UtcNow,
+                EstimatedDelivery = DateTime.UtcNow
             };
         
         /*if (CheckSufficientAmountOfInventoryToShipment(_inventoryService.ReturnProductAmount(remainingsOnTheFulfillmentCenter.Result), ReturnShipmentAmount(shipment.Order.Items)))
