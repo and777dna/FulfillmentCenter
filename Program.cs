@@ -6,6 +6,7 @@ using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Implementations;
 using FulfillmentCenter.Services.Interfaces;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -88,57 +89,16 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler();
 }
 
-//DONE
-app.MapGet("/api/products", async (ProductsController productController) => 
-    await productController.GetProducts());
-//DONE
-app.MapPost("/api/products", (ProductsController productController) => productController.AddProduct(new RequestProductDto
+app.Map("/error", (HttpContext context) =>
 {
-    Name = "AirPods 10",
-    SKU = "33",
-    Weight = 0
-}));
-//DONE
-app.MapPost("/api/shipments", (ShipmentsController shipmentsController) => shipmentsController.CreateShipment(new RequestShipmentDto
-{
-    DistributionCenterId = Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e"),
-    OrderId = Guid.Parse("619550e6-d4a8-4a17-8069-5203ad823c72"),
-    Status = ShipmentStatus.Shipped
-}));
-app.MapGet("/api/inventory/{centerId}", async (InventoryController inventoryController) =>
-    await inventoryController.InventoryRemaining(Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e")));
-//[FromRoute] Guid id  //TODO: to see if i need to fix it to make it "[FromRoute] Guid id"
-//DONE
-app.MapGet("/api/orders/{id}/status", (OrdersController ordersController) => 
-    ordersController.GetOrder(Guid.Parse("619550e6-d4a8-4a17-8069-5203ad823c72")));
-app.MapPut("/api/shipments/{id}/status", (ShipmentsController shipmentsController) =>//TODO: ShipmentStatus.Failed 
-    shipmentsController.UpdateShipmentStatus(Guid.Parse("8a5c1f2a-7f4b-4c7f-bf1e-5b9b7a0d03a8"), ShipmentStatus.Cancelled));
-app.MapPost("/api/inventory", (InventoryController inventoryController) => inventoryController.AddStock(new RequestInventoryDto
-{//TODO: this one is TOUGH TOUGH TOUGH
-    DistributionCenterId = Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e"),
-    ProductId = Guid.Parse("550e8400-e29b-41d4-a716-446655440000"),
-    Quantity = 8
-}));
-app.MapPut("/api/orders/{id}", (OrdersController ordersController) => 
-    ordersController.ChangeOrderStatus(Guid.Parse("8a5c1f2a-7f4b-4c7f-bf1e-5b9b7a0d03a3"), OrderStatus.Processing));
-//"statusCode": 204
+    var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
 
+    return Results.Problem(
+        title: "Server error",
+        detail: exception?.Message
+    );
+});
 
-//DONE
-app.MapPost("/api/orders", (OrdersController ordersController) => ordersController.CreateOrder(new RequestOrderDto
-{
-    CustomerId = Guid.Parse("0f8fad5b-d9cb-469f-a165-70867728950e"),
-    DeliveryAddress = "not prazska, 642 00 Brno",
-    Status = OrderStatus.Created
-}));//TODO: to reduce/add quantity of products from inventory(orderItem), to add relation to DistributionCenter
-
-
-app.MapPost("/api/order-item", (OrderItemController orderItemController) => orderItemController.AddOrderItemToOrder(
-    new RequestOrderItemDto
-    {
-        
-    }
-    ));
 
 
 app.Run();

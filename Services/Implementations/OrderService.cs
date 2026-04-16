@@ -61,7 +61,7 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
         return findBook;
     }
     
-    public Order SearchById(Guid orderId, List<Order> orders)
+    private Order SearchById(Guid orderId, List<Order> orders)
     {
         var findOrder = orders.FirstOrDefault(order => order.Id == orderId);
         if (findOrder != null)

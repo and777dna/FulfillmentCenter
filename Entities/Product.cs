@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FulfillmentCenter.Entities;
 
-public class Product
+public class Product : BaseEntity
 {
     [Required]
     public Guid Id { get; set; }

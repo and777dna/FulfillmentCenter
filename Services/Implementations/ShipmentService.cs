@@ -28,12 +28,6 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
 
         return openWith;
     }
-
-    public bool CheckSufficientAmountOfInventoryToShipment(Dictionary<Guid, int> returnProductAmount, Dictionary<Guid, int> returnShipmentAmount)
-    {
-        returnProductAmount.OrderBy(product => product.Key);
-        return true;
-    }
     
     public async Task CreateShipment(RequestShipmentDto requestShipmentDto)
     {//na FulfillmentCenter достаточно товара для каждой позиции Order

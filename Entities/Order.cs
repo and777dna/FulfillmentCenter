@@ -3,7 +3,7 @@ using FulfillmentCenter.Enums;
 
 namespace FulfillmentCenter.Entities;
 
-public class Order
+public class Order : BaseEntity
 {
     [Key]
     [Required]
@@ -14,14 +14,10 @@ public class Order
     [MaxLength(200)]
     public string DeliveryAddress { get; set; } = string.Empty;
     [Required]
-    [MaxLength(200)]
     public DateTime CreatedAt { get; set; } 
     //public DateTime CreatedAt { get; set; } //TODO review: CreatedAt is not auto-set. There's no default value like DateTime.UtcNow. A caller must remember to set it manually
     [Required]
-    [MaxLength(200)]
     public OrderStatus Status { get; set; } = OrderStatus.Created;
-    [Required]
-    public bool IsDeleted { get; set; } = false;
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
     public Shipment? Shipment { get; set; }
     public Customer? Customer { get; set; }

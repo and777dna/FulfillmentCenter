@@ -3,7 +3,7 @@ using FulfillmentCenter.Enums;
 
 namespace FulfillmentCenter.Entities;
 
-public class Shipment
+public class Shipment : BaseEntity
 {
     [Required]
     public Guid Id { get; set; }
@@ -19,6 +19,4 @@ public class Shipment
     public DateTime ShippedAt { get; set; }
     [Required]
     public DateTime? EstimatedDelivery { get; set; }
-    [Required]
-    public bool IsDeleted { get; set; } = false;
 }
