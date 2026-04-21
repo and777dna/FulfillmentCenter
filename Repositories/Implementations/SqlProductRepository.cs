@@ -8,7 +8,7 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlProductRepository : IProductRepository
 {
-    private FulfillmentCenDbContext _context;
+    private readonly FulfillmentCenDbContext _context;
 
     public SqlProductRepository(FulfillmentCenDbContext context)
     {
@@ -19,7 +19,7 @@ public class SqlProductRepository : IProductRepository
     {
         try
         {
-            await _context.Product.AddAsync(product);
+            await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -31,12 +31,12 @@ public class SqlProductRepository : IProductRepository
 
     public async Task Delete(Guid id)
     {
-        var productToDelete = await _context.Product.FirstOrDefaultAsync(product => product.Id == id);
+        var productToDelete = await _context.Products.FirstOrDefaultAsync(product => product.Id == id);
         if(productToDelete == null)
         {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException(nameof(id), "no Product was found");
         }
-        _context.Product.Remove(productToDelete);
+        _context.Products.Remove(productToDelete);
         //TODO: to return Result
         await _context.SaveChangesAsync();
     }
@@ -46,7 +46,7 @@ public class SqlProductRepository : IProductRepository
         List<Product> products;
         try
         {
-            products = await _context.Product.ToListAsync();
+            products = await _context.Products.ToListAsync();
         }
         catch (Exception e)
         {

@@ -10,14 +10,12 @@ namespace FulfillmentCenter.Controllers;
 [Route("/api/orders")]
 public class OrdersController(IOrderService orderService) : ControllerBase
 {
-    private readonly IOrderService _orderService = orderService;
-    
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] RequestOrderDto? orderDto)
     {
         if (orderDto != null)
         {
-            await _orderService.CreateOrder(orderDto);
+            await orderService.CreateOrder(orderDto);
             return Ok();
         }
 
@@ -27,14 +25,18 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     [HttpPut("{id}/status")]
     public async Task<IActionResult> ChangeOrderStatus([FromRoute] Guid id,[FromQuery] OrderStatus status)
     {
-        await _orderService.UpdateOrderStatus(status, id);
+        if (!Enum.IsDefined(typeof(OrderStatus), status))
+        {
+            return BadRequest("Invalid order status");
+        }
+        await orderService.UpdateOrderStatus(status, id);
         return NoContent();
     }
     
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrder([FromRoute] Guid id)
     {
-        var order = await _orderService.GetOrderById(id);
+        var order = await orderService.GetOrderById(id);
 
         return Ok(
             new ResponseOrderDto

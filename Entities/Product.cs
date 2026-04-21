@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FulfillmentCenter.Entities;
 
-public class Product
+public class Product : BaseEntity
 {
     [Required]
     public Guid Id { get; set; }
@@ -12,5 +12,5 @@ public class Product
     public string SKU { get; set; } = string.Empty;
     [Required]
     public decimal Weight { get; set; }
-    public ICollection<Inventory> Inventory { get; set; } = new List<Inventory>();
+    public ICollection<Inventory> Inventories { get; set; } = new List<Inventory>();
 }

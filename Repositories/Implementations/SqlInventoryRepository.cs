@@ -8,24 +8,19 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlInventoryRepository : IInventoryRepository
 {
-    private FulfillmentCenDbContext _context;
-    public List<Inventory> Inventories;
-    private bool _isCached;
+    private readonly FulfillmentCenDbContext _context;
     
     public SqlInventoryRepository(FulfillmentCenDbContext context)
     {
         _context = context;
-        Inventories = Read().Result;
-        _isCached = true;
     }
 
     public async Task Create(Inventory inventory)
     {
         try
         {
-            await _context.Inventory.AddAsync(inventory);
+            await _context.Inventories.AddAsync(inventory);
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {
@@ -36,51 +31,44 @@ public class SqlInventoryRepository : IInventoryRepository
 
     public async Task Delete(Guid id)
     {
-        var inventoryToDelete = await _context.Inventory.FirstOrDefaultAsync(inventory => inventory.Id == id);
+        var inventoryToDelete = await _context.Inventories.FirstOrDefaultAsync(inventory => inventory.Id == id);
         if(inventoryToDelete == null)
         {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException(nameof(id), "no Inventory was found");
         }
-        _context.Inventory.Remove(inventoryToDelete);
+        _context.Inventories.Remove(inventoryToDelete);
         await _context.SaveChangesAsync();
     }
 
     public async Task<List<Inventory>> Read()
     {//All Read() methods load the entire table into memory as a List<T>. No filtering, no Where, no pagination. This will not scale
         List<Inventory> inventories;
-        if (_isCached == false)
-        {
             try
             {
-                inventories = await _context.Inventory.ToListAsync();
+                inventories = await _context.Inventories.ToListAsync();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-            _isCached = true;
             return inventories;
-        }
-
-        return Inventories;
     }
     
     public async Task UpdateInventory(Inventory inventory)
     {
         try
         {
-            var inventoryToUpdate = await _context.Inventory.FirstOrDefaultAsync(inv =>
+            var inventoryToUpdate = await _context.Inventories.FirstOrDefaultAsync(inv =>
                 inv.ProductId == inventory.ProductId && inv.DistributionCenterId == inventory.DistributionCenterId);
 
             if (inventoryToUpdate == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(inventory.ProductId), "Inventory was not found");
             }
-            inventoryToUpdate.Quantity = inventory.Quantity;
+            inventoryToUpdate.Quantity += inventory.Quantity;
 
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {
@@ -99,18 +87,17 @@ public class SqlInventoryRepository : IInventoryRepository
     {
         try
         {
-            var inventoryToUpdate = await _context.Inventory.FirstOrDefaultAsync(inv =>
+            var inventoryToUpdate = await _context.Inventories.FirstOrDefaultAsync(inv =>
                 inv.ProductId == inventory.ProductId);
 
             if (inventoryToUpdate == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(inventoryToUpdate.ProductId), "InventoryToUpdate was not found");
             }
             
-            inventoryToUpdate.Quantity = inventory.Quantity;
+            inventoryToUpdate.Quantity += inventory.Quantity;
 
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {

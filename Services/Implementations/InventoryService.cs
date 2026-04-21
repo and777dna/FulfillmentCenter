@@ -77,7 +77,7 @@ public class InventoryService(
         var inventories = await _inventoryRepository.Read();
         var findInventoriesFromCenter = inventories.FindAll(inventory => inventory.DistributionCenterId == centerId);
         //var findCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
-        if (findInventoriesFromCenter != null)
+        if (findInventoriesFromCenter.Count > 0)
         {
             return findInventoriesFromCenter;
         }
@@ -96,25 +96,36 @@ public class InventoryService(
         return openWith;
     }
 
-    public async Task UpdateInventoryProduct(Guid productId, int quantity)
+    public async Task UpdateInventoryProduct(Guid productId, int quantity, Guid centerId)
     {
-        var updatedInventory = new UpdateInventoryDto()
+        var updatedInventory = new UpdateInventoryDto
         {
             ProductId = productId,
             Quantity = quantity
         };
+        var remainingsOnTheFulfillmentCenter = await RemainingsOnTheFulfillmentCenter(centerId);
 
-        await _inventoryRepository.UpdateInventoryQuantity(updatedInventory);
+        if (CheckSufficientAmountOfInventory(remainingsOnTheFulfillmentCenter, updatedInventory))
+        {
+            await _inventoryRepository.UpdateInventoryQuantity(updatedInventory);
+        }
+
+        throw new InvalidOperationException("not enough product on the given distribution center for the inventory");
     }
 
-/*public bool CheckSufficientAmountOfInventory(ICollection<Inventory> remainingsOnTheFulfillmentCenter, ICollection<OrderItem> items)
-{
-    //TODO: to create for each remainingsOnTheFulfillmentCenter,items hash to compare them.
-    foreach (var inventory in remainingsOnTheFulfillmentCenter)
+    public bool CheckSufficientAmountOfInventory(ICollection<Inventory> remainingsOnTheFulfillmentCenter, UpdateInventoryDto itemsToUpdate)
     {
+        var findInventoryProduct = remainingsOnTheFulfillmentCenter.FirstOrDefault(inventory => inventory.ProductId == itemsToUpdate.ProductId);
+        if (findInventoryProduct == null)
+        {
+            throw new ArgumentNullException(nameof(findInventoryProduct), "inventory with such productId doesnt exist on the given distribution center");
+        }
 
+        if (findInventoryProduct.Quantity - itemsToUpdate.Quantity > 0)
+        {
+            return true;
+        }
+
+        return false;
     }
-
-    return true;
-}*/
 }

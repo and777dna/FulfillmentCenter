@@ -8,24 +8,24 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlShipmentRepository : IShipmentRepository
 {
-    public List<Shipment> Shipments;
-    private bool _isCached;
-    private FulfillmentCenDbContext _context;
+    //public List<Shipment> Shipments;
+    //private bool _isCached;
+    private readonly FulfillmentCenDbContext _context;
     
     public SqlShipmentRepository(FulfillmentCenDbContext context)
     {
         _context = context;
-        Shipments = Read().Result;
-        _isCached = true;
+        //Shipments = Read().Result;
+        //_isCached = true;
     }
 
     public async Task Create(Shipment shipment)
     {
         try
         {
-            await _context.Shipment.AddAsync(shipment);
+            await _context.Shipments.AddAsync(shipment);
             await _context.SaveChangesAsync();
-            _isCached = false;
+            //_isCached = false;
         }
         catch (Exception e)
         {
@@ -36,18 +36,18 @@ public class SqlShipmentRepository : IShipmentRepository
 
     public async Task Delete(Guid id)//TODO: to specify id more precisely
     {
-        var shipmentToDelete = await _context.Shipment.FirstOrDefaultAsync(shipment => shipment.Id == id);
+        var shipmentToDelete = await _context.Shipments.FirstOrDefaultAsync(shipment => shipment.Id == id);
         if(shipmentToDelete != null){shipmentToDelete.IsDeleted = true;}
         else
         {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException(nameof(id), "no Shipment was found");
         }
         
         //_context.Shipment.Remove(shipmentToDelete);
         try
         {
             await _context.SaveChangesAsync();
-            _isCached = false;
+            //_isCached = false;
         }
         catch (Exception e)
         {
@@ -58,22 +58,19 @@ public class SqlShipmentRepository : IShipmentRepository
 
     public async Task<List<Shipment>> Read()
     {
-        if (!_isCached)
-        {
+        
             //Shipments = await _context.Shipment.ToListAsync();
-            Shipments = await _context.Shipment.Where(shipment => shipment.IsDeleted != true && shipment.Status !=
+            return await _context.Shipments.Where(shipment => shipment.IsDeleted != true && shipment.Status !=
                 ShipmentStatus.Cancelled && shipment.Status != ShipmentStatus.Failed).ToListAsync();
-        }
-
-        return Shipments;
+        
     }
     
     public async Task UpdateShipmentStatus(Guid id, ShipmentStatus status)
     {
         if(status == ShipmentStatus.Cancelled)
         {
-            await Delete(id);
             await UpdateShipment(id, status, (shipmentStatus, shipment) => shipment.Status = shipmentStatus);
+            await Delete(id);
         }else if (status == ShipmentStatus.Failed) {
             //TODO: to fill this one
         }
@@ -94,10 +91,9 @@ public class SqlShipmentRepository : IShipmentRepository
     {
         try
         {
-            var shipmentToUpdate = await _context.Shipment.FirstOrDefaultAsync(shipment => shipment.Id == id);
+            var shipmentToUpdate = await _context.Shipments.FirstOrDefaultAsync(shipment => shipment.Id == id);
             up(updateParameter, shipmentToUpdate);
             await _context.SaveChangesAsync();
-            _isCached = false;
         }
         catch (Exception e)
         {
