@@ -8,7 +8,7 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlOrderRepository : IOrderRepository
 {
-    private FulfillmentCenDbContext _context;
+    private readonly FulfillmentCenDbContext _context;
     
     public SqlOrderRepository(FulfillmentCenDbContext context)
     {
@@ -59,7 +59,6 @@ public class SqlOrderRepository : IOrderRepository
 
     public async Task<List<Order>> Read()
     {
-       
             try
             {
                 List<Order> orders = await _context.Orders.Where(order => order.IsDeleted != true &&
@@ -73,7 +72,6 @@ public class SqlOrderRepository : IOrderRepository
                 Console.WriteLine(e);
                 throw;
             }
-        
     }
     
     public async Task UpdateOrder<TUpdateParam>(TUpdateParam updateParam,Guid orderId, Action<Order, TUpdateParam> up)
@@ -81,7 +79,7 @@ public class SqlOrderRepository : IOrderRepository
         try
         {
             var orderToUpdate = await _context.Orders.FirstOrDefaultAsync(order => order.Id == orderId);
-            if (orderToUpdate == null)throw new NullReferenceException("orderToUpdate want found");
+            if (orderToUpdate == null)throw new KeyNotFoundException("orderToUpdate want found");
             up(orderToUpdate, updateParam);
             await _context.SaveChangesAsync();
         }

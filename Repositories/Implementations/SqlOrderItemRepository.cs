@@ -7,7 +7,7 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlOrderItemRepository : IOrderItemRepository
 {
-    private FulfillmentCenDbContext _context;
+    private readonly FulfillmentCenDbContext _context;
     
     public SqlOrderItemRepository(FulfillmentCenDbContext context)
     {

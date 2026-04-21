@@ -35,9 +35,8 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
             Id = Guid.NewGuid(),
             CustomerId = orderDto.CustomerId,
             DeliveryAddress = orderDto.DeliveryAddress,
-            CreatedAt = DateTime.UtcNow,
             //CreatedAt = DateTime.SpecifyKind(orderDto.CreatedAt, DateTimeKind.Unspecified),
-            Status = orderDto.Status,
+            Status = OrderStatus.Created
             //TODO: to add shippment here, by finding it in db
         };
         await _orderRepository.Create(order);

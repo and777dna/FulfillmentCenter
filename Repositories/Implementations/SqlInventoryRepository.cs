@@ -8,7 +8,7 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlInventoryRepository : IInventoryRepository
 {
-    private FulfillmentCenDbContext _context;
+    private readonly FulfillmentCenDbContext _context;
     
     public SqlInventoryRepository(FulfillmentCenDbContext context)
     {
@@ -53,7 +53,6 @@ public class SqlInventoryRepository : IInventoryRepository
                 throw;
             }
             return inventories;
-        
     }
     
     public async Task UpdateInventory(Inventory inventory)

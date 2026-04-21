@@ -10,7 +10,7 @@ public class SqlShipmentRepository : IShipmentRepository
 {
     //public List<Shipment> Shipments;
     //private bool _isCached;
-    private FulfillmentCenDbContext _context;
+    private readonly FulfillmentCenDbContext _context;
     
     public SqlShipmentRepository(FulfillmentCenDbContext context)
     {

@@ -20,7 +20,6 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("FulfilmentCenterDatabase");
 builder.Services.AddDbContext<FulfillmentCenDbContext>(options =>
-    {
         {
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 
@@ -30,7 +29,6 @@ builder.Services.AddDbContext<FulfillmentCenDbContext>(options =>
                     .EnableSensitiveDataLogging();
             }
         }
-    }
 );
 //builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseSqlServer(connectionString));
 
@@ -87,6 +85,7 @@ if (app.Environment.IsDevelopment())
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler();
+    app.UseStatusCodePages();
 }
 
 app.Map("/error", (HttpContext context) =>

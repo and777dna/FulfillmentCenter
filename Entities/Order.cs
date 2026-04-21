@@ -13,11 +13,8 @@ public class Order : BaseEntity
     [Required]
     [MaxLength(200)]
     public string DeliveryAddress { get; set; } = string.Empty;
-    [Required]
-    public DateTime CreatedAt { get; set; } 
-    //public DateTime CreatedAt { get; set; } //TODO review: CreatedAt is not auto-set. There's no default value like DateTime.UtcNow. A caller must remember to set it manually
-    [Required]
-    public OrderStatus Status { get; set; } = OrderStatus.Created;
+    [Required] public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    [Required] public OrderStatus Status { get; set; }
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
     public Shipment? Shipment { get; set; }
     public Customer? Customer { get; set; }

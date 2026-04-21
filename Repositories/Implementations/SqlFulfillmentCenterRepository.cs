@@ -13,7 +13,7 @@ namespace FulfillmentCenter.Repositories.Implementations;
 //5. isCached is set to true in the constructor and never reset to false after Create, Delete, or Update operations. This means after the first load, Read() will always return the stale in-memory list, never re-querying the database
 public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
 {
-    private FulfillmentCenDbContext _context;
+    private readonly FulfillmentCenDbContext _context;
     public SqlFulfillmentCenterRepository(FulfillmentCenDbContext context)
     {
         _context = context;
@@ -45,7 +45,7 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
     public async Task UpdateFulfillmentCenter<TUpdateParam>(Guid FulfillmentCenterId, TUpdateParam updateParam, Action<TUpdateParam, Entities.DistributionCenter> up)
     {
         var fulfillmentCenterToUpdate = await _context.DistributionCenters.FirstOrDefaultAsync(center => center.Id == FulfillmentCenterId);
-        if(fulfillmentCenterToUpdate == null)throw new NullReferenceException("fulfillmentCenterToUpdate wasnt found");
+        if(fulfillmentCenterToUpdate == null)throw new KeyNotFoundException("fulfillmentCenterToUpdate wasnt found");
         up(updateParam, fulfillmentCenterToUpdate);
         await _context.SaveChangesAsync();
     }

@@ -8,7 +8,7 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlProductRepository : IProductRepository
 {
-    private FulfillmentCenDbContext _context;
+    private readonly FulfillmentCenDbContext _context;
 
     public SqlProductRepository(FulfillmentCenDbContext context)
     {
