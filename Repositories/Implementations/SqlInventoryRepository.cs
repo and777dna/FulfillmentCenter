@@ -36,7 +36,7 @@ public class SqlInventoryRepository : IInventoryRepository
         {
             throw new ArgumentNullException(nameof(id), "no Inventory was found");
         }
-        _context.Inventories.Remove(inventoryToDelete);
+        inventoryToDelete.IsDeleted = true;
         await _context.SaveChangesAsync();
     }
 

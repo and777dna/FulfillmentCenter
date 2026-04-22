@@ -36,7 +36,7 @@ public class SqlProductRepository : IProductRepository
         {
             throw new ArgumentNullException(nameof(id), "no Product was found");
         }
-        _context.Products.Remove(productToDelete);
+        productToDelete.IsDeleted = true;
         //TODO: to return Result
         await _context.SaveChangesAsync();
     }

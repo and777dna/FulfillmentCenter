@@ -38,7 +38,7 @@ public class SqlOrderItemRepository : IOrderItemRepository
 
         try
         {
-            _context.OrderItems.Remove(orderItemToDelete);
+            orderItemToDelete.IsDeleted = true;
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
