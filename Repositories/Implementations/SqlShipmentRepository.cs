@@ -11,6 +11,8 @@ public class SqlShipmentRepository : IShipmentRepository
     //public List<Shipment> Shipments;
     //private bool _isCached;
     private readonly FulfillmentCenDbContext _context;
+    int page = 2;
+    int pageSize = 50;
     
     public SqlShipmentRepository(FulfillmentCenDbContext context)
     {
@@ -61,7 +63,8 @@ public class SqlShipmentRepository : IShipmentRepository
         
             //Shipments = await _context.Shipment.ToListAsync();
             return await _context.Shipments.Where(shipment => shipment.IsDeleted != true && shipment.Status !=
-                ShipmentStatus.Cancelled && shipment.Status != ShipmentStatus.Failed).ToListAsync();
+                ShipmentStatus.Cancelled && shipment.Status != ShipmentStatus.Failed).Skip((page - 1) * pageSize)
+                .Take(pageSize).OrderBy(p => p.Id).ToListAsync();
         
     }
     

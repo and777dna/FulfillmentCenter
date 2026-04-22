@@ -10,6 +10,8 @@ namespace FulfillmentCenter.Repositories.Implementations;
 public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
 {
     private readonly FulfillmentCenDbContext _context;
+    int page = 2;
+    int pageSize = 50;
     public SqlFulfillmentCenterRepository(FulfillmentCenDbContext context)
     {
         _context = context;
@@ -34,7 +36,9 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
 
     public async Task<List<DistributionCenter>> Read()
     {//All Read() methods load the entire table into memory as a List<T>. No filtering, no Where, no pagination. This will not scale
-        List<DistributionCenter> fulfillmentCenters = await _context.DistributionCenters.ToListAsync();
+        List<DistributionCenter> fulfillmentCenters = await _context.DistributionCenters.Skip((page - 1) * pageSize)
+            .Take(pageSize).OrderBy(p => p.Id)
+            .ToListAsync();
         return fulfillmentCenters;
     }
 

@@ -9,7 +9,8 @@ namespace FulfillmentCenter.Repositories.Implementations;
 public class SqlInventoryRepository : IInventoryRepository
 {
     private readonly FulfillmentCenDbContext _context;
-    
+    int page = 2;
+    int pageSize = 50;
     public SqlInventoryRepository(FulfillmentCenDbContext context)
     {
         _context = context;
@@ -45,7 +46,10 @@ public class SqlInventoryRepository : IInventoryRepository
         List<Inventory> inventories;
             try
             {
-                inventories = await _context.Inventories.ToListAsync();
+                inventories = await _context.Inventories
+                    .OrderBy(p => p.Id)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize).ToListAsync();
             }
             catch (Exception e)
             {

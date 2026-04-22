@@ -9,7 +9,8 @@ namespace FulfillmentCenter.Repositories.Implementations;
 public class SqlOrderRepository : IOrderRepository
 {
     private readonly FulfillmentCenDbContext _context;
-    
+    int page = 2;
+    int pageSize = 50;
     public SqlOrderRepository(FulfillmentCenDbContext context)
     {
         _context = context;
@@ -63,6 +64,9 @@ public class SqlOrderRepository : IOrderRepository
             {
                 List<Order> orders = await _context.Orders.Where(order => order.IsDeleted != true &&
                                                                           order.Status != OrderStatus.Cancelled)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .OrderBy(p => p.Id)
                     .ToListAsync();
                 if (orders == null) throw new FileNotFoundException();
                 return orders;

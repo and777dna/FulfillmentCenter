@@ -9,7 +9,8 @@ namespace FulfillmentCenter.Repositories.Implementations;
 public class SqlProductRepository : IProductRepository
 {
     private readonly FulfillmentCenDbContext _context;
-
+    int page = 2;
+    int pageSize = 50;
     public SqlProductRepository(FulfillmentCenDbContext context)
     {
         _context = context;
@@ -46,7 +47,8 @@ public class SqlProductRepository : IProductRepository
         List<Product> products;
         try
         {
-            products = await _context.Products.ToListAsync();
+            products = await _context.Products.Skip((page - 1) * pageSize)
+                .Take(pageSize).OrderBy(p => p.Id).ToListAsync();
         }
         catch (Exception e)
         {

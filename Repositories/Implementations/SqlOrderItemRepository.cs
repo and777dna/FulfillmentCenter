@@ -8,7 +8,8 @@ namespace FulfillmentCenter.Repositories.Implementations;
 public class SqlOrderItemRepository : IOrderItemRepository
 {
     private readonly FulfillmentCenDbContext _context;
-    
+    int page = 2;
+    int pageSize = 50;
     public SqlOrderItemRepository(FulfillmentCenDbContext context)
     {
         _context = context;
@@ -52,7 +53,8 @@ public class SqlOrderItemRepository : IOrderItemRepository
     {
         //TODO: to add .Where(orderItem => order.orderItem != true)
          // order.Status != OrderStatus.Cancelled)
-            List<OrderItem> orderItems = await _context.OrderItems.ToListAsync();
+            List<OrderItem> orderItems = await _context.OrderItems.Skip((page - 1) * pageSize)
+                .Take(pageSize).OrderBy(p => p.Id).ToListAsync();
             return orderItems;
     }
 
