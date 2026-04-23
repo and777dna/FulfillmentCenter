@@ -5,8 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-//TODO review: Across all implementations:
-//3. All Read() methods load the entire table into memory as a List<T>. No filtering, no Where, no pagination. This will not scale
 public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
 {
     private readonly FulfillmentCenDbContext _context;

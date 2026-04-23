@@ -78,7 +78,7 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
             //case OrderStatus.ReadyToShip: shipmentRepository.Create(); return;//TODO: to create shipment;
             case OrderStatus.Delivered: 
                 await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
-                await _orderRepository.Delete(Id); 
+                await _orderRepository.Delete(Id);//TODO: to put status here also
                 return;//TODO: to delete order with soft delete
             case OrderStatus.Cancelled: 
                 await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
@@ -90,5 +90,4 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
                 return;
             case OrderStatus.Created: throw new ArgumentException("order has been already Created.");}
     }
-
 }

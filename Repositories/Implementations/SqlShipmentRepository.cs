@@ -8,8 +8,6 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlShipmentRepository : IShipmentRepository
 {
-    //public List<Shipment> Shipments;
-    //private bool _isCached;
     private readonly FulfillmentCenDbContext _context;
     int page = 2;
     int pageSize = 50;
@@ -17,8 +15,6 @@ public class SqlShipmentRepository : IShipmentRepository
     public SqlShipmentRepository(FulfillmentCenDbContext context)
     {
         _context = context;
-        //Shipments = Read().Result;
-        //_isCached = true;
     }
 
     public async Task Create(Shipment shipment)
@@ -27,7 +23,6 @@ public class SqlShipmentRepository : IShipmentRepository
         {
             await _context.Shipments.AddAsync(shipment);
             await _context.SaveChangesAsync();
-            //_isCached = false;
         }
         catch (Exception e)
         {
@@ -44,12 +39,9 @@ public class SqlShipmentRepository : IShipmentRepository
         {
             throw new ArgumentNullException(nameof(id), "no Shipment was found");
         }
-        
-        //_context.Shipment.Remove(shipmentToDelete);
         try
         {
             await _context.SaveChangesAsync();
-            //_isCached = false;
         }
         catch (Exception e)
         {
