@@ -5,33 +5,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlOrderItemRepository : IOrderItemRepository
+public class SqlOrderItemRepository(FulfillmentCenDbContext context, ILogger<SqlOrderItemRepository> logger) : IOrderItemRepository
 {
-    private readonly FulfillmentCenDbContext _context;
     int page = 2;
     int pageSize = 50;
-    public SqlOrderItemRepository(FulfillmentCenDbContext context)
-    {
-        _context = context;
-    }
 
     public async Task Create(OrderItem orderItem)
     {
         try
         {
-            await _context.OrderItems.AddAsync(orderItem);
-            await _context.SaveChangesAsync();
+            await context.OrderItems.AddAsync(orderItem);
+            await context.SaveChangesAsync();
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to create an order item.");
             throw;
         }
     }
 
     public async Task Delete(Guid id)
     {
-        var orderItemToDelete = await _context.OrderItems.FirstOrDefaultAsync(order => order.Id == id);
+        var orderItemToDelete = await context.OrderItems.FirstOrDefaultAsync(order => order.Id == id);
         if(orderItemToDelete == null)
         {
             throw new ArgumentNullException(nameof(id), "orderItem was not found");
@@ -40,11 +35,11 @@ public class SqlOrderItemRepository : IOrderItemRepository
         try
         {
             orderItemToDelete.IsDeleted = true;
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to delete an order item");
             throw;
         }
     }
@@ -53,7 +48,7 @@ public class SqlOrderItemRepository : IOrderItemRepository
     {
         //TODO: to add .Where(orderItem => order.orderItem != true)
          // order.Status != OrderStatus.Cancelled)
-            List<OrderItem> orderItems = await _context.OrderItems.Skip((page - 1) * pageSize)
+            List<OrderItem> orderItems = await context.OrderItems.Skip((page - 1) * pageSize)
                 .Take(pageSize).OrderBy(p => p.Id).ToListAsync();
             return orderItems;
     }

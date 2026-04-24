@@ -6,39 +6,34 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlInventoryRepository : IInventoryRepository
+public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<SqlInventoryRepository> logger) : IInventoryRepository
 {
-    private readonly FulfillmentCenDbContext _context;
     int page = 2;
     int pageSize = 50;
-    public SqlInventoryRepository(FulfillmentCenDbContext context)
-    {
-        _context = context;
-    }
 
     public async Task Create(Inventory inventory)
     {
         try
         {
-            await _context.Inventories.AddAsync(inventory);
-            await _context.SaveChangesAsync();
+            await context.Inventories.AddAsync(inventory);
+            await context.SaveChangesAsync();
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to create an inventory.");
             throw;
         }
     }
 
     public async Task Delete(Guid id)
     {
-        var inventoryToDelete = await _context.Inventories.FirstOrDefaultAsync(inventory => inventory.Id == id);
+        var inventoryToDelete = await context.Inventories.FirstOrDefaultAsync(inventory => inventory.Id == id);
         if(inventoryToDelete == null)
         {
             throw new ArgumentNullException(nameof(id), "no Inventory was found");
         }
         inventoryToDelete.IsDeleted = true;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 
     public async Task<List<Inventory>> Read()
@@ -46,14 +41,14 @@ public class SqlInventoryRepository : IInventoryRepository
         List<Inventory> inventories;
             try
             {
-                inventories = await _context.Inventories
+                inventories = await context.Inventories
                     .OrderBy(p => p.Id)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize).ToListAsync();
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                logger.LogError(e, "not possible to read products.");
                 throw;
             }
             return inventories;
@@ -63,7 +58,7 @@ public class SqlInventoryRepository : IInventoryRepository
     {
         try
         {
-            var inventoryToUpdate = await _context.Inventories.FirstOrDefaultAsync(inv =>
+            var inventoryToUpdate = await context.Inventories.FirstOrDefaultAsync(inv =>
                 inv.ProductId == inventory.ProductId && inv.DistributionCenterId == inventory.DistributionCenterId);
 
             if (inventoryToUpdate == null)
@@ -72,11 +67,11 @@ public class SqlInventoryRepository : IInventoryRepository
             }
             inventoryToUpdate.Quantity += inventory.Quantity;
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to update an inventory.");
             throw;
         }
         /*UpdateInventoryQuantity(fulfillmentCenterId, inventory,
@@ -91,7 +86,7 @@ public class SqlInventoryRepository : IInventoryRepository
     {
         try
         {
-            var inventoryToUpdate = await _context.Inventories.FirstOrDefaultAsync(inv =>
+            var inventoryToUpdate = await context.Inventories.FirstOrDefaultAsync(inv =>
                 inv.ProductId == inventory.ProductId);
 
             if (inventoryToUpdate == null)
@@ -101,11 +96,11 @@ public class SqlInventoryRepository : IInventoryRepository
             
             inventoryToUpdate.Quantity += inventory.Quantity;
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to update an inventory quantity.");
             throw;
         }
     }

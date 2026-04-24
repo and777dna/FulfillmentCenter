@@ -4,7 +4,7 @@ using FulfillmentCenter.Repositories.Interfaces;
 
 namespace FulfillmentCenter.Services.Handlers.Implementations;
 
-public class OrderCancelHandler(IOrderRepository orderRepository, FulfillmentCenDbContext context) : IOrderStatusHandler
+public class OrderCancelHandler(IOrderRepository orderRepository, FulfillmentCenDbContext context, ILogger<OrderCancelHandler> logger) : IOrderStatusHandler
 {
     private IOrderRepository _orderRepository = orderRepository;
 
@@ -21,7 +21,7 @@ public class OrderCancelHandler(IOrderRepository orderRepository, FulfillmentCen
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to save updated status and afterwards soft deleted order");
             throw;
         }
     }

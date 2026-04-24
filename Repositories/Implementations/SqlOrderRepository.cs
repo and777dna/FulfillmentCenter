@@ -6,41 +6,37 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlOrderRepository : IOrderRepository
+public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrderRepository> logger) : IOrderRepository
 {
-    private readonly FulfillmentCenDbContext _context;
     int page = 2;
     int pageSize = 50;
-    public SqlOrderRepository(FulfillmentCenDbContext context)
-    {
-        _context = context;
-    }
+
     public async Task Create(Order order)
     {
         try
         {
-            await _context.Orders.AddAsync(order);
+            await context.Orders.AddAsync(order);
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to create an order.");
             throw;
         }
 
         try
         {
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to save an order.");
             throw;
         }
     }
 
     public async Task Delete(Guid id)
     {
-        var orderToDelete = await _context.Orders.FirstOrDefaultAsync(order => order.Id == id);
+        var orderToDelete = await context.Orders.FirstOrDefaultAsync(order => order.Id == id);
         if(orderToDelete != null){orderToDelete.IsDeleted = true;}
         else
         {
@@ -53,7 +49,7 @@ public class SqlOrderRepository : IOrderRepository
     {
             try
             {
-                List<Order> orders = await _context.Orders.Where(order => order.IsDeleted != true &&
+                List<Order> orders = await context.Orders.Where(order => order.IsDeleted != true &&
                                                                           order.Status != OrderStatus.Cancelled)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
@@ -64,7 +60,7 @@ public class SqlOrderRepository : IOrderRepository
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                logger.LogError(e, "not possible to read orders.");
                 throw;
             }
     }
@@ -73,13 +69,13 @@ public class SqlOrderRepository : IOrderRepository
     {//.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
         try
         {
-            var orderToUpdate = await _context.Orders.FirstOrDefaultAsync(order => order.Id == orderId);
+            var orderToUpdate = await context.Orders.FirstOrDefaultAsync(order => order.Id == orderId);
             if (orderToUpdate == null)throw new KeyNotFoundException("orderToUpdate want found");
             up(orderToUpdate, updateParam);
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to update orders.");
             throw;
         }
     }

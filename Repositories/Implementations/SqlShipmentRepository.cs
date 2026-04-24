@@ -6,34 +6,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlShipmentRepository : IShipmentRepository
+public class SqlShipmentRepository(FulfillmentCenDbContext context, ILogger<SqlShipmentRepository> logger) : IShipmentRepository
 {
-    private readonly FulfillmentCenDbContext _context;
     int page = 2;
     int pageSize = 50;
-    
-    public SqlShipmentRepository(FulfillmentCenDbContext context)
-    {
-        _context = context;
-    }
 
     public async Task Create(Shipment shipment)
     {
         try
         {
-            await _context.Shipments.AddAsync(shipment);
-            await _context.SaveChangesAsync();
+            await context.Shipments.AddAsync(shipment);
+            await context.SaveChangesAsync();
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to create a shipment.");
             throw;
         }
     }
 
     public async Task Delete(Guid id)//TODO: to specify id more precisely
     {
-        var shipmentToDelete = await _context.Shipments.FirstOrDefaultAsync(shipment => shipment.Id == id);
+        var shipmentToDelete = await context.Shipments.FirstOrDefaultAsync(shipment => shipment.Id == id);
         if(shipmentToDelete != null){shipmentToDelete.IsDeleted = true;}
         else
         {
@@ -41,11 +35,11 @@ public class SqlShipmentRepository : IShipmentRepository
         }
         try
         {
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to delete a shipment.");
             throw;
         }
     }
@@ -54,7 +48,7 @@ public class SqlShipmentRepository : IShipmentRepository
     {
         
             //Shipments = await _context.Shipment.ToListAsync();
-            return await _context.Shipments.Where(shipment => shipment.IsDeleted != true && shipment.Status !=
+            return await context.Shipments.Where(shipment => shipment.IsDeleted != true && shipment.Status !=
                 ShipmentStatus.Cancelled && shipment.Status != ShipmentStatus.Failed).Skip((page - 1) * pageSize)
                 .Take(pageSize).OrderBy(p => p.Id).ToListAsync();
         
@@ -86,13 +80,13 @@ public class SqlShipmentRepository : IShipmentRepository
     {
         try
         {
-            var shipmentToUpdate = await _context.Shipments.FirstOrDefaultAsync(shipment => shipment.Id == id);
+            var shipmentToUpdate = await context.Shipments.FirstOrDefaultAsync(shipment => shipment.Id == id);
             up(updateParameter, shipmentToUpdate);
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to update a shipment.");
             throw;
         }
     }

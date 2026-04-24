@@ -1,10 +1,11 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
+using FulfillmentCenter.Services.Handlers.Implementations;
 
-namespace FulfillmentCenter.Services.Handlers.Implementations;
+namespace FulfillmentCenter.Services.UpdateOrderStatus.Implementations;
 
-public class OrderProcessHandler(FulfillmentCenDbContext context, IOrderRepository orderRepository)
+public class OrderProcessHandler(FulfillmentCenDbContext context, IOrderRepository orderRepository, ILogger<OrderDeliverHandler> logger)
 {
     private IOrderRepository _orderRepository = orderRepository;
 
@@ -20,7 +21,7 @@ public class OrderProcessHandler(FulfillmentCenDbContext context, IOrderReposito
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.LogError(e, "not possible to save updated status and afterwards soft deleted order");
             throw;
         }
     }

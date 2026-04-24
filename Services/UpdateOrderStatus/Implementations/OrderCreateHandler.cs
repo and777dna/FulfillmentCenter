@@ -1,4 +1,4 @@
-namespace FulfillmentCenter.Services.Handlers.Implementations;
+namespace FulfillmentCenter.Services.UpdateOrderStatus.Implementations;
 
 public class OrderCreateHandler
 {
