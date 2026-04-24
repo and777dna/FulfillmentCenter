@@ -46,16 +46,7 @@ public class SqlOrderRepository : IOrderRepository
         {
             throw new ArgumentNullException(nameof(id), "no Order was found");
         }
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        
     }
 
     public async Task<List<Order>> Read()
@@ -85,7 +76,6 @@ public class SqlOrderRepository : IOrderRepository
             var orderToUpdate = await _context.Orders.FirstOrDefaultAsync(order => order.Id == orderId);
             if (orderToUpdate == null)throw new KeyNotFoundException("orderToUpdate want found");
             up(orderToUpdate, updateParam);
-            await _context.SaveChangesAsync();
         }
         catch (Exception e)
         {

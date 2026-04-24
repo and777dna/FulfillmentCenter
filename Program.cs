@@ -4,8 +4,11 @@ using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
+using FulfillmentCenter.Services.Handlers;
+using FulfillmentCenter.Services.Handlers.Implementations;
 using FulfillmentCenter.Services.Implementations;
 using FulfillmentCenter.Services.Interfaces;
+using FulfillmentCenter.Services.UpdateOrderStatus;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,6 +48,9 @@ builder.Services.AddScoped<IOrderItemRepository, SqlOrderItemRepository>();
 builder.Services.AddScoped<IOrderRepository, SqlOrderRepository>();
 builder.Services.AddScoped<IProductRepository, SqlProductRepository>();
 builder.Services.AddScoped<IShipmentRepository, SqlShipmentRepository>();
+
+builder.Services.AddScoped<OrderHandlerFactory>();
+builder.Services.AddScoped<IOrderStatusHandler, OrderCancelHandler>();
 
 builder.Services.AddControllers();
 /*builder.Services.AddScoped<OrderItemController, OrderItemController>();

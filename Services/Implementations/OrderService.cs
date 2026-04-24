@@ -3,6 +3,7 @@ using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
+using FulfillmentCenter.Services.UpdateOrderStatus;
 
 namespace FulfillmentCenter.Services.Implementations;
 
@@ -10,6 +11,8 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
 {
     private IOrderRepository _orderRepository = orderRepository;
     private IShipmentRepository _shipmentRepository = shipmentRepository;
+    
+    private OrderHandlerFactory _orderHandlerFactory = new OrderHandlerFactory();
     
     public async Task CreateOrder(RequestOrderDto orderDto)
     {
@@ -47,7 +50,8 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
         var orderToCancelStatus = (await GetOrderById(orderId)).Status;
             if (orderToCancelStatus == OrderStatus.Created || orderToCancelStatus == OrderStatus.Processing)
             {
-                await UpdateOrderStatus(OrderStatus.Cancelled, orderId);
+                var service = _orderHandlerFactory.GetHandler(orderToCancelStatus);
+                await service.HandleAsync(orderId);
             }
             //GetOrderById(orderId).Status = OrderStatus.Cancelled;//TODO: to change to this status
     }
@@ -69,25 +73,5 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
         }
 
         throw new ArgumentNullException(nameof(orderId), "Order not found");
-    }
-    
-    public async Task UpdateOrderStatus(OrderStatus orderStatus, Guid Id)
-    {
-        switch (orderStatus)
-        {
-            //case OrderStatus.ReadyToShip: shipmentRepository.Create(); return;//TODO: to create shipment;
-            case OrderStatus.Delivered: 
-                await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
-                await _orderRepository.Delete(Id);//TODO: to put status here also
-                return;//TODO: to delete order with soft delete
-            case OrderStatus.Cancelled: 
-                await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
-                await _orderRepository.Delete(Id);
-                //await _shipmentRepository.UpdateShipmentStatus(,ShipmentStatus.Cancelled);
-                return;//TODO: to delete order && to delete shipment if exist
-            case OrderStatus.Processing: 
-                await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
-                return;
-            case OrderStatus.Created: throw new ArgumentException("order has been already Created.");}
     }
 }

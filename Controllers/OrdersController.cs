@@ -2,6 +2,7 @@ using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Services.Interfaces;
+using FulfillmentCenter.Services.UpdateOrderStatus;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FulfillmentCenter.Controllers;
@@ -10,6 +11,8 @@ namespace FulfillmentCenter.Controllers;
 [Route("/api/orders")]
 public class OrdersController(IOrderService orderService) : ControllerBase
 {
+    private OrderHandlerFactory _orderHandlerFactory = new OrderHandlerFactory();
+    
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] RequestOrderDto? orderDto)
     {
@@ -29,7 +32,10 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         {
             return BadRequest("Invalid order status");
         }
-        await orderService.UpdateOrderStatus(status, id);
+
+        var service = _orderHandlerFactory.GetHandler(status);
+        await service.HandleAsync(id);
+        
         return NoContent();
     }
     
