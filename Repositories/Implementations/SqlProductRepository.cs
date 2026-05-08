@@ -40,11 +40,13 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
 
     public async Task<List<Product>> Read()
     {
+        Console.WriteLine(context.Database.GetConnectionString());
         List<Product> products;
         try
         {
             products = await context.Products.Skip((page - 1) * pageSize)
                 .Take(pageSize).OrderBy(p => p.Id).ToListAsync();
+            products = await context.Products.OrderBy(p => p.Id).ToListAsync();
         }
         catch (Exception e)
         {

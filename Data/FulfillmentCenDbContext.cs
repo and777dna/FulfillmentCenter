@@ -26,9 +26,28 @@ public class FulfillmentCenDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Product>().HasData(
+            new Product
+            {
+                Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                Name = "Product A",
+                SKU = "SKU-001",
+                Weight = 1.5m
+            },
+            new Product
+            {
+                Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                Name = "Product B",
+                SKU = "SKU-002",
+                Weight = 2.0m
+            }
+        );
+        
+        
+        
         modelBuilder.Entity<Product>().HasKey(product => product.SKU);//TODO: because of this LOC /api/inventory/{centerId} doesnt work
         
-        modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted)
+        modelBuilder.Entity<Product>()//.HasQueryFilter(p => !p.IsDeleted)
             .HasAlternateKey(p => p.Id);
 
         modelBuilder.Entity<Inventory>().HasQueryFilter(p => !p.IsDeleted)

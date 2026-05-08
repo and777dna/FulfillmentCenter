@@ -1,5 +1,8 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace FulfillmentCenter.Entities;
 
+[Table("DistributionCenter")]
 public class DistributionCenter : BaseEntity
 {
     public Guid Id { get; set; }

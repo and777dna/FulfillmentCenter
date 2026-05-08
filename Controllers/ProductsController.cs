@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FulfillmentCenter.Controllers;
 
 [ApiController]
-[Route("/api/products")]
+[Route("api/products")]
 public class ProductsController(IProductService productService) : ControllerBase
 {
     private readonly IProductService _productService = productService;

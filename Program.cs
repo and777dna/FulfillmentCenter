@@ -70,6 +70,7 @@ builder.Services.AddScoped<DbContext, FulfillmentCenDbContext>();//TODO: to chec
 
 var app = builder.Build();
 
+app.MapControllers();
 //DbContextOptions
 
 // Configure the HTTP request pipeline.

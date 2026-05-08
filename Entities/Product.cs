@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FulfillmentCenter.Entities;
 
+[Table("Product")]
 public class Product : BaseEntity
 {
     [Required]
