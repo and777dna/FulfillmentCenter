@@ -10,7 +10,6 @@ public class ProductService(IProductRepository productRepository) : IProductServ
 {
     private IProductRepository _productRepository = productRepository;
 
-
     public async Task<List<Product>> GetProducts()
     {
         List<Product> products = await _productRepository.Read();
