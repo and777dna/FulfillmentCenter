@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FulfillmentCenter.DTOs.Responses;
 
-public class ResponseProductDto
+public record ResponseProductDto
 {
     [Required]
     public string Name { get; set; } = string.Empty;
