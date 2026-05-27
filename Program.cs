@@ -9,6 +9,8 @@ using FulfillmentCenter.Services.Handlers.Implementations;
 using FulfillmentCenter.Services.Implementations;
 using FulfillmentCenter.Services.Interfaces;
 using FulfillmentCenter.Services.UpdateOrderStatus;
+using FulfillmentCenter.Strategies.Implementations;
+using FulfillmentCenter.Strategies.Interfaces;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +36,7 @@ builder.Services.AddDbContext<FulfillmentCenDbContext>(options =>
         }
 );
 //builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddTransient<IShipmentAssignmentStrategy, HighestStockStrategy>();
 
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
@@ -51,6 +54,8 @@ builder.Services.AddScoped<IShipmentRepository, SqlShipmentRepository>();
 
 builder.Services.AddScoped<OrderHandlerFactory>();
 builder.Services.AddScoped<IOrderStatusHandler, OrderCancelHandler>();
+
+
 
 builder.Services.AddControllers();
 /*builder.Services.AddScoped<OrderItemController, OrderItemController>();

@@ -21,16 +21,16 @@ public class OrderService : IOrderService
 
     public OrderService(IOrderRepository orderRepository, IShipmentRepository shipmentRepository, ICacheService cache)
     {
-        ResetCache();
+        //ResetCache();
         _orderRepository = orderRepository;
         _shipmentRepository = shipmentRepository;
         _cache = cache;
     }
     
-    private void ResetCache()
+    /*private void ResetCache()
     {
         _orders = new Lazy<Task<List<Order>>>(() => _orderRepository.Read());
-    }
+    }*/
     
     public async Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey)
     {
