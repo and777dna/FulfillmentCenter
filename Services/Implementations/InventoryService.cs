@@ -39,12 +39,12 @@ public class InventoryService(
         //if(fulfillmentCenterId == true && product == true){to update inventory}
         if (productOnFulfillmentCenter)
         {
-            await _inventoryRepository.UpdateInventory(inventory);
+            await _inventoryRepository.UpdateInventoryAsync(inventory);
         }
         else
         {
             //TODO: to check if SKU is unique, because SKU is the PK
-            await _inventoryRepository.Create(inventory);
+            await _inventoryRepository.CreateAsync(inventory);
         }
 
         //if(product == false){to create inventory}
@@ -57,7 +57,7 @@ public class InventoryService(
 
     private async Task<bool> FindProduct(Guid fulfillmentCenterId, Guid productId)
     {
-        var inventories = await _inventoryRepository.Read();
+        var inventories = await _inventoryRepository.ReadAsync();
         bool productWasFound = false;
         var productOnFulfilCen = inventories.FirstOrDefault(inventory =>
         {
@@ -74,7 +74,7 @@ public class InventoryService(
     ////GET	/api/inventory/{centerId}	Остатки на складе
     public async Task<ICollection<Inventory>> RemainingsOnTheFulfillmentCenter(Guid centerId)
     {
-        var inventories = await _inventoryRepository.Read();
+        var inventories = await _inventoryRepository.ReadAsync();
         var findInventoriesFromCenter = inventories.FindAll(inventory => inventory.DistributionCenterId == centerId);
         //var findCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
         if (findInventoriesFromCenter.Count > 0)
@@ -107,7 +107,7 @@ public class InventoryService(
 
         if (CheckSufficientAmountOfInventory(remainingsOnTheFulfillmentCenter, updatedInventory))
         {
-            await _inventoryRepository.UpdateInventoryQuantity(updatedInventory);
+            await _inventoryRepository.UpdateInventoryQuantityAsync(updatedInventory);
         }
 
         throw new InvalidOperationException("not enough product on the given distribution center for the inventory");

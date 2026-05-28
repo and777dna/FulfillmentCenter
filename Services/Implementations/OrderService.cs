@@ -71,7 +71,7 @@ public class OrderService : IOrderService
         
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         
-        await _orderRepository.Create(order);
+        await _orderRepository.CreateAsync(order);
         await _orderItemService.AddOrderItemToOrder(orderItemDto, findCenterId);
         _cache.Set(idempotencyKey, order.Id, TimeSpan.FromMinutes(10));
         
@@ -91,7 +91,7 @@ public class OrderService : IOrderService
     
     public async Task<Order> GetOrderById(Guid orderId)
     {
-        var orders = await _orderRepository.Read();
+        var orders = await _orderRepository.ReadAsync();
         
         var findBook = SearchById(orderId, orders);
         return findBook;

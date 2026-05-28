@@ -29,7 +29,7 @@ public class OrderItemService(IOrderItemRepository orderItemRepository, IInvento
         
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         
-        await _orderItemRepository.Create(orderItem);
+        await _orderItemRepository.CreateAsync(orderItem);
         await _inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, centerId);
         
         scope.Complete();

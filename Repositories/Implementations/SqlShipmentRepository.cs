@@ -11,7 +11,7 @@ public class SqlShipmentRepository(FulfillmentCenDbContext context, ILogger<SqlS
     int page = 2;
     int pageSize = 50;
 
-    public async Task Create(Shipment shipment)
+    public async Task CreateAsync(Shipment shipment)
     {
         try
         {
@@ -25,7 +25,7 @@ public class SqlShipmentRepository(FulfillmentCenDbContext context, ILogger<SqlS
         }
     }
 
-    public async Task Delete(Guid id)//TODO: to specify id more precisely
+    public async Task DeleteAsync(Guid id)//TODO: to specify id more precisely
     {
         var shipmentToDelete = await context.Shipments.FirstOrDefaultAsync(shipment => shipment.Id == id);
         if(shipmentToDelete != null){shipmentToDelete.IsDeleted = true;}
@@ -44,7 +44,7 @@ public class SqlShipmentRepository(FulfillmentCenDbContext context, ILogger<SqlS
         }
     }
 
-    public async Task<List<Shipment>> Read()
+    public async Task<List<Shipment>> ReadAsync()
     {
         
             //Shipments = await _context.Shipment.ToListAsync();
@@ -54,12 +54,12 @@ public class SqlShipmentRepository(FulfillmentCenDbContext context, ILogger<SqlS
         
     }
     
-    public async Task UpdateShipmentStatus(Guid id, ShipmentStatus status)
+    public async Task UpdateShipmentStatusAsync(Guid id, ShipmentStatus status)
     {
         if(status == ShipmentStatus.Cancelled)
         {
-            await UpdateShipment(id, status, (shipmentStatus, shipment) => shipment.Status = shipmentStatus);
-            await Delete(id);
+            await UpdateShipmentAsync(id, status, (shipmentStatus, shipment) => shipment.Status = shipmentStatus);
+            await DeleteAsync(id);
         }else if (status == ShipmentStatus.Failed) {
             //TODO: to fill this one
         }
@@ -69,14 +69,14 @@ public class SqlShipmentRepository(FulfillmentCenDbContext context, ILogger<SqlS
         }
         else
         {
-            await UpdateShipment(id, status, (shipmentStatus, shipment) => shipment.Status = shipmentStatus);
+            await UpdateShipmentAsync(id, status, (shipmentStatus, shipment) => shipment.Status = shipmentStatus);
         }
         
     }
     
     /*Failed = 4,
        Cancelled = 5*/
-    public async Task UpdateShipment<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, Action<TUpdateParameter, Shipment> up)
+    public async Task UpdateShipmentAsync<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, Action<TUpdateParameter, Shipment> up)
     {
         try
         {

@@ -15,7 +15,7 @@ public class HighestStockStrategy : IShipmentAssignmentStrategy
     }
     public async Task<Guid> SelectDistributionCenter(Guid productId, int quantity)
     {
-        var distributionCenters = _cache ??= await _fulfillmentCenterRepository.Read();
+        var distributionCenters = _cache ??= await _fulfillmentCenterRepository.ReadAsync();
         //distributionCenters.First(distributionCenter => distributionCenter.);
         var distributionCenter = distributionCenters
             .Select(center => new

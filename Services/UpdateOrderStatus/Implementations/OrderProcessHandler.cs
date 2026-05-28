@@ -13,7 +13,7 @@ public class OrderProcessHandler(FulfillmentCenDbContext context, IOrderReposito
     
     public async Task HandleAsync(Guid orderId)
     {
-        await _orderRepository.UpdateOrder(SupportedStatus, orderId, (order, status) => { order.Status = status;});
+        await _orderRepository.UpdateOrderAsync(SupportedStatus, orderId, (order, status) => { order.Status = status;});
         
         try
         {

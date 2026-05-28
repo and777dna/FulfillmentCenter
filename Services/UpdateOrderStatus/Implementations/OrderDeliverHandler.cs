@@ -15,8 +15,8 @@ public class OrderDeliverHandler(FulfillmentCenDbContext context, IOrderReposito
     {
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         
-        await _orderRepository.UpdateOrder(SupportedStatus, orderId, (order, status) => { order.Status = status;});
-        await _orderRepository.Delete(orderId);
+        await _orderRepository.UpdateOrderAsync(SupportedStatus, orderId, (order, status) => { order.Status = status;});
+        await _orderRepository.DeleteAsync(orderId);
         
         scope.Complete();
         

@@ -4,8 +4,8 @@ namespace FulfillmentCenter.Repositories.Interfaces;
 
 public interface IProductRepository
 {
-    public Task Create(Product product);
-    public Task Delete(Guid id);
-    public Task<List<Product>> Read(int page,int pageSize);
-    public Task<List<Product>> Read();
+    public Task CreateAsync(Product product);
+    public Task DeleteAsync(Guid id);
+    public Task<List<Product>> ReadAsync(int page,int pageSize);
+    public Task<List<Product>> ReadAsync();
 }

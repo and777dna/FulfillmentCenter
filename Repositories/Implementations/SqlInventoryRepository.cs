@@ -11,7 +11,7 @@ public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<Sql
     int page = 2;
     int pageSize = 50;
 
-    public async Task Create(Inventory inventory)
+    public async Task CreateAsync(Inventory inventory)
     {
         try
         {
@@ -25,7 +25,7 @@ public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<Sql
         }
     }
 
-    public async Task Delete(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
         var inventoryToDelete = await context.Inventories.FirstOrDefaultAsync(inventory => inventory.Id == id);
         if(inventoryToDelete == null)
@@ -36,7 +36,7 @@ public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<Sql
         await context.SaveChangesAsync();
     }
 
-    public async Task<List<Inventory>> Read()
+    public async Task<List<Inventory>> ReadAsync()
     {//All Read() methods load the entire table into memory as a List<T>. No filtering, no Where, no pagination. This will not scale
         List<Inventory> inventories;
             try
@@ -54,7 +54,7 @@ public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<Sql
             return inventories;
     }
     
-    public async Task UpdateInventory(Inventory inventory)
+    public async Task UpdateInventoryAsync(Inventory inventory)
     {
         try
         {
@@ -82,7 +82,7 @@ public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<Sql
             });*/
     }
 
-    public async Task UpdateInventoryQuantity(UpdateInventoryDto inventory)
+    public async Task UpdateInventoryQuantityAsync(UpdateInventoryDto inventory)
     {
         try
         {

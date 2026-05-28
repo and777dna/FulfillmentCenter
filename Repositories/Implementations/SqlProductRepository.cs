@@ -10,7 +10,7 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
     : IProductRepository
 {
 
-    public async Task Create(Product product)
+    public async Task CreateAsync(Product product)
     {
         try
         {
@@ -24,7 +24,7 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
         }
     }
 
-    public async Task Delete(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
         var productToDelete = await context.Products.FirstOrDefaultAsync(product => product.Id == id);
         if(productToDelete == null)
@@ -36,7 +36,7 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
         await context.SaveChangesAsync();
     }
 
-    public async Task<List<Product>> Read()
+    public async Task<List<Product>> ReadAsync()
     {
         Console.WriteLine(context.Database.GetConnectionString());
         List<Product> products;
@@ -52,7 +52,7 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
         }
         return products;
     }
-    public async Task<List<Product>> Read(int page ,int pageSize)
+    public async Task<List<Product>> ReadAsync(int page ,int pageSize)
     {
         Console.WriteLine(context.Database.GetConnectionString());
         List<Product> products;

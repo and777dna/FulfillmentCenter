@@ -11,7 +11,7 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
     int page = 2;
     int pageSize = 50;
 
-    public async Task Create(Order order)
+    public async Task CreateAsync(Order order)
     {
         try
         {
@@ -34,7 +34,7 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
         }
     }
 
-    public async Task Delete(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
         var orderToDelete = await context.Orders.FirstOrDefaultAsync(order => order.Id == id);
         if(orderToDelete != null){orderToDelete.IsDeleted = true;}
@@ -45,7 +45,7 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
         
     }
 
-    public async Task<List<Order>> Read()
+    public async Task<List<Order>> ReadAsync()
     {
             try
             {
@@ -65,7 +65,7 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
             }
     }
     
-    public async Task UpdateOrder<TUpdateParam>(TUpdateParam updateParam,Guid orderId, Action<Order, TUpdateParam> up)
+    public async Task UpdateOrderAsync<TUpdateParam>(TUpdateParam updateParam,Guid orderId, Action<Order, TUpdateParam> up)
     {//.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
         try
         {

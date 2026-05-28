@@ -12,8 +12,8 @@ public class OrderCancelHandler(IOrderRepository orderRepository, FulfillmentCen
     
     public async Task HandleAsync(Guid orderId)
     {
-        await _orderRepository.UpdateOrder(SupportedStatus, orderId, (order, status) => { order.Status = status;});
-        await _orderRepository.Delete(orderId);
+        await _orderRepository.UpdateOrderAsync(SupportedStatus, orderId, (order, status) => { order.Status = status;});
+        await _orderRepository.DeleteAsync(orderId);
         
         try
         {

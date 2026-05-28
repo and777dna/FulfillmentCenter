@@ -32,7 +32,7 @@ public class ProductsServicesTests
         };
         
         repositoryMock
-            .Setup(service => service.Read())
+            .Setup(service => service.ReadAsync())
             .ReturnsAsync(products);
         
         var service = new ProductService(repositoryMock.Object);
@@ -44,7 +44,7 @@ public class ProductsServicesTests
 
         Assert.Equal("Phone", result[0].Name);
 
-        repositoryMock.Verify(r => r.Read(), Times.Once);
+        repositoryMock.Verify(r => r.ReadAsync(), Times.Once);
     }
     
     [Fact]
@@ -54,16 +54,16 @@ public class ProductsServicesTests
         var requestDto = new RequestProductDto { Name = "Laptop", SKU = "LP456", Weight = 1500 };
 
         repositoryMock
-            .Setup(r => r.Read())
+            .Setup(r => r.ReadAsync())
             .ReturnsAsync(new List<Product>());
         
         var service = new ProductService(repositoryMock.Object);
         
         await service.CreateProduct(requestDto);
 
-        repositoryMock.Verify(r => r.Read(), Times.Once);
+        repositoryMock.Verify(r => r.ReadAsync(), Times.Once);
         
-        repositoryMock.Verify(r => r.Create(It.Is<Product>(p =>
+        repositoryMock.Verify(r => r.CreateAsync(It.Is<Product>(p =>
             p.Name == requestDto.Name &&
             p.SKU == requestDto.SKU &&
             p.Weight == requestDto.Weight &&
@@ -93,16 +93,16 @@ public class ProductsServicesTests
             }
         };
         var requestDto = new RequestProductDto { Name = "Laptop", SKU = "LP456", Weight = 1500 };
-        repositoryMock.Setup(r => r.Read()).ReturnsAsync(products);
+        repositoryMock.Setup(r => r.ReadAsync()).ReturnsAsync(products);
         var service = new ProductService(repositoryMock.Object);
         var exception = await Assert.ThrowsAsync<InvalidOperationException> (
             () => service.CreateProduct(requestDto));
         Assert.Equal("Запись с таким SKU уже существует в базе данных.",
             exception.Message);
         
-        repositoryMock.Verify(r => r.Read(), Times.Once);
+        repositoryMock.Verify(r => r.ReadAsync(), Times.Once);
         repositoryMock.Verify(
-            r => r.Create(It.IsAny<Product>()),
+            r => r.CreateAsync(It.IsAny<Product>()),
             Times.Never);
     }
 
@@ -129,7 +129,7 @@ public class ProductsServicesTests
             }
         };
 
-        repositoryMock.Setup(r => r.Read()).ReturnsAsync(products);
+        repositoryMock.Setup(r => r.ReadAsync()).ReturnsAsync(products);
 
         var service = new ProductService(repositoryMock.Object);
 
@@ -140,7 +140,7 @@ public class ProductsServicesTests
         Assert.Equal("Laptop", result.Name);
         Assert.Equal("LP456", result.SKU);
         
-        repositoryMock.Verify(r => r.Read(), Times.Once);
+        repositoryMock.Verify(r => r.ReadAsync(), Times.Once);
     }
 
     [Fact]
@@ -165,10 +165,10 @@ public class ProductsServicesTests
                 Weight = 200
             }
         };
-        repositoryMock.Setup(r => r.Read()).ReturnsAsync(products);
+        repositoryMock.Setup(r => r.ReadAsync()).ReturnsAsync(products);
         var service = new ProductService(repositoryMock.Object);
 
         await Assert.ThrowsAsync<ValidationException>(() => service.FindProduct(Guid.NewGuid()));
-        repositoryMock.Verify(r => r.Read(), Times.Once);
+        repositoryMock.Verify(r => r.ReadAsync(), Times.Once);
     }
 }

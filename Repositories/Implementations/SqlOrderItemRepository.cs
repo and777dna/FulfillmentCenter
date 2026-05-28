@@ -10,7 +10,7 @@ public class SqlOrderItemRepository(FulfillmentCenDbContext context, ILogger<Sql
     int page = 2;
     int pageSize = 50;
 
-    public async Task Create(OrderItem orderItem)
+    public async Task CreateAsync(OrderItem orderItem)
     {
         try
         {
@@ -24,7 +24,7 @@ public class SqlOrderItemRepository(FulfillmentCenDbContext context, ILogger<Sql
         }
     }
 
-    public async Task Delete(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
         var orderItemToDelete = await context.OrderItems.FirstOrDefaultAsync(order => order.Id == id);
         if(orderItemToDelete == null)
@@ -44,7 +44,7 @@ public class SqlOrderItemRepository(FulfillmentCenDbContext context, ILogger<Sql
         }
     }
 
-    public async Task<List<OrderItem>> Read()
+    public async Task<List<OrderItem>> ReadAsync()
     {
         //TODO: to add .Where(orderItem => order.orderItem != true)
          // order.Status != OrderStatus.Cancelled)
@@ -53,5 +53,5 @@ public class SqlOrderItemRepository(FulfillmentCenDbContext context, ILogger<Sql
             return orderItems;
     }
 
-    public async Task UpdateOrderItem(){}
+    public async Task UpdateOrderItemAsync(){}
 }

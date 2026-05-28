@@ -16,7 +16,7 @@ public class FirstAvailableCenterStrategy : IShipmentAssignmentStrategy
     }
     public async Task<Guid> SelectDistributionCenter(Guid productId, int quantity)
     {
-        var _distributionCenters = _cache ??= await _fulfillmentCenterRepository.Read();
+        var _distributionCenters = _cache ??= await _fulfillmentCenterRepository.ReadAsync();
         var distributionCenter = _distributionCenters
             .FirstOrDefault(center =>
                 center.Inventories

@@ -4,8 +4,8 @@ namespace FulfillmentCenter.Repositories.Interfaces;
 
 public interface IOrderRepository
 {
-    public Task Create(Order order);
-    public Task Delete(Guid id);
-    public Task<List<Order>> Read();
-    public Task UpdateOrder<TUpdateParam>(TUpdateParam updateParam, Guid orderId, Action<Order, TUpdateParam> up);
+    public Task CreateAsync(Order order);
+    public Task DeleteAsync(Guid id);
+    public Task<List<Order>> ReadAsync();
+    public Task UpdateOrderAsync<TUpdateParam>(TUpdateParam updateParam, Guid orderId, Action<Order, TUpdateParam> up);
 }

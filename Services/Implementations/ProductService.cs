@@ -12,7 +12,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
 
     public async Task<List<Product>> GetProducts(int page,int pageSize)
     {
-        List<Product> products = await _productRepository.Read(page,pageSize);
+        List<Product> products = await _productRepository.ReadAsync(page,pageSize);
         return products;
     }
 
@@ -30,18 +30,18 @@ public class ProductService(IProductRepository productRepository) : IProductServ
             SKU = productDto.SKU,
             Weight = productDto.Weight
         };
-        await _productRepository.Create(product);
+        await _productRepository.CreateAsync(product);
     }
 
     private async Task<bool> CheckProductExist(string productSku)
     {
-        var products = await _productRepository.Read();
+        var products = await _productRepository.ReadAsync();
         return products.Any(product => product.SKU == productSku);
     }
 
     public async Task<Product> FindProduct(Guid productId)
     {
-        var products = await _productRepository.Read();
+        var products = await _productRepository.ReadAsync();
         var product = products.FirstOrDefault(product => product.Id == productId);
         if (product != null)
         {

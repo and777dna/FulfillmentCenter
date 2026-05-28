@@ -18,7 +18,7 @@ public class FulfillmentCenterService : IFulfillmentCenterService
 
     private void ResetCache()
     {
-        _distributionCenters = new Lazy<Task<List<DistributionCenter>>>(() => _fulfillmentCenterRepository.Read());
+        _distributionCenters = new Lazy<Task<List<DistributionCenter>>>(() => _fulfillmentCenterRepository.ReadAsync());
     }
     
     public async Task<DistributionCenter> FindFulfillmentCenter(Guid centerId)
