@@ -37,7 +37,7 @@ public class ProductsServicesTests
         
         var service = new ProductService(repositoryMock.Object);
         
-        var result = await service.GetProducts();
+        var result = await service.GetProducts(1, 20);
         
         // Assert
         Assert.Equal(2, result.Count);

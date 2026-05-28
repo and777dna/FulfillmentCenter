@@ -10,9 +10,9 @@ public class ProductService(IProductRepository productRepository) : IProductServ
 {
     private IProductRepository _productRepository = productRepository;
 
-    public async Task<List<Product>> GetProducts()
+    public async Task<List<Product>> GetProducts(int page,int pageSize)
     {
-        List<Product> products = await _productRepository.Read();
+        List<Product> products = await _productRepository.Read(page,pageSize);
         return products;
     }
 
@@ -33,10 +33,10 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         await _productRepository.Create(product);
     }
 
-    private async Task<bool> CheckProductExist(string productSKU)
+    private async Task<bool> CheckProductExist(string productSku)
     {
         var products = await _productRepository.Read();
-        return products.Any(product => product.SKU == productSKU);
+        return products.Any(product => product.SKU == productSku);
     }
 
     public async Task<Product> FindProduct(Guid productId)

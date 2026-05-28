@@ -19,7 +19,7 @@ public class InventoryService(
     private IFulfillmentCenterService _fulfillmentCenterService = fulfillmentCenterService;
     private IProductService _productService = productService;
 
-    public async Task AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId) //пополнить остатки
+    public async Task AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)
     {
         //TODO: if "fulfillmentCenterId" exist -> should be BOOL THIS ONE to delete?????
         //var fulfillmentCenter = await FindProduct(fulfillmentCenterId, inventoryDto.ProductId);

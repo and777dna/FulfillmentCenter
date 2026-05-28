@@ -1,3 +1,4 @@
+using System.Transactions;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
@@ -5,11 +6,12 @@ using FulfillmentCenter.Services.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
-public class OrderItemService(IOrderItemRepository orderItemRepository) : IOrderItemService
+public class OrderItemService(IOrderItemRepository orderItemRepository, IInventoryService inventoryService) : IOrderItemService
 {
     private IOrderItemRepository _orderItemRepository = orderItemRepository;
+    private readonly IInventoryService _inventoryService = inventoryService;
     
-    public async Task AddOrderItemToOrder(RequestOrderItemDto? orderItemDto)
+    public async Task AddOrderItemToOrder(RequestOrderItemDto? orderItemDto, Guid centerId)
     {
         if (orderItemDto == null)
         {
@@ -24,7 +26,13 @@ public class OrderItemService(IOrderItemRepository orderItemRepository) : IOrder
             ProductId = orderItemDto.ProductId,
             Quantity = orderItemDto.Quantity
         };
+        
+        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        
         await _orderItemRepository.Create(orderItem);
+        await _inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, centerId);
+        
+        scope.Complete();
     }
     
     

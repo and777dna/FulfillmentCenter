@@ -9,8 +9,6 @@ namespace FulfillmentCenter.Repositories.Implementations;
 public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlProductRepository> logger)
     : IProductRepository
 {
-    int page = 2;
-    int pageSize = 50;
 
     public async Task Create(Product product)
     {
@@ -44,9 +42,25 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
         List<Product> products;
         try
         {
+            products = await context.Products.OrderBy(p => p.Id).ToListAsync();
+            //products = await context.Products.OrderBy(p => p.Id).ToListAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "not possible to read products");
+            throw;
+        }
+        return products;
+    }
+    public async Task<List<Product>> Read(int page ,int pageSize)
+    {
+        Console.WriteLine(context.Database.GetConnectionString());
+        List<Product> products;
+        try
+        {
             products = await context.Products.Skip((page - 1) * pageSize)
                 .Take(pageSize).OrderBy(p => p.Id).ToListAsync();
-            products = await context.Products.OrderBy(p => p.Id).ToListAsync();
+            //products = await context.Products.OrderBy(p => p.Id).ToListAsync();
         }
         catch (Exception e)
         {

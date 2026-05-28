@@ -13,17 +13,26 @@ public class ProductsController(IProductService productService) : ControllerBase
     private readonly IProductService _productService = productService;
     
     [HttpGet]
-    public async Task<IActionResult> GetProducts()
+    public async Task<IActionResult> GetProducts([FromBody] int page, [FromBody] int pageSize)
     //public async Task<IActionResult<List<ResponseProductDto>>> GetProducts()
     {
-        List<Product> products = await _productService.GetProducts();
-        List<ResponseProductDto> productsDtos = products.Select(product => new ResponseProductDto
+        List<Product> products = await _productService.GetProducts(page,pageSize);
+        /*List<ResponseProductDto> productsDtos = products.Select(product => new ResponseProductDto
         {
             Name = product.Name,
             SKU = product.SKU,
             Weight = product.Weight
-        }).ToList();
-        return Ok(productsDtos);
+        }).ToList();*/
+        PagedResultProduct<Product> productsPagedResult = new PagedResultProduct<Product>()
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = products.Count,
+            Products = products,
+            TotalPages = (int)Math.Ceiling(
+                (double)products.Count / pageSize)
+        };
+        return Ok(productsPagedResult);
     }
 
     [HttpPost]

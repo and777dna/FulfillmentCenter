@@ -1,14 +1,23 @@
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Strategies.Interfaces;
 
 namespace FulfillmentCenter.Strategies.Implementations;
 //HighestStockStrategy - берёт центр с наибольшим остатком нужного товара
 public class HighestStockStrategy : IShipmentAssignmentStrategy
 {
-    public DistributionCenter SelectDistributionCenter(Guid productId, int quantity, IReadOnlyCollection<DistributionCenter> distributionCenters)
+    private IFulfillmentCenterRepository _fulfillmentCenterRepository;
+    private List<DistributionCenter>? _cache;
+
+    public HighestStockStrategy(IFulfillmentCenterRepository fulfillmentCenterRepository)
     {
+        _fulfillmentCenterRepository = fulfillmentCenterRepository;
+    }
+    public async Task<Guid> SelectDistributionCenter(Guid productId, int quantity)
+    {
+        var distributionCenters = _cache ??= await _fulfillmentCenterRepository.Read();
         //distributionCenters.First(distributionCenter => distributionCenter.);
-        return distributionCenters
+        var distributionCenter = distributionCenters
             .Select(center => new
             {
                 Center = center,
@@ -20,5 +29,6 @@ public class HighestStockStrategy : IShipmentAssignmentStrategy
             .OrderByDescending(x => x.Stock)
             .FirstOrDefault()
             ?.Center;
+        return distributionCenter.Id;
     }
 }

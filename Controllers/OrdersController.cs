@@ -16,12 +16,13 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateOrder(
         [FromHeader(Name = "Idempotency-Key")] string? idempotencyKey,
-        [FromBody] RequestOrderDto? orderDto)
+        [FromBody] RequestOrderDto? orderDto,
+        [FromBody] RequestOrderItemDto? orderItemDto)
     {
         if(idempotencyKey == null)return BadRequest("missing Idempotency-Key");
         if (orderDto != null)
         {
-            await orderService.CreateOrder(orderDto, idempotencyKey);
+            await orderService.CreateOrder(orderDto, idempotencyKey, orderItemDto);
             return Ok();
         }
 

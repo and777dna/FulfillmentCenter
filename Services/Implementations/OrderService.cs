@@ -1,30 +1,31 @@
+using System.Transactions;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
 using FulfillmentCenter.Services.UpdateOrderStatus;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.Extensions.Caching.Memory;
+using FulfillmentCenter.Strategies.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
 public class OrderService : IOrderService
 {
     private IOrderRepository _orderRepository;
-    private IShipmentRepository _shipmentRepository;
     private readonly ICacheService _cache;
+    private IOrderItemService _orderItemService;
+    private IShipmentAssignmentStrategy _shipmentAssignmentStrategy;
 
     private Lazy<Task<List<Order>>> _orders;
     
     private OrderHandlerFactory _orderHandlerFactory = new OrderHandlerFactory();
 
-    public OrderService(IOrderRepository orderRepository, IShipmentRepository shipmentRepository, ICacheService cache)
+    public OrderService(IOrderRepository orderRepository, ICacheService cache, IShipmentAssignmentStrategy shipmentAssignmentStrategy)
     {
         //ResetCache();
         _orderRepository = orderRepository;
-        _shipmentRepository = shipmentRepository;
         _cache = cache;
+        _shipmentAssignmentStrategy = shipmentAssignmentStrategy;
     }
     
     /*private void ResetCache()
@@ -32,7 +33,7 @@ public class OrderService : IOrderService
         _orders = new Lazy<Task<List<Order>>>(() => _orderRepository.Read());
     }*/
     
-    public async Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey)
+    public async Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey, RequestOrderItemDto orderItemDto)
     {
         /*if (GetOrderById(orderDto.Id) != null)//TODO: to fix this "Expression is always true according to nullable reference types' annotations"
         {
@@ -65,9 +66,16 @@ public class OrderService : IOrderService
             Status = OrderStatus.Created
             //TODO: to add shippment here, by finding it in db
         };
-        await _orderRepository.Create(order);
+
+        var findCenterId = await _shipmentAssignmentStrategy.SelectDistributionCenter(orderItemDto.ProductId, orderItemDto.Quantity);
         
+        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        
+        await _orderRepository.Create(order);
+        await _orderItemService.AddOrderItemToOrder(orderItemDto, findCenterId);
         _cache.Set(idempotencyKey, order.Id, TimeSpan.FromMinutes(10));
+        
+        scope.Complete();
     }
 
     public async Task CancelOrder(Guid orderId)

@@ -4,5 +4,5 @@ namespace FulfillmentCenter.Services.Interfaces;
 
 public interface IOrderItemService
 {
-    public Task AddOrderItemToOrder(RequestOrderItemDto? orderItemDto);
+    public Task AddOrderItemToOrder(RequestOrderItemDto? orderItemDto, Guid centerId);
 }
