@@ -13,7 +13,7 @@ public class ProductsController(IProductService productService) : ControllerBase
     private readonly IProductService _productService = productService;
     
     [HttpGet]
-    public async Task<IActionResult> GetProducts([FromBody] int page, [FromBody] int pageSize)
+    public async Task<IActionResult> GetProducts([FromQuery] int page, [FromQuery] int pageSize)
     //public async Task<IActionResult<List<ResponseProductDto>>> GetProducts()
     {
         List<Product> products = await _productService.GetProducts(page,pageSize);

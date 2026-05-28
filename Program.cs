@@ -35,8 +35,11 @@ builder.Services.AddDbContext<FulfillmentCenDbContext>(options =>
             }
         }
 );
+builder.Services.AddMemoryCache();
+
 //builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddTransient<IShipmentAssignmentStrategy, HighestStockStrategy>();
+builder.Services.AddSingleton<ICacheService, MemoryCacheService>();
 
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
