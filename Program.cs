@@ -1,7 +1,4 @@
-using FulfillmentCenter.Controllers;
 using FulfillmentCenter.Data;
-using FulfillmentCenter.DTOs.Requests;
-using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Handlers;
@@ -30,7 +27,7 @@ builder.Services.AddDbContext<FulfillmentCenDbContext>(options =>
 
             if (builder.Environment.IsDevelopment())
             {
-                options.LogTo(Console.WriteLine, LogLevel.Information)
+                options.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command }, LogLevel.Information)
                     .EnableSensitiveDataLogging();
             }
         }

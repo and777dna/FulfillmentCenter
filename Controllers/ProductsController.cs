@@ -16,6 +16,7 @@ public class ProductsController(IProductService productService) : ControllerBase
     public async Task<IActionResult> GetProducts([FromQuery] int page, [FromQuery] int pageSize)
     //public async Task<IActionResult<List<ResponseProductDto>>> GetProducts()
     {
+        //TODO: to make DTO here from repoistory
         List<Product> products = await _productService.GetProducts(page,pageSize);
         /*List<ResponseProductDto> productsDtos = products.Select(product => new ResponseProductDto
         {

@@ -1,5 +1,6 @@
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
+using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Services.Interfaces;
 using FulfillmentCenter.Services.UpdateOrderStatus;
@@ -56,6 +57,19 @@ public class OrdersController(IOrderService orderService) : ControllerBase
             Status = order.Status
         }
         );
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetOrders([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate)
+    {
+        var orderFilterParams = new OrderFilterParams
+        {
+            fromDate = fromDate,
+            toDate = toDate
+        };
+        
+        List<ResponseOrderDto> orders = await orderService.GetOrders(orderFilterParams);
+        return Ok(orders);
     }
     
 }

@@ -1,5 +1,6 @@
 using System.Transactions;
 using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
@@ -96,7 +97,22 @@ public class OrderService : IOrderService
         var findBook = SearchById(orderId, orders);
         return findBook;
     }
-    
+
+    public async Task<List<ResponseOrderDto>> GetOrders(OrderFilterParams orderFilterParams)
+    {
+        var orders = await _orderRepository.ReadAsync(orderFilterParams);
+        
+        List<ResponseOrderDto> responseOrderDtos = orders.Select(order => new ResponseOrderDto()
+        {
+            CustomerId = order.CustomerId,
+            CreatedAt = order.CreatedAt,
+            DeliveryAddress = order.DeliveryAddress,
+            Status = order.Status
+        }).ToList();
+
+        return responseOrderDtos;
+    }
+
     private Order SearchById(Guid orderId, List<Order> orders)
     {
         var findOrder = orders.FirstOrDefault(order => order.Id == orderId);

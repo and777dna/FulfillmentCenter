@@ -1,12 +1,17 @@
 using FulfillmentCenter.Data;
+using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
+using FulfillmentCenter.Repositories.Filters;
+using FulfillmentCenter.Repositories.Filters.Interfaces;
 using FulfillmentCenter.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrderRepository> logger) : IOrderRepository
+public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrderRepository> logger,
+    ISpecification<Order> specification) : IOrderRepository
 {
     int page = 2;
     int pageSize = 50;
@@ -44,13 +49,38 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
         }
         
     }
-
+    
     public async Task<List<Order>> ReadAsync()
     {
+        
+        try
+        {
+            List<Order> orders = await context.Orders.Where(order => order.IsDeleted != true &&
+                                                                      order.Status != OrderStatus.Cancelled)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .OrderBy(p => p.Id)
+                .ToListAsync();
+            if (orders == null) throw new FileNotFoundException();
+            return orders;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "not possible to read orders.");
+            throw;
+        }
+    }
+
+    public async Task<List<Order>> ReadAsync(OrderFilterParams orderFilterParams)
+    {
+        var specification = new FilterBuilder(orderFilterParams).Build();
+        
             try
             {
-                List<Order> orders = await context.Orders.Where(order => order.IsDeleted != true &&
-                                                                          order.Status != OrderStatus.Cancelled)
+                List<Order> orders = await context.Orders
+                    .Where(specification.ToExpression())
+                    .Where(order => order.IsDeleted != true &&
+                                    order.Status != OrderStatus.Cancelled)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .OrderBy(p => p.Id)
