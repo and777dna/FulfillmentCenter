@@ -27,7 +27,16 @@ builder.Services.AddDbContext<FulfillmentCenDbContext>(options =>
 
             if (builder.Environment.IsDevelopment())
             {
-                options.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command }, LogLevel.Information)
+                options.LogTo(
+                        message =>
+                        {
+                            if (!string.IsNullOrWhiteSpace(message))
+                            {
+                                Console.WriteLine(message.Replace(Environment.NewLine, " "));
+                            }
+                        },
+                        new[] { DbLoggerCategory.Database.Command.Name }, 
+                        LogLevel.Information)
                     .EnableSensitiveDataLogging();
             }
         }

@@ -1,17 +1,14 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Requests;
-using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Filters;
-using FulfillmentCenter.Repositories.Filters.Interfaces;
 using FulfillmentCenter.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrderRepository> logger,
-    ISpecification<Order> specification) : IOrderRepository
+public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrderRepository> logger) : IOrderRepository
 {
     int page = 2;
     int pageSize = 50;

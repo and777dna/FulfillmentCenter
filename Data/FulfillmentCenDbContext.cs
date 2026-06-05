@@ -55,6 +55,10 @@ public class FulfillmentCenDbContext : DbContext
             .WithMany(p => p.Inventories)
             .HasForeignKey(i => i.ProductId)
             .HasPrincipalKey(p => p.Id);
+
+        modelBuilder.Entity<Order>().HasIndex(o => o.CreatedAt);
+        modelBuilder.Entity<OrderItem>().HasIndex(oi => oi.OrderId);
+        modelBuilder.Entity<Inventory>().HasIndex(i => i.ProductId);
         
         modelBuilder.Entity<Order>().HasQueryFilter(p => !p.IsDeleted)
             .Property(e => e.Status)
