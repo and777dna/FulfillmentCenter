@@ -13,27 +13,18 @@ public class ProductsController(IProductService productService) : ControllerBase
     private readonly IProductService _productService = productService;
     
     [HttpGet]
-    public async Task<IActionResult> GetProducts([FromQuery] int page, [FromQuery] int pageSize)
+    public async Task<IActionResult> GetProducts([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] int page, [FromQuery] int pageSize)
     {
-        
+        var productsQueryParams = new QueryParams
+        {
+            FromDate = fromDate,
+            ToDate = toDate,
+            Page = page,
+            PageSize = pageSize
+        };
         
         //TODO: to make DTO here from repoistory
-        List<Product> products = await _productService.GetProducts(page,pageSize);
-        /*List<ResponseProductDto> productsDtos = products.Select(product => new ResponseProductDto
-        {
-            Name = product.Name,
-            SKU = product.SKU,
-            Weight = product.Weight
-        }).ToList();*/
-        PagedResult<Product> pagedResult = new PagedResult<Product>()
-        {
-            Page = page,
-            PageSize = pageSize,
-            TotalCount = products.Count,
-            Items = products,
-            TotalPages = (int)Math.Ceiling(
-                (double)products.Count / pageSize)
-        };
+        var pagedResult = await _productService.GetProducts(productsQueryParams);
         return Ok(pagedResult);
     }
 

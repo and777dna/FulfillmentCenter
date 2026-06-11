@@ -1,5 +1,6 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,6 @@ namespace FulfillmentCenter.Repositories.Implementations;
 public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlProductRepository> logger)
     : IProductRepository
 {
-
     public async Task CreateAsync(Product product)
     {
         try
@@ -52,21 +52,40 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
         }
         return products;
     }
-    public async Task<List<Product>> ReadAsync(int page ,int pageSize)
+    public async Task<PagedResult<ResponseProductDto>> ReadAsync(QueryParams productsQueryParams)
     {
+        int page = productsQueryParams.Page;
+        int pageSize = productsQueryParams.PageSize;
+        
         Console.WriteLine(context.Database.GetConnectionString());
         List<Product> products;
         try
         {
             products = await context.Products.Skip((page - 1) * pageSize)
                 .Take(pageSize).OrderBy(p => p.Id).ToListAsync();
-            //products = await context.Products.OrderBy(p => p.Id).ToListAsync();
         }
         catch (Exception e)
         {
             logger.LogError(e, "not possible to read products");
             throw;
         }
-        return products;
+
+        var responseProductDtos = products.Select(product =>
+            new ResponseProductDto
+            {
+                Name = product.Name,
+                SKU = product.SKU,
+                Weight = product.Weight
+            });
+
+        PagedResult<ResponseProductDto> pagedResult = new PagedResult<ResponseProductDto>()
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = products.Count,
+            TotalPages = products.Count / page,
+            Items = responseProductDtos
+        };
+        return pagedResult;
     }
 }

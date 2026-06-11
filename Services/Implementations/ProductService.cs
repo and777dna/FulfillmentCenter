@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
@@ -10,9 +11,9 @@ public class ProductService(IProductRepository productRepository) : IProductServ
 {
     private IProductRepository _productRepository = productRepository;
 
-    public async Task<List<Product>> GetProducts(int page,int pageSize)
+    public async Task<PagedResult<ResponseProductDto>> GetProducts(QueryParams productsQueryParams)
     {
-        List<Product> products = await _productRepository.ReadAsync(page,pageSize);
+        var products = await _productRepository.ReadAsync(productsQueryParams);
         return products;
     }
 
