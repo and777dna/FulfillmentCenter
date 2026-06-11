@@ -59,15 +59,18 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetOrders([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate)
+    public async Task<IActionResult> GetOrders([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] int page, [FromQuery] int pageSize)
     {
-        var orderFilterParams = new OrderFilterParams
+        var orderQueryParamsParams = new QueryParams
         {
-            fromDate = fromDate,
-            toDate = toDate
+            FromDate = fromDate,
+            ToDate = toDate,
+            
+            Page = page,
+            PageSize = pageSize
         };
         
-        List<ResponseOrderDto> orders = await orderService.GetOrders(orderFilterParams);
+        List<ResponseOrderDto> orders = await orderService.GetOrders(orderQueryParamsParams);
         return Ok(orders);
     }
     

@@ -10,5 +10,5 @@ public interface IOrderService
     public Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey, RequestOrderItemDto orderItemDto);
     public Task CancelOrder(Guid orderId);
     public Task<Order> GetOrderById(Guid orderId);
-    public Task<List<ResponseOrderDto>> GetOrders(OrderFilterParams orderFilterParams);
+    public Task<List<ResponseOrderDto>> GetOrders(QueryParams queryParams);
 }

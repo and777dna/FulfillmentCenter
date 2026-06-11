@@ -10,9 +10,6 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrderRepository> logger) : IOrderRepository
 {
-    int page = 1;
-    int pageSize = 50;
-
     public async Task CreateAsync(Order order)
     {
         try
@@ -52,10 +49,9 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
         
         try
         {
-            List<Order> orders = await context.Orders.Where(order => order.IsDeleted != true &&
-                                                                      order.Status != OrderStatus.Cancelled)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+            List<Order> orders = await context.Orders
+                //.Skip((page - 1) * pageSize)
+                //.Take(pageSize)
                 .OrderBy(p => p.Id)
                 .ToListAsync();
             if (orders == null) throw new FileNotFoundException();
@@ -68,16 +64,16 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
         }
     }
 
-    public async Task<List<Order>> ReadAsync(OrderFilterParams orderFilterParams)
+    public async Task<List<Order>> ReadAsync(QueryParams queryParams)
     {
-        var specification = new FilterBuilder(orderFilterParams).Build();
+        var specification = new FilterBuilder(queryParams).Build();
+        var page = queryParams.Page;
+        var pageSize = queryParams.PageSize;
         
             try
             {
                 List<Order> orders = await context.Orders
                     .Where(specification.ToExpression())
-                    .Where(order => order.IsDeleted != true &&
-                                    order.Status != OrderStatus.Cancelled)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .OrderBy(p => p.Id)

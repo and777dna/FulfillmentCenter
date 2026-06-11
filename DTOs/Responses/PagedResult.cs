@@ -1,8 +1,8 @@
 namespace FulfillmentCenter.DTOs.Responses;
 
-public record PagedResultProduct<Product>
+public record PagedResult<T>
 {
-    public IEnumerable<Product> Products { get; set; }
+    public IEnumerable<T> Items { get; set; }
 
     public int Page { get; set; }
 

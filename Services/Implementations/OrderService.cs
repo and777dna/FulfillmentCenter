@@ -92,9 +92,9 @@ public class OrderService(
         return findBook;
     }
 
-    public async Task<List<ResponseOrderDto>> GetOrders(OrderFilterParams orderFilterParams)
+    public async Task<List<ResponseOrderDto>> GetOrders(QueryParams queryParams)
     {
-        var orders = await orderRepository.ReadAsync(orderFilterParams);
+        var orders = await orderRepository.ReadAsync(queryParams);
         
         List<ResponseOrderDto> responseOrderDtos = orders.Select(order => new ResponseOrderDto()
         {

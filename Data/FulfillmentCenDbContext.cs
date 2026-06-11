@@ -152,7 +152,7 @@ public class FulfillmentCenDbContext : DbContext
         modelBuilder.Entity<OrderItem>().HasIndex(oi => oi.OrderId);
         modelBuilder.Entity<Inventory>().HasIndex(i => i.ProductId);
         
-        modelBuilder.Entity<Order>().HasQueryFilter(p => !p.IsDeleted)
+        modelBuilder.Entity<Order>().HasQueryFilter(p => !p.IsDeleted && p.Status != OrderStatus.Cancelled)
             .Property(e => e.Status)
             .HasConversion(v => v.ToString(),
             v => (OrderStatus)Enum.Parse(typeof(OrderStatus), v));

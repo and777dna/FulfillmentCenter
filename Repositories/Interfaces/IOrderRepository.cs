@@ -8,6 +8,6 @@ public interface IOrderRepository
     public Task CreateAsync(Order order);
     public Task DeleteAsync(Guid id);
     public Task<List<Order>> ReadAsync();
-    public Task<List<Order>> ReadAsync(OrderFilterParams orderFilterParams);
+    public Task<List<Order>> ReadAsync(QueryParams queryParams);
     public Task UpdateOrderAsync<TUpdateParam>(TUpdateParam updateParam, Guid orderId, Action<Order, TUpdateParam> up);
 }
