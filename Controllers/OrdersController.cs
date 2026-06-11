@@ -70,7 +70,7 @@ public class OrdersController(IOrderService orderService) : ControllerBase
             PageSize = pageSize
         };
         
-        List<ResponseOrderDto> orders = await orderService.GetOrders(orderQueryParamsParams);
+        PagedResult<ResponseOrderDto> orders = await orderService.GetOrders(orderQueryParamsParams);
         return Ok(orders);
     }
     

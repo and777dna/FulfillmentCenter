@@ -1,5 +1,6 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Filters;
@@ -64,7 +65,7 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
         }
     }
 
-    public async Task<List<Order>> ReadAsync(QueryParams queryParams)
+    public async Task<PagedResult<ResponseOrderDto>> ReadAsync(QueryParams queryParams)
     {
         var specification = new FilterBuilder(queryParams).Build();
         var page = queryParams.Page;
@@ -78,8 +79,25 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
                     .Take(pageSize)
                     .OrderBy(p => p.Id)
                     .ToListAsync();
+                
+                List<ResponseOrderDto> responseOrderDtos = orders.Select(order => new ResponseOrderDto()
+                {
+                    CustomerId = order.CustomerId,
+                    CreatedAt = order.CreatedAt,
+                    DeliveryAddress = order.DeliveryAddress,
+                    Status = order.Status
+                }).ToList();
+
+                PagedResult<ResponseOrderDto> pagedResult = new PagedResult<ResponseOrderDto>()
+                {
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = orders.Count, 
+                    TotalPages = (int)Math.Ceiling((double)orders.Count / pageSize),
+                    Items = responseOrderDtos
+                };
                 if (orders == null) throw new FileNotFoundException();
-                return orders;
+                return pagedResult;
             }
             catch (Exception e)
             {

@@ -92,19 +92,19 @@ public class OrderService(
         return findBook;
     }
 
-    public async Task<List<ResponseOrderDto>> GetOrders(QueryParams queryParams)
+    public async Task<PagedResult<ResponseOrderDto>> GetOrders(QueryParams queryParams)
     {
-        var orders = await orderRepository.ReadAsync(queryParams);
+        var pagedOrders = await orderRepository.ReadAsync(queryParams);
         
-        List<ResponseOrderDto> responseOrderDtos = orders.Select(order => new ResponseOrderDto()
+        /*List<ResponseOrderDto> responseOrderDtos = orders.Select(order => new ResponseOrderDto()
         {
             CustomerId = order.CustomerId,
             CreatedAt = order.CreatedAt,
             DeliveryAddress = order.DeliveryAddress,
             Status = order.Status
-        }).ToList();
+        }).ToList();*/
 
-        return responseOrderDtos;
+        return pagedOrders;
     }
 
     private Order SearchById(Guid orderId, List<Order> orders)
