@@ -15,11 +15,20 @@ public class SqlOrderItemRepository(FulfillmentCenDbContext context, ILogger<Sql
         try
         {
             await context.OrderItems.AddAsync(orderItem);
-            await context.SaveChangesAsync();
         }
         catch (Exception e)
         {
             logger.LogError(e, "not possible to create an order item.");
+            throw;
+        }
+        
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "not possible to save an order item.");
             throw;
         }
     }

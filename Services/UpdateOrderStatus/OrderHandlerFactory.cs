@@ -1,5 +1,5 @@
 using FulfillmentCenter.Enums;
-using FulfillmentCenter.Services.Handlers;
+using FulfillmentCenter.Services.UpdateOrderStatus.Interfaces;
 
 namespace FulfillmentCenter.Services.UpdateOrderStatus;
 

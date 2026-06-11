@@ -10,7 +10,7 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrderRepository> logger) : IOrderRepository
 {
-    int page = 2;
+    int page = 1;
     int pageSize = 50;
 
     public async Task CreateAsync(Order order)

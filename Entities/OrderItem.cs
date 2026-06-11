@@ -8,10 +8,10 @@ public class OrderItem : BaseEntity
     public Guid Id { get; set; }
     [Required]
     public Guid OrderId { get; set; }
-    public Order Order { get; set; } = null!;
+    public Order Order { get; set; }
     [Required]
     public Guid ProductId { get; set; }
-    public Product Product { get; set; } = null!;
+    public Product Product { get; set; }
     [Required]
     public int Quantity { get; set; }
     [Required]

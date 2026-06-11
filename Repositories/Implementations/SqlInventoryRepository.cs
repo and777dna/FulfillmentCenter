@@ -8,7 +8,7 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<SqlInventoryRepository> logger) : IInventoryRepository
 {
-    int page = 2;
+    int page = 1;
     int pageSize = 50;
 
     public async Task CreateAsync(Inventory inventory)

@@ -14,7 +14,6 @@ public class ProductsController(IProductService productService) : ControllerBase
     
     [HttpGet]
     public async Task<IActionResult> GetProducts([FromQuery] int page, [FromQuery] int pageSize)
-    //public async Task<IActionResult<List<ResponseProductDto>>> GetProducts()
     {
         //TODO: to make DTO here from repoistory
         List<Product> products = await _productService.GetProducts(page,pageSize);
@@ -37,9 +36,9 @@ public class ProductsController(IProductService productService) : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult AddProduct([FromBody] RequestProductDto productDto)
+    public async Task<IActionResult> AddProduct([FromBody] RequestProductDto productDto)
     {
-        _productService.CreateProduct(productDto);
+        await _productService.CreateProduct(productDto);
         return CreatedAtAction(nameof(AddProduct), new {productDto.SKU});
     }
 

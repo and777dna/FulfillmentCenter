@@ -1,4 +1,3 @@
-using System.Transactions;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
@@ -10,25 +9,19 @@ using FulfillmentCenter.Strategies.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
-public class OrderService : IOrderService
+public class OrderService(
+    IOrderRepository orderRepository,
+    ICacheService cache,
+    IShipmentAssignmentStrategy shipmentAssignmentStrategy,
+    IOrderItemService orderItemService)
+    : IOrderService
 {
-    private IOrderRepository _orderRepository;
-    private readonly ICacheService _cache;
-    private IOrderItemService _orderItemService;
-    private IShipmentAssignmentStrategy _shipmentAssignmentStrategy;
-
     private Lazy<Task<List<Order>>> _orders;
     
     private OrderHandlerFactory _orderHandlerFactory = new OrderHandlerFactory();
 
-    public OrderService(IOrderRepository orderRepository, ICacheService cache, IShipmentAssignmentStrategy shipmentAssignmentStrategy)
-    {
-        //ResetCache();
-        _orderRepository = orderRepository;
-        _cache = cache;
-        _shipmentAssignmentStrategy = shipmentAssignmentStrategy;
-    }
-    
+    //ResetCache();
+
     /*private void ResetCache()
     {
         _orders = new Lazy<Task<List<Order>>>(() => _orderRepository.Read());
@@ -49,7 +42,7 @@ public class OrderService : IOrderService
             };
             _orderRepository.Create(order);
         }*/
-        if (_cache.TryGet<Guid>(idempotencyKey, out var cachedOrderId))
+        if (cache.TryGet<Guid>(idempotencyKey, out var cachedOrderId))
         {
             return;
         }
@@ -60,7 +53,8 @@ public class OrderService : IOrderService
         }
         Order order = new Order
         {
-            Id = Guid.NewGuid(),
+            //Id = Guid.NewGuid(),
+            Id = orderItemDto.OrderId,
             CustomerId = orderDto.CustomerId,
             DeliveryAddress = orderDto.DeliveryAddress,
             //CreatedAt = DateTime.SpecifyKind(orderDto.CreatedAt, DateTimeKind.Unspecified),
@@ -68,15 +62,15 @@ public class OrderService : IOrderService
             //TODO: to add shippment here, by finding it in db
         };
 
-        var findCenterId = await _shipmentAssignmentStrategy.SelectDistributionCenter(orderItemDto.ProductId, orderItemDto.Quantity);
+        var findCenterId = await shipmentAssignmentStrategy.SelectDistributionCenter(orderItemDto.ProductId, orderItemDto.Quantity);
         
-        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        //using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         
-        await _orderRepository.CreateAsync(order);
-        await _orderItemService.AddOrderItemToOrder(orderItemDto, findCenterId);
-        _cache.Set(idempotencyKey, order.Id, TimeSpan.FromMinutes(10));
+        await orderRepository.CreateAsync(order);
+        await orderItemService.AddOrderItemToOrder(orderItemDto, findCenterId);
+        cache.Set(idempotencyKey, order.Id, TimeSpan.FromMinutes(10));
         
-        scope.Complete();
+        //scope.Complete();
     }
 
     public async Task CancelOrder(Guid orderId)
@@ -92,7 +86,7 @@ public class OrderService : IOrderService
     
     public async Task<Order> GetOrderById(Guid orderId)
     {
-        var orders = await _orderRepository.ReadAsync();
+        var orders = await orderRepository.ReadAsync();
         
         var findBook = SearchById(orderId, orders);
         return findBook;
@@ -100,7 +94,7 @@ public class OrderService : IOrderService
 
     public async Task<List<ResponseOrderDto>> GetOrders(OrderFilterParams orderFilterParams)
     {
-        var orders = await _orderRepository.ReadAsync(orderFilterParams);
+        var orders = await orderRepository.ReadAsync(orderFilterParams);
         
         List<ResponseOrderDto> responseOrderDtos = orders.Select(order => new ResponseOrderDto()
         {

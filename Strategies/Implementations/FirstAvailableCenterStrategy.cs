@@ -12,7 +12,6 @@ public class FirstAvailableCenterStrategy : IShipmentAssignmentStrategy
     public FirstAvailableCenterStrategy(IFulfillmentCenterRepository fulfillmentCenterRepository)
     {
         _fulfillmentCenterRepository = fulfillmentCenterRepository;
-        // _distributionCenters = new Lazy<Task<List<DistributionCenter>>>(() => _fulfillmentCenterRepository.Read());
     }
     public async Task<Guid> SelectDistributionCenter(Guid productId, int quantity)
     {

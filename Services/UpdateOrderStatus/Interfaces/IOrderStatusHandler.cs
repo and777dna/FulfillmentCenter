@@ -1,6 +1,6 @@
 using FulfillmentCenter.Enums;
 
-namespace FulfillmentCenter.Services.Handlers;
+namespace FulfillmentCenter.Services.UpdateOrderStatus.Interfaces;
 
 public interface IOrderStatusHandler
 {

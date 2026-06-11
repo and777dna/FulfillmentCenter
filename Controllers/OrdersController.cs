@@ -1,6 +1,5 @@
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
-using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Services.Interfaces;
 using FulfillmentCenter.Services.UpdateOrderStatus;

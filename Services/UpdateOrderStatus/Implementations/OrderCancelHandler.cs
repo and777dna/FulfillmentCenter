@@ -1,8 +1,9 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
+using FulfillmentCenter.Services.UpdateOrderStatus.Interfaces;
 
-namespace FulfillmentCenter.Services.Handlers.Implementations;
+namespace FulfillmentCenter.Services.UpdateOrderStatus.Implementations;
 
 public class OrderCancelHandler(IOrderRepository orderRepository, FulfillmentCenDbContext context, ILogger<OrderCancelHandler> logger) : IOrderStatusHandler
 {

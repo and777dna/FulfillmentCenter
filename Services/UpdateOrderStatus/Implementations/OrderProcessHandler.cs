@@ -1,7 +1,6 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
-using FulfillmentCenter.Services.Handlers.Implementations;
 
 namespace FulfillmentCenter.Services.UpdateOrderStatus.Implementations;
 

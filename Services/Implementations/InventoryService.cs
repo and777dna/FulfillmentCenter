@@ -33,10 +33,9 @@ public class InventoryService(
         {
             Id = Guid.NewGuid(),
             ProductId = inventoryDto.ProductId,
-            Quantity = inventoryDto.Quantity, //to add +1 or to create with label 1
+            Quantity = inventoryDto.Quantity,
             DistributionCenterId = fulfillmentCenterId,
         };
-        //if(fulfillmentCenterId == true && product == true){to update inventory}
         if (productOnFulfillmentCenter)
         {
             await _inventoryRepository.UpdateInventoryAsync(inventory);
@@ -46,14 +45,7 @@ public class InventoryService(
             //TODO: to check if SKU is unique, because SKU is the PK
             await _inventoryRepository.CreateAsync(inventory);
         }
-
-        //if(product == false){to create inventory}
-        //на конкретном складе//TODO: the update should be inside Inventory entity
     }
-    /*Id CHAR(36) PRIMARY KEY NOT NULL,
-       ProductId CHAR(36),
-       DistributionCenterId CHAR(36),
-       Quantity INT,*/
 
     private async Task<bool> FindProduct(Guid fulfillmentCenterId, Guid productId)
     {
@@ -70,13 +62,11 @@ public class InventoryService(
 
         return true;
     }
-
-    ////GET	/api/inventory/{centerId}	Остатки на складе
+    
     public async Task<ICollection<Inventory>> RemainingsOnTheFulfillmentCenter(Guid centerId)
     {
         var inventories = await _inventoryRepository.ReadAsync();
         var findInventoriesFromCenter = inventories.FindAll(inventory => inventory.DistributionCenterId == centerId);
-        //var findCenter = fulfillmentCenters.FirstOrDefault(center => center.Id == centerId);
         if (findInventoriesFromCenter.Count > 0)
         {
             return findInventoriesFromCenter;
@@ -109,8 +99,12 @@ public class InventoryService(
         {
             await _inventoryRepository.UpdateInventoryQuantityAsync(updatedInventory);
         }
+        else
+        {
+            throw new InvalidOperationException("not enough product on the given distribution center for the inventory");
+        }
 
-        throw new InvalidOperationException("not enough product on the given distribution center for the inventory");
+        
     }
 
     public bool CheckSufficientAmountOfInventory(ICollection<Inventory> remainingsOnTheFulfillmentCenter, UpdateInventoryDto itemsToUpdate)
