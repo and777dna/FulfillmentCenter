@@ -2,7 +2,7 @@ namespace FulfillmentCenter.DTOs.Responses;
 
 public record PagedResult<T>
 {
-    public IEnumerable<T> Items { get; set; }
+    public IReadOnlyList<T> Items { get; set; }
 
     public int Page { get; set; }
 

@@ -80,7 +80,7 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
                 Name = product.Name,
                 SKU = product.SKU,
                 Weight = product.Weight
-            });
+            }).ToList();
 
         PagedResult<ResponseProductDto> pagedResult = new PagedResult<ResponseProductDto>()
         {
