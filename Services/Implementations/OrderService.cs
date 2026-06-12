@@ -1,17 +1,33 @@
 using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
+using FulfillmentCenter.Services.UpdateOrderStatus;
+using FulfillmentCenter.Strategies.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
-public class OrderService(IOrderRepository orderRepository, IShipmentRepository shipmentRepository) : IOrderService
+public class OrderService(
+    IOrderRepository orderRepository,
+    ICacheService cache,
+    IShipmentAssignmentStrategy shipmentAssignmentStrategy,
+    IOrderItemService orderItemService)
+    : IOrderService
 {
-    private IOrderRepository _orderRepository = orderRepository;
-    private IShipmentRepository _shipmentRepository = shipmentRepository;
+    private Lazy<Task<List<Order>>> _orders;
     
-    public async Task CreateOrder(RequestOrderDto orderDto)
+    private OrderHandlerFactory _orderHandlerFactory = new OrderHandlerFactory();
+
+    //ResetCache();
+
+    /*private void ResetCache()
+    {
+        _orders = new Lazy<Task<List<Order>>>(() => _orderRepository.Read());
+    }*/
+    
+    public async Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey, RequestOrderItemDto orderItemDto)
     {
         /*if (GetOrderById(orderDto.Id) != null)//TODO: to fix this "Expression is always true according to nullable reference types' annotations"
         {
@@ -26,20 +42,35 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
             };
             _orderRepository.Create(order);
         }*/
+        if (cache.TryGet<Guid>(idempotencyKey, out var cachedOrderId))
+        {
+            return;
+        }
+        
         if (orderDto.Status != OrderStatus.Created)
         {
             throw new ArgumentException("first status of order should be Created");
         }
         Order order = new Order
         {
-            Id = Guid.NewGuid(),
+            //Id = Guid.NewGuid(),
+            Id = orderItemDto.OrderId,
             CustomerId = orderDto.CustomerId,
             DeliveryAddress = orderDto.DeliveryAddress,
             //CreatedAt = DateTime.SpecifyKind(orderDto.CreatedAt, DateTimeKind.Unspecified),
             Status = OrderStatus.Created
             //TODO: to add shippment here, by finding it in db
         };
-        await _orderRepository.Create(order);
+
+        var findCenterId = await shipmentAssignmentStrategy.SelectDistributionCenter(orderItemDto.ProductId, orderItemDto.Quantity);
+        
+        //using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        
+        await orderRepository.CreateAsync(order);
+        await orderItemService.AddOrderItemToOrder(orderItemDto, findCenterId);
+        cache.Set(idempotencyKey, order.Id, TimeSpan.FromMinutes(10));
+        
+        //scope.Complete();
     }
 
     public async Task CancelOrder(Guid orderId)
@@ -47,19 +78,35 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
         var orderToCancelStatus = (await GetOrderById(orderId)).Status;
             if (orderToCancelStatus == OrderStatus.Created || orderToCancelStatus == OrderStatus.Processing)
             {
-                await UpdateOrderStatus(OrderStatus.Cancelled, orderId);
+                var service = _orderHandlerFactory.GetHandler(orderToCancelStatus);
+                await service.HandleAsync(orderId);
             }
             //GetOrderById(orderId).Status = OrderStatus.Cancelled;//TODO: to change to this status
     }
     
     public async Task<Order> GetOrderById(Guid orderId)
     {
-        var orders = await _orderRepository.Read();
+        var orders = await orderRepository.ReadAsync();
         
         var findBook = SearchById(orderId, orders);
         return findBook;
     }
-    
+
+    public async Task<PagedResult<ResponseOrderDto>> GetOrders(QueryParams queryParams)
+    {
+        var pagedOrders = await orderRepository.ReadAsync(queryParams);
+        
+        /*List<ResponseOrderDto> responseOrderDtos = orders.Select(order => new ResponseOrderDto()
+        {
+            CustomerId = order.CustomerId,
+            CreatedAt = order.CreatedAt,
+            DeliveryAddress = order.DeliveryAddress,
+            Status = order.Status
+        }).ToList();*/
+
+        return pagedOrders;
+    }
+
     private Order SearchById(Guid orderId, List<Order> orders)
     {
         var findOrder = orders.FirstOrDefault(order => order.Id == orderId);
@@ -70,25 +117,4 @@ public class OrderService(IOrderRepository orderRepository, IShipmentRepository 
 
         throw new ArgumentNullException(nameof(orderId), "Order not found");
     }
-    
-    public async Task UpdateOrderStatus(OrderStatus orderStatus, Guid Id)
-    {
-        switch (orderStatus)
-        {
-            //case OrderStatus.ReadyToShip: shipmentRepository.Create(); return;//TODO: to create shipment;
-            case OrderStatus.Delivered: 
-                await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
-                await _orderRepository.Delete(Id); 
-                return;//TODO: to delete order with soft delete
-            case OrderStatus.Cancelled: 
-                await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
-                await _orderRepository.Delete(Id);
-                //await _shipmentRepository.UpdateShipmentStatus(,ShipmentStatus.Cancelled);
-                return;//TODO: to delete order && to delete shipment if exist
-            case OrderStatus.Processing: 
-                await _orderRepository.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
-                return;
-            case OrderStatus.Created: throw new ArgumentException("order has been already Created.");}
-    }
-
 }

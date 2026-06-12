@@ -1,4 +1,5 @@
 using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 
@@ -6,8 +7,8 @@ namespace FulfillmentCenter.Services.Interfaces;
 
 public interface IOrderService
 {
-    public Task CreateOrder(RequestOrderDto orderDto);
+    public Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey, RequestOrderItemDto orderItemDto);
     public Task CancelOrder(Guid orderId);
-    public Task UpdateOrderStatus(OrderStatus status,Guid id);
     public Task<Order> GetOrderById(Guid orderId);
+    public Task<PagedResult<ResponseOrderDto>> GetOrders(QueryParams queryParams);
 }

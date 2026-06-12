@@ -11,4 +11,6 @@ public record RequestOrderDto
     public string DeliveryAddress { get; set; }
     [Required]
     public OrderStatus Status { get; set; }
+    [Required] 
+    public RequestOrderItemDto? orderItemDto { get; set; }
 }

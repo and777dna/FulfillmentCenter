@@ -1,21 +1,21 @@
-using FulfillmentCenter.Controllers;
 using FulfillmentCenter.Data;
-using FulfillmentCenter.DTOs.Requests;
-using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Implementations;
 using FulfillmentCenter.Services.Interfaces;
+using FulfillmentCenter.Services.UpdateOrderStatus;
+using FulfillmentCenter.Services.UpdateOrderStatus.Implementations;
+using FulfillmentCenter.Services.UpdateOrderStatus.Interfaces;
+using FulfillmentCenter.Strategies.Implementations;
+using FulfillmentCenter.Strategies.Interfaces;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 
 var connectionString = builder.Configuration.GetConnectionString("FulfilmentCenterDatabase");
@@ -25,12 +25,35 @@ builder.Services.AddDbContext<FulfillmentCenDbContext>(options =>
 
             if (builder.Environment.IsDevelopment())
             {
-                options.LogTo(Console.WriteLine, LogLevel.Information)
-                    .EnableSensitiveDataLogging();
+                options.LogTo(
+                    msg =>
+                    {
+                        var lines = msg.Split(Environment.NewLine);
+
+                        var sqlLines = lines
+                            .SkipWhile(l =>
+                                !l.TrimStart().StartsWith("SELECT", StringComparison.OrdinalIgnoreCase) &&
+                                !l.TrimStart().StartsWith("INSERT", StringComparison.OrdinalIgnoreCase) &&
+                                !l.TrimStart().StartsWith("UPDATE", StringComparison.OrdinalIgnoreCase) &&
+                                !l.TrimStart().StartsWith("DELETE", StringComparison.OrdinalIgnoreCase));
+
+                        var sql = string.Join(Environment.NewLine, sqlLines);
+
+                        if (!string.IsNullOrWhiteSpace(sql))
+                        {
+                            Console.WriteLine(sql);
+                        }
+                    },
+                    LogLevel.Information,
+                    DbContextLoggerOptions.Id// | DbContextLoggerOptions.SingleLine
+                    ).EnableSensitiveDataLogging();
             }
         }
 );
-//builder.Services.AddDbContext<FulfillmentCenDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddMemoryCache();
+
+builder.Services.AddTransient<IShipmentAssignmentStrategy, HighestStockStrategy>();
+builder.Services.AddSingleton<ICacheService, MemoryCacheService>();
 
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
@@ -46,27 +69,19 @@ builder.Services.AddScoped<IOrderRepository, SqlOrderRepository>();
 builder.Services.AddScoped<IProductRepository, SqlProductRepository>();
 builder.Services.AddScoped<IShipmentRepository, SqlShipmentRepository>();
 
+builder.Services.AddScoped<OrderHandlerFactory>();
+builder.Services.AddScoped<IOrderStatusHandler, OrderCancelHandler>();
+
+
+
 builder.Services.AddControllers();
-/*builder.Services.AddScoped<OrderItemController, OrderItemController>();
-builder.Services.AddScoped<InventoryController, InventoryController>();
-builder.Services.AddScoped<OrdersController, OrdersController>();
-builder.Services.AddScoped<ProductsController, ProductsController>();
-builder.Services.AddScoped<ShipmentsController, ShipmentsController>();*/
 
 builder.Services.AddProblemDetails();
-/*
-builder.Services.AddSingleton<FulfillmentCenDbContext>();
-builder.Services.AddSingleton<DbContext,FulfillmentCenDbContext>();
-
-builder.Services.AddScoped<DbContext, FulfillmentCenDbContext>();//TODO: to check if this is okay, because i need to register interface first
-*/
-
 
 var app = builder.Build();
 
-//DbContextOptions
+app.MapControllers();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

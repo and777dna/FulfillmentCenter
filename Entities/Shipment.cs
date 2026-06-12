@@ -6,8 +6,6 @@ namespace FulfillmentCenter.Entities;
 public class Shipment : BaseEntity
 {
     [Required]
-    public Guid Id { get; set; }
-    [Required]
     public Guid OrderId { get; set; }
     public Order Order { get; set; } = null!;
     [Required]

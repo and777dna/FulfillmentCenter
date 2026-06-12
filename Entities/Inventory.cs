@@ -5,8 +5,6 @@ namespace FulfillmentCenter.Entities;
 public class Inventory : BaseEntity
 {
     [Required]
-    public Guid Id { get; set; }
-    [Required]
     public Guid ProductId { get; set; }
     public Product Product { get; set; } = null!;
     [Required]

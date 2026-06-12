@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FulfillmentCenter.DTOs.Responses;
 
-public class ResponseInventoryDto
+public record ResponseInventoryDto
 {
     [Required]
     public Guid ProductId { get; set; }

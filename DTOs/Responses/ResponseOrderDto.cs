@@ -3,7 +3,7 @@ using FulfillmentCenter.Enums;
 
 namespace FulfillmentCenter.DTOs.Responses;
 
-public class ResponseOrderDto
+public record ResponseOrderDto
 {
     [Required]
     public Guid CustomerId { get; set; }

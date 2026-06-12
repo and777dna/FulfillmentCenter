@@ -54,13 +54,13 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
         {
             _shipmentRepository.Create(shipment);
         }*/
-        await _shipmentRepository.Create(shipment);
+        await _shipmentRepository.CreateAsync(shipment);
     }
     
     
 
     public async Task UpdateShipmentStatus(Guid shipmentId, ShipmentStatus status)
     {
-        await _shipmentRepository.UpdateShipmentStatus(shipmentId, status);
+        await _shipmentRepository.UpdateShipmentStatusAsync(shipmentId, status);
     }
 }

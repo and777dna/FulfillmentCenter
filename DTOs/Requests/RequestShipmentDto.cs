@@ -4,7 +4,7 @@ using FulfillmentCenter.Enums;
 
 namespace FulfillmentCenter.DTOs.Requests;
 
-public class RequestShipmentDto
+public record RequestShipmentDto
 {
     [Required]
     public Guid OrderId { get; set; }

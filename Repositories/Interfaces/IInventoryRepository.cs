@@ -5,9 +5,9 @@ namespace FulfillmentCenter.Repositories.Interfaces;
 
 public interface IInventoryRepository
 {
-    public Task Create(Inventory inventory);
-    public Task Delete(Guid id);
-    public Task<List<Inventory>> Read();
-    public Task UpdateInventory(Inventory inventory);
-    public Task UpdateInventoryQuantity(UpdateInventoryDto inventory);
+    public Task CreateAsync(Inventory inventory);
+    public Task DeleteAsync(Guid id);
+    public Task<List<Inventory>> ReadAsync();
+    public Task UpdateInventoryAsync(Inventory inventory);
+    public Task UpdateInventoryQuantityAsync(UpdateInventoryDto inventory);
 }

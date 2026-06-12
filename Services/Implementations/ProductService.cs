@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
@@ -10,10 +11,9 @@ public class ProductService(IProductRepository productRepository) : IProductServ
 {
     private IProductRepository _productRepository = productRepository;
 
-
-    public async Task<List<Product>> GetProducts()
+    public async Task<PagedResult<ResponseProductDto>> GetProducts(QueryParams productsQueryParams)
     {
-        List<Product> products = await _productRepository.Read();
+        var products = await _productRepository.ReadAsync(productsQueryParams);
         return products;
     }
 
@@ -31,18 +31,18 @@ public class ProductService(IProductRepository productRepository) : IProductServ
             SKU = productDto.SKU,
             Weight = productDto.Weight
         };
-        await _productRepository.Create(product);
+        await _productRepository.CreateAsync(product);
     }
 
-    private async Task<bool> CheckProductExist(string productSKU)
+    private async Task<bool> CheckProductExist(string productSku)
     {
-        var products = await _productRepository.Read();
-        return products.Any(product => product.SKU == productSKU);
+        var products = await _productRepository.ReadAsync();
+        return products.Any(product => product.SKU == productSku);
     }
 
     public async Task<Product> FindProduct(Guid productId)
     {
-        var products = await _productRepository.Read();
+        var products = await _productRepository.ReadAsync();
         var product = products.FirstOrDefault(product => product.Id == productId);
         if (product != null)
         {
