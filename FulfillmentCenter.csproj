@@ -33,6 +33,7 @@
     <ItemGroup>
       <Folder Include="FulfillmentCenter.Tests\Controllers\" />
       <Folder Include="FulfillmentCenter.Tests\Repositories\" />
+      <Folder Include="Repositories\FilterV2\Interfaces\" />
     </ItemGroup>
 
 </Project>

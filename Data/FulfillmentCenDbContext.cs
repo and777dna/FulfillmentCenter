@@ -1,7 +1,6 @@
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FulfillmentCenter.Data;
 
@@ -116,17 +115,17 @@ public class FulfillmentCenDbContext : DbContext
         modelBuilder.Entity<Customer>().HasData(
             new Customer
             {
-                CustomerId = Guid.Parse("a1111111-1111-1111-1111-111111111111"),
+                Id = Guid.Parse("a1111111-1111-1111-1111-111111111111"),
                 CustomerName = "Contoso Ltd"
             },
             new Customer
             {
-                CustomerId = Guid.Parse("a2222222-2222-2222-2222-222222222222"),
+                Id = Guid.Parse("a2222222-2222-2222-2222-222222222222"),
                 CustomerName = "Northwind Traders"
             },
             new Customer
             {
-                CustomerId = Guid.Parse("a3333333-3333-3333-3333-333333333333"),
+                Id = Guid.Parse("a3333333-3333-3333-3333-333333333333"),
                 CustomerName = "Adventure Works"
             }
         );

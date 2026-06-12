@@ -2,8 +2,7 @@ using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
-using FulfillmentCenter.Enums;
-using FulfillmentCenter.Repositories.Filters;
+using FulfillmentCenter.Repositories.FilterV2.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -67,14 +66,14 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
 
     public async Task<PagedResult<ResponseOrderDto>> ReadAsync(QueryParams queryParams)
     {
-        var specification = new FilterBuilder<Order>(queryParams).Build();
+        //var specification = new FilterBuilder<Order>(queryParams).Build();
+        var specification = new OrderFilterBuilder(context.Orders).DateRangeSpecification(queryParams.FromDate, queryParams.ToDate).Build();
         var page = queryParams.Page;
         var pageSize = queryParams.PageSize;
         
             try
             {
-                List<Order> orders = await context.Orders
-                    .Where(specification.ToExpression())
+                List<Order> orders = await specification
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .OrderBy(p => p.Id)
