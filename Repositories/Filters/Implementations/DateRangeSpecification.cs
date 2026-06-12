@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Repositories.Filters.Interfaces;
 
 namespace FulfillmentCenter.Repositories.Filters.Implementations;
 

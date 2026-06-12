@@ -2,6 +2,7 @@ using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Repositories.Filters;
 using FulfillmentCenter.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,6 +57,7 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
     {
         int page = productsQueryParams.Page;
         int pageSize = productsQueryParams.PageSize;
+        var specification = new FilterBuilder<Product>(productsQueryParams).Build();
         
         Console.WriteLine(context.Database.GetConnectionString());
         List<Product> products;

@@ -67,7 +67,7 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
 
     public async Task<PagedResult<ResponseOrderDto>> ReadAsync(QueryParams queryParams)
     {
-        var specification = new FilterBuilder(queryParams).Build();
+        var specification = new FilterBuilder<Order>(queryParams).Build();
         var page = queryParams.Page;
         var pageSize = queryParams.PageSize;
         

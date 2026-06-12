@@ -5,16 +5,16 @@ using FulfillmentCenter.Repositories.Filters.Interfaces;
 
 namespace FulfillmentCenter.Repositories.Filters;
 
-public class FilterBuilder(QueryParams filter)
-{
-    public ISpecification<Order> Build()
+public class FilterBuilder<T>(QueryParams filter)
+{//TODO: to create this for each entity
+    public ISpecification<T> Build()
     {
-        Specification<Order> spec = new TrueSpecification<Order>();
+        Specification<T> spec = new TrueSpecification<T>();
 
         if (filter.FromDate.HasValue)
         {
             //spec = spec.And(o => o.CreatedAt >= filter.fromDate.Value);
-            spec = spec.And(new DateRangeSpecification(filter.FromDate.Value, filter.ToDate));
+            spec = spec.And(new DateRangeSpecification<T>(filter.FromDate.Value, filter.ToDate));
         }
 
         return spec;

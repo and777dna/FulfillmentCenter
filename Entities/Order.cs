@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using FulfillmentCenter.Enums;
+using FulfillmentCenter.Repositories.Filters.Interfaces;
 
 namespace FulfillmentCenter.Entities;
 

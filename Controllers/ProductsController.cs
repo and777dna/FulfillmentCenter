@@ -17,8 +17,6 @@ public class ProductsController(IProductService productService) : ControllerBase
     {
         var productsQueryParams = new QueryParams
         {
-            FromDate = fromDate,
-            ToDate = toDate,
             Page = page,
             PageSize = pageSize
         };
