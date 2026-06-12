@@ -2,6 +2,7 @@ using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Repositories.FilterV2.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,13 +57,15 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
     {
         int page = productsQueryParams.Page;
         int pageSize = productsQueryParams.PageSize;
-        //var specification = new FilterBuilder<Product>(productsQueryParams).Build();
+        
+        var filter = new ProductFilterBuilder(context.Products)
+            .FilterWeight(productsQueryParams.FromWeight, productsQueryParams.ToWeight).Build();
         
         Console.WriteLine(context.Database.GetConnectionString());
         List<Product> products;
         try
         {
-            products = await context.Products.Skip((page - 1) * pageSize)
+            products = await filter.Skip((page - 1) * pageSize)
                 .Take(pageSize).OrderBy(p => p.Id).ToListAsync();
         }
         catch (Exception e)

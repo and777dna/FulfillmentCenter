@@ -13,10 +13,13 @@ public class ProductsController(IProductService productService) : ControllerBase
     private readonly IProductService _productService = productService;
     
     [HttpGet]
-    public async Task<IActionResult> GetProducts([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] int page, [FromQuery] int pageSize)
+    public async Task<IActionResult> GetProducts([FromQuery] decimal? fromWeight, [FromQuery] decimal? toWeight, [FromQuery] int page, [FromQuery] int pageSize)
     {
         var productsQueryParams = new QueryParams
         {
+            FromWeight = fromWeight,
+            ToWeight = toWeight,
+            
             Page = page,
             PageSize = pageSize
         };
