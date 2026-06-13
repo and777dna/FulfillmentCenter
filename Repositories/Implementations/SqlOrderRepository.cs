@@ -42,16 +42,22 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
             throw new ArgumentNullException(nameof(id), "no Order was found");
         }
         
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "not possible to delete an order.");
+            throw;
+        }
     }
     
     public async Task<List<Order>> ReadAsync()
     {
-        
         try
         {
             List<Order> orders = await context.Orders
-                //.Skip((page - 1) * pageSize)
-                //.Take(pageSize)
                 .OrderBy(p => p.Id)
                 .ToListAsync();
             if (orders == null) throw new FileNotFoundException();
@@ -66,7 +72,6 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
 
     public async Task<PagedResult<ResponseOrderDto>> ReadAsync(QueryParams queryParams)
     {
-        //var specification = new FilterBuilder<Order>(queryParams).Build();
         var specification = new OrderFilterBuilder(context.Orders).DateRangeSpecification(queryParams.FromDate, queryParams.ToDate).Build();
         var page = queryParams.Page;
         var pageSize = queryParams.PageSize;
@@ -106,7 +111,7 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
     }
     
     public async Task UpdateOrderAsync<TUpdateParam>(TUpdateParam updateParam,Guid orderId, Action<Order, TUpdateParam> up)
-    {//.UpdateOrder(orderStatus, Id, (order, status) => { order.Status = status;});
+    {
         try
         {
             var orderToUpdate = await context.Orders.FirstOrDefaultAsync(order => order.Id == orderId);

@@ -34,7 +34,15 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
         }
         productToDelete.IsDeleted = true;
         //TODO: to return Result
-        await context.SaveChangesAsync();
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "not possible to delete a product.");
+            throw;
+        }
     }
 
     public async Task<List<Product>> ReadAsync()
@@ -44,7 +52,6 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
         try
         {
             products = await context.Products.OrderBy(p => p.Id).ToListAsync();
-            //products = await context.Products.OrderBy(p => p.Id).ToListAsync();
         }
         catch (Exception e)
         {
@@ -53,7 +60,7 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
         }
         return products;
     }
-    public async Task<PagedResult<ResponseProductDto>> ReadAsync(QueryParams productsQueryParams)
+    public async Task<List<Product>> ReadAsync(QueryParams productsQueryParams)
     {
         int page = productsQueryParams.Page;
         int pageSize = productsQueryParams.PageSize;
@@ -74,7 +81,7 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
             throw;
         }
 
-        var responseProductDtos = products.Select(product =>
+        /*var responseProductDtos = products.Select(product =>
             new ResponseProductDto
             {
                 Name = product.Name,
@@ -89,7 +96,7 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
             TotalCount = products.Count,
             TotalPages = products.Count / page,
             Items = responseProductDtos
-        };
-        return pagedResult;
+        };*/
+        return products;
     }
 }

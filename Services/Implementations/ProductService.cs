@@ -9,21 +9,18 @@ namespace FulfillmentCenter.Services.Implementations;
 
 public class ProductService(IProductRepository productRepository) : IProductService
 {
-    private IProductRepository _productRepository = productRepository;
-
     public async Task<PagedResult<ResponseProductDto>> GetProducts(QueryParams productsQueryParams)
     {
-        var products = await _productRepository.ReadAsync(productsQueryParams);
+        var products = await productRepository.ReadAsync(productsQueryParams);
+        
+        
         return products;
     }
 
     public async Task CreateProduct(RequestProductDto productDto)
     {
-        var productAlreadyExist = await CheckProductExist(productDto.SKU);
-        if (productAlreadyExist)
-        {
-            throw new InvalidOperationException("Запись с таким SKU уже существует в базе данных.");
-        }
+        await CheckProductExist(productDto.SKU);
+        
         Product product = new Product
         {
             Id = Guid.NewGuid(),
@@ -31,24 +28,28 @@ public class ProductService(IProductRepository productRepository) : IProductServ
             SKU = productDto.SKU,
             Weight = productDto.Weight
         };
-        await _productRepository.CreateAsync(product);
+        await productRepository.CreateAsync(product);
     }
 
-    private async Task<bool> CheckProductExist(string productSku)
+    private async Task CheckProductExist(string productSku)
     {
-        var products = await _productRepository.ReadAsync();
-        return products.Any(product => product.SKU == productSku);
+        var products = await productRepository.ReadAsync();
+        var productAlreadyExist = products.Any(product => product.SKU == productSku);
+        if (productAlreadyExist)
+        {
+            throw new InvalidOperationException("Запись с таким SKU уже существует в базе данных.");
+        }
     }
 
     public async Task<Product> FindProduct(Guid productId)
     {
-        var products = await _productRepository.ReadAsync();
+        var products = await productRepository.ReadAsync();
         var product = products.FirstOrDefault(product => product.Id == productId);
         if (product != null)
         {
             return product;
         }
 
-        throw new ValidationException();
+        throw new ValidationException("no product was found");
     }
 }

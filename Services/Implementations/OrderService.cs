@@ -64,6 +64,7 @@ public class OrderService(
 
         var findCenterId = await shipmentAssignmentStrategy.SelectDistributionCenter(orderItemDto.ProductId, orderItemDto.Quantity);
         
+        //TODO: to enable differenct level of isolation to make it workable
         //using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         
         await orderRepository.CreateAsync(order);

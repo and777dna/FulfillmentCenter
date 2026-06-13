@@ -34,6 +34,8 @@
       <Folder Include="FulfillmentCenter.Tests\Controllers\" />
       <Folder Include="FulfillmentCenter.Tests\Repositories\" />
       <Folder Include="Repositories\FilterV2\Interfaces\" />
+      <Folder Include="Services\MapperDto\Implementations\" />
+      <Folder Include="Services\MapperDto\Interfaces\" />
     </ItemGroup>
 
 </Project>

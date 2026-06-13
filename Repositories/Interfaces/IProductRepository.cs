@@ -8,6 +8,6 @@ public interface IProductRepository
 {
     public Task CreateAsync(Product product);
     public Task DeleteAsync(Guid id);
-    public Task<PagedResult<ResponseProductDto>> ReadAsync(QueryParams productsQueryParams);
+    public Task<List<Product>> ReadAsync(QueryParams productsQueryParams);
     public Task<List<Product>> ReadAsync();
 }

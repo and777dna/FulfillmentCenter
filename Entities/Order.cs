@@ -5,9 +5,6 @@ namespace FulfillmentCenter.Entities;
 
 public class Order : BaseEntity
 {
-    [Key]
-    [Required]
-    public Guid Id { get; set; }
     [Required]
     public Guid CustomerId { get; set; } // TODO review: No CustomerId. Customer should be an entity with its own ID and relationships to Orders
     [Required]
