@@ -70,7 +70,7 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
         }
     }
 
-    public async Task<PagedResult<ResponseOrderDto>> ReadAsync(QueryParams queryParams)
+    public async Task<List<Order>> ReadAsync(QueryParams queryParams)
     {
         var specification = new OrderFilterBuilder(context.Orders).DateRangeSpecification(queryParams.FromDate, queryParams.ToDate).Build();
         var page = queryParams.Page;
@@ -84,7 +84,7 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
                     .OrderBy(p => p.Id)
                     .ToListAsync();
                 
-                List<ResponseOrderDto> responseOrderDtos = orders.Select(order => new ResponseOrderDto()
+                /*List<ResponseOrderDto> responseOrderDtos = orders.Select(order => new ResponseOrderDto()
                 {
                     CustomerId = order.CustomerId,
                     CreatedAt = order.CreatedAt,
@@ -99,9 +99,9 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
                     TotalCount = orders.Count, 
                     TotalPages = (int)Math.Ceiling((double)orders.Count / pageSize),
                     Items = responseOrderDtos
-                };
+                };*/
                 if (orders == null) throw new FileNotFoundException();
-                return pagedResult;
+                return orders;
             }
             catch (Exception e)
             {

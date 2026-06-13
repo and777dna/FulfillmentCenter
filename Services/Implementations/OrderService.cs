@@ -4,6 +4,7 @@ using FulfillmentCenter.Entities;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
+using FulfillmentCenter.Services.MapperDto.Interfaces;
 using FulfillmentCenter.Services.UpdateOrderStatus;
 using FulfillmentCenter.Strategies.Interfaces;
 
@@ -13,7 +14,8 @@ public class OrderService(
     IOrderRepository orderRepository,
     ICacheService cache,
     IShipmentAssignmentStrategy shipmentAssignmentStrategy,
-    IOrderItemService orderItemService)
+    IOrderItemService orderItemService,
+    IMapper<Order, ResponseOrderDto> orderMapper)
     : IOrderService
 {
     private Lazy<Task<List<Order>>> _orders;
@@ -103,7 +105,8 @@ public class OrderService(
             DeliveryAddress = order.DeliveryAddress,
             Status = order.Status
         }).ToList();*/
-
-        return pagedOrders;
+        var orderDtos = orderMapper.ToDto(pagedOrders);
+        var pagedResult = orderMapper.ToPagedResult(queryParams.Page, queryParams.PageSize, orderDtos); 
+        return pagedResult;
     }
 }
