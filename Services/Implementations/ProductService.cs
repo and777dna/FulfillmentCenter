@@ -14,8 +14,8 @@ public class ProductService(IProductRepository productRepository, IMapper<Produc
     {
         var products = await productRepository.ReadAsync(productsQueryParams);
         var productDtos = productMapper.ToDto(products);
-        
-        return products;
+        var pagedResult = productMapper.ToPagedResult(productsQueryParams.Page, productsQueryParams.PageSize, productDtos);
+        return pagedResult;
     }
 
     public async Task CreateProduct(RequestProductDto productDto)

@@ -17,4 +17,27 @@ public class ProductMapper : IMapper<Product, ResponseProductDto>
             }).ToList();
         return responseProductDtos;
     }
+
+    
+    /*PagedResult<ResponseProductDto> pagedResult = new PagedResult<ResponseProductDto>()
+       {
+           Page = page,
+           PageSize = pageSize,
+           TotalCount = products.Count,
+           TotalPages = products.Count / page,
+           Items = responseProductDtos
+       };*/
+    public PagedResult<ResponseProductDto> ToPagedResult(int page, int pageSize, List<ResponseProductDto> responseProductDtos)
+    {
+        var pagedResult = new PagedResult<ResponseProductDto>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = responseProductDtos.Count,
+            TotalPages = responseProductDtos.Count / page,
+            Items = responseProductDtos
+        };
+
+        return pagedResult;
+    }
 }
