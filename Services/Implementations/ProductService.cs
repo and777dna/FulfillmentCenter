@@ -4,15 +4,16 @@ using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
+using FulfillmentCenter.Services.MapperDto.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
-public class ProductService(IProductRepository productRepository) : IProductService
+public class ProductService(IProductRepository productRepository, IMapper<Product, ResponseProductDto> productMapper) : IProductService
 {
     public async Task<PagedResult<ResponseProductDto>> GetProducts(QueryParams productsQueryParams)
     {
         var products = await productRepository.ReadAsync(productsQueryParams);
-        
+        var productDtos = productMapper.ToDto(products);
         
         return products;
     }

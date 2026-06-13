@@ -1,8 +1,12 @@
 using FulfillmentCenter.Data;
+using FulfillmentCenter.DTOs.Responses;
+using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Implementations;
 using FulfillmentCenter.Services.Interfaces;
+using FulfillmentCenter.Services.MapperDto.Implementations;
+using FulfillmentCenter.Services.MapperDto.Interfaces;
 using FulfillmentCenter.Services.UpdateOrderStatus;
 using FulfillmentCenter.Services.UpdateOrderStatus.Implementations;
 using FulfillmentCenter.Services.UpdateOrderStatus.Interfaces;
@@ -71,6 +75,7 @@ builder.Services.AddScoped<IShipmentRepository, SqlShipmentRepository>();
 
 builder.Services.AddScoped<OrderHandlerFactory>();
 builder.Services.AddScoped<IOrderStatusHandler, OrderCancelHandler>();
+builder.Services.AddScoped<IMapper<Product, ResponseProductDto>, ProductMapper>();
 
 
 

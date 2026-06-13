@@ -81,6 +81,13 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
             throw;
         }
 
+        var responseProductDtos = products.Select(product =>
+            new ResponseProductDto
+            {
+                Name = product.Name,
+                SKU = product.SKU,
+                Weight = product.Weight
+            }).ToList();
         /*var responseProductDtos = products.Select(product =>
             new ResponseProductDto
             {
