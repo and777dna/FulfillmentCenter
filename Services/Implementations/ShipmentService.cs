@@ -7,12 +7,12 @@ using FulfillmentCenter.Services.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
-public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryRepository inventoryRepository, IInventoryService inventoryService, IOrderService orderService, IFulfillmentCenterService fulfillmentCenterService) : IShipmentService
+public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryRepository inventoryRepository, IInventoryService inventoryService, IOrderRepository orderRepository, IFulfillmentCenterService fulfillmentCenterService) : IShipmentService
 {
     private IShipmentRepository _shipmentRepository = shipmentRepository;
     private IInventoryRepository _inventoryRepository = inventoryRepository;
     private IInventoryService _inventoryService = inventoryService;
-    private IOrderService _orderService = orderService;
+    private IOrderRepository _orderRepository = orderRepository;
     private IFulfillmentCenterService _fulfillmentCenterService = fulfillmentCenterService;
     
     
@@ -37,7 +37,7 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
         //Shipment.Order ICollection<OrderItem> Items => 
         //
         //var sufficientAmountOfInventory = _inventoryService.CheckSufficientAmountOfInventory(remainingsOnTheFulfillmentCenter, shipment.Order.Items);
-        var order = await _orderService.GetOrderById(requestShipmentDto.OrderId);
+        var order = await _orderRepository.GetOrderById(requestShipmentDto.OrderId);
         var distributionCenter = await _fulfillmentCenterService.FindFulfillmentCenter(requestShipmentDto.DistributionCenterId);
         
         var shipment =

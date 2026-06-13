@@ -87,10 +87,9 @@ public class OrderService(
     
     public async Task<Order> GetOrderById(Guid orderId)
     {
-        var orders = await orderRepository.ReadAsync();
+        var order = await orderRepository.GetOrderById(orderId);
         
-        var findBook = SearchById(orderId, orders);
-        return findBook;
+        return order;
     }
 
     public async Task<PagedResult<ResponseOrderDto>> GetOrders(QueryParams queryParams)
@@ -106,16 +105,5 @@ public class OrderService(
         }).ToList();*/
 
         return pagedOrders;
-    }
-
-    private Order SearchById(Guid orderId, List<Order> orders)
-    {
-        var findOrder = orders.FirstOrDefault(order => order.Id == orderId);
-        if (findOrder != null)
-        {
-            return findOrder;
-        }
-
-        throw new ArgumentNullException(nameof(orderId), "Order not found");
     }
 }

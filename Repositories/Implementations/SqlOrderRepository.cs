@@ -124,4 +124,23 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
             throw;
         }
     }
+
+    public async Task<Order> GetOrderById(Guid orderId)
+    {
+        var orders = await ReadAsync();
+        
+        var findBook = SearchById(orderId, orders);
+        return findBook;
+    }
+    
+    private Order SearchById(Guid orderId, List<Order> orders)
+    {
+        var findOrder = orders.FirstOrDefault(order => order.Id == orderId);
+        if (findOrder != null)
+        {
+            return findOrder;
+        }
+
+        throw new ArgumentNullException(nameof(orderId), "Order not found");
+    }
 }
