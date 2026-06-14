@@ -97,14 +97,6 @@ public class OrderService(
     public async Task<PagedResult<ResponseOrderDto>> GetOrders(QueryParams queryParams)
     {
         var pagedOrders = await orderRepository.ReadAsync(queryParams);
-        
-        /*List<ResponseOrderDto> responseOrderDtos = orders.Select(order => new ResponseOrderDto()
-        {
-            CustomerId = order.CustomerId,
-            CreatedAt = order.CreatedAt,
-            DeliveryAddress = order.DeliveryAddress,
-            Status = order.Status
-        }).ToList();*/
         var orderDtos = orderMapper.ToDto(pagedOrders);
         var pagedResult = orderMapper.ToPagedResult(queryParams.Page, queryParams.PageSize, orderDtos); 
         return pagedResult;

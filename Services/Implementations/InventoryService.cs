@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using FulfillmentCenter.DTOs.Requests;
+using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
+using FulfillmentCenter.Services.MapperDto.Implementations;
 
 namespace FulfillmentCenter.Services.Implementations;
 
@@ -10,7 +12,7 @@ public class InventoryService(
     IInventoryRepository inventoryRepository,
     IFulfillmentCenterRepository fulfillmentCenterRepositor,
     IFulfillmentCenterService fulfillmentCenterService,
-    IProductService productService) : IInventoryService
+    IProductService productService, InventoryMapper inventoryMapper) : IInventoryService
 {
     private IInventoryRepository _inventoryRepository = inventoryRepository;
 
@@ -18,6 +20,7 @@ public class InventoryService(
     private IFulfillmentCenterRepository _fulfillmentCenterRepositor = fulfillmentCenterRepositor;
     private IFulfillmentCenterService _fulfillmentCenterService = fulfillmentCenterService;
     private IProductService _productService = productService;
+    
 
     public async Task AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)
     {
@@ -63,13 +66,14 @@ public class InventoryService(
         return true;
     }
     
-    public async Task<ICollection<Inventory>> RemainingsOnTheFulfillmentCenter(Guid centerId)
+    public async Task<List<ResponseInventoryDto>> RemainingsOnTheFulfillmentCenter(Guid centerId)
     {
         var inventories = await _inventoryRepository.ReadAsync();
         var findInventoriesFromCenter = inventories.FindAll(inventory => inventory.DistributionCenterId == centerId);
         if (findInventoriesFromCenter.Count > 0)
         {
-            return findInventoriesFromCenter;
+            var findInventoriesFromCenterDto = inventoryMapper.ToDto(findInventoriesFromCenter);
+            return findInventoriesFromCenterDto;
         }
 
         throw new ValidationException();
@@ -107,7 +111,7 @@ public class InventoryService(
         
     }
 
-    public bool CheckSufficientAmountOfInventory(ICollection<Inventory> remainingsOnTheFulfillmentCenter, UpdateInventoryDto itemsToUpdate)
+    public bool CheckSufficientAmountOfInventory(List<ResponseInventoryDto> remainingsOnTheFulfillmentCenter, UpdateInventoryDto itemsToUpdate)
     {
         var findInventoryProduct = remainingsOnTheFulfillmentCenter.FirstOrDefault(inventory => inventory.ProductId == itemsToUpdate.ProductId);
         if (findInventoryProduct == null)

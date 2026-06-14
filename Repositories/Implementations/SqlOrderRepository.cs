@@ -1,6 +1,5 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Requests;
-using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.FilterV2.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
@@ -84,22 +83,6 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
                     .OrderBy(p => p.Id)
                     .ToListAsync();
                 
-                /*List<ResponseOrderDto> responseOrderDtos = orders.Select(order => new ResponseOrderDto()
-                {
-                    CustomerId = order.CustomerId,
-                    CreatedAt = order.CreatedAt,
-                    DeliveryAddress = order.DeliveryAddress,
-                    Status = order.Status
-                }).ToList();
-
-                PagedResult<ResponseOrderDto> pagedResult = new PagedResult<ResponseOrderDto>()
-                {
-                    Page = page,
-                    PageSize = pageSize,
-                    TotalCount = orders.Count, 
-                    TotalPages = (int)Math.Ceiling((double)orders.Count / pageSize),
-                    Items = responseOrderDtos
-                };*/
                 if (orders == null) throw new FileNotFoundException();
                 return orders;
             }
