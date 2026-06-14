@@ -66,14 +66,16 @@ public class InventoryService(
         return true;
     }
     
-    public async Task<List<ResponseInventoryDto>> RemainingsOnTheFulfillmentCenter(Guid centerId)
+    public async Task<PagedResult<ResponseInventoryDto>> RemainingsOnTheFulfillmentCenter(Guid centerId, QueryParams queryParams)
     {
-        var inventories = await _inventoryRepository.ReadAsync();
+        var inventories = await _inventoryRepository.ReadAsync(queryParams);
         var findInventoriesFromCenter = inventories.FindAll(inventory => inventory.DistributionCenterId == centerId);
         if (findInventoriesFromCenter.Count > 0)
         {
             var findInventoriesFromCenterDto = inventoryMapper.ToDto(findInventoriesFromCenter);
-            return findInventoriesFromCenterDto;
+            var pagedResult = inventoryMapper.ToPagedResult(queryParams.Page, queryParams.PageSize, findInventoriesFromCenterDto);
+            
+            return pagedResult;
         }
 
         throw new ValidationException();
@@ -97,7 +99,7 @@ public class InventoryService(
             ProductId = productId,
             Quantity = quantity
         };
-        var remainingsOnTheFulfillmentCenter = await RemainingsOnTheFulfillmentCenter(centerId);
+        var remainingsOnTheFulfillmentCenter = await RemainingsOnTheFulfillmentCenter(centerId, new QueryParams{ PageSize = 50, Page = 1});
 
         if (CheckSufficientAmountOfInventory(remainingsOnTheFulfillmentCenter, updatedInventory))
         {
@@ -111,9 +113,9 @@ public class InventoryService(
         
     }
 
-    public bool CheckSufficientAmountOfInventory(List<ResponseInventoryDto> remainingsOnTheFulfillmentCenter, UpdateInventoryDto itemsToUpdate)
+    public bool CheckSufficientAmountOfInventory(PagedResult<ResponseInventoryDto> remainingsOnTheFulfillmentCenter, UpdateInventoryDto itemsToUpdate)
     {
-        var findInventoryProduct = remainingsOnTheFulfillmentCenter.FirstOrDefault(inventory => inventory.ProductId == itemsToUpdate.ProductId);
+        var findInventoryProduct = remainingsOnTheFulfillmentCenter.Items.FirstOrDefault(inventory => inventory.ProductId == itemsToUpdate.ProductId);
         if (findInventoryProduct == null)
         {
             throw new ArgumentNullException(nameof(findInventoryProduct), "inventory with such productId doesnt exist on the given distribution center");

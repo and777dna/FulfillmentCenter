@@ -18,7 +18,16 @@ public class InventoryMapper : IMapper<Inventory, ResponseInventoryDto>
 
     public PagedResult<ResponseInventoryDto> ToPagedResult(int page, int pageSize, List<ResponseInventoryDto> responseDtos)
     {
-        throw new NotImplementedException();
+        PagedResult<ResponseInventoryDto> pagedResult = new PagedResult<ResponseInventoryDto>()
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = responseDtos.Count,
+            TotalPages = responseDtos.Count / page,
+            Items = responseDtos
+        };
+
+        return pagedResult;
     }
 
     public ResponseInventoryDto ToDto(Inventory items)

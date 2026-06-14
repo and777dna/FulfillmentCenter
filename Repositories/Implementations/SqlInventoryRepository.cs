@@ -8,9 +8,6 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<SqlInventoryRepository> logger) : IInventoryRepository
 {
-    int page = 1;
-    int pageSize = 50;
-
     public async Task CreateAsync(Inventory inventory)
     {
         try
@@ -43,8 +40,7 @@ public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<Sql
             {
                 inventories = await context.Inventories
                     .OrderBy(p => p.Id)
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize).ToListAsync();
+                    .ToListAsync();
             }
             catch (Exception e)
             {
@@ -52,6 +48,27 @@ public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<Sql
                 throw;
             }
             return inventories;
+    }
+    
+    public async Task<List<Inventory>> ReadAsync(QueryParams queryParams)
+    {//All Read() methods load the entire table into memory as a List<T>. No filtering, no Where, no pagination. This will not scale
+        int page = queryParams.Page;
+        int pageSize = queryParams.PageSize;
+        
+        List<Inventory> inventories;
+        try
+        {
+            inventories = await context.Inventories
+                .OrderBy(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize).ToListAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "not possible to read products.");
+            throw;
+        }
+        return inventories;
     }
     
     public async Task UpdateInventoryAsync(Inventory inventory)

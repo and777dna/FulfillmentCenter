@@ -24,9 +24,14 @@ public class InventoryController(IInventoryService inventoryService) : Controlle
     }
     
     [HttpGet("{centerId}")]
-    public async Task<IActionResult> InventoryRemaining([FromRoute] Guid centerId)
+    public async Task<IActionResult> InventoryRemaining([FromRoute] Guid centerId, [FromQuery] int page, [FromQuery] int pageSize)
     {
-        var remainingsDto = await _inventoryService.RemainingsOnTheFulfillmentCenter(centerId);
-        return Ok(remainingsDto);
+        var queryParams = new QueryParams()
+        {
+            Page = page,
+            PageSize = pageSize
+        };
+        var pagedResult = await _inventoryService.RemainingsOnTheFulfillmentCenter(centerId, queryParams);
+        return Ok(pagedResult);
     }
 }
