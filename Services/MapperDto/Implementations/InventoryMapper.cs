@@ -20,4 +20,9 @@ public class InventoryMapper : IMapper<Inventory, ResponseInventoryDto>
     {
         throw new NotImplementedException();
     }
+
+    public ResponseInventoryDto ToDto(Inventory items)
+    {
+        throw new NotImplementedException();
+    }
 }

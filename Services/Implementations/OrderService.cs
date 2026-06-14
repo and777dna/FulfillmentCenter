@@ -87,11 +87,18 @@ public class OrderService(
             //GetOrderById(orderId).Status = OrderStatus.Cancelled;//TODO: to change to this status
     }
     
-    public async Task<Order> GetOrderById(Guid orderId)
+    public async Task<ResponseOrderDto> GetOrderById(Guid orderId)
     {
         var order = await orderRepository.GetOrderById(orderId);
-        
-        return order;
+        var orderDto = orderMapper.ToDto(order);
+        /*new ResponseOrderDto
+           {
+               CustomerId = order.CustomerId,
+               DeliveryAddress = order.DeliveryAddress,
+               CreatedAt = order.CreatedAt,
+               Status = order.Status
+           }*/
+        return orderDto;
     }
 
     public async Task<PagedResult<ResponseOrderDto>> GetOrders(QueryParams queryParams)

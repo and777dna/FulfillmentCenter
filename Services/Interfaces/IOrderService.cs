@@ -9,6 +9,6 @@ public interface IOrderService
 {
     public Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey, RequestOrderItemDto orderItemDto);
     public Task CancelOrder(Guid orderId);
-    public Task<Order> GetOrderById(Guid orderId);
+    public Task<ResponseOrderDto> GetOrderById(Guid orderId);
     public Task<PagedResult<ResponseOrderDto>> GetOrders(QueryParams queryParams);
 }

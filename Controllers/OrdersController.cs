@@ -45,16 +45,10 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrder([FromRoute] Guid id)
     {
-        var order = await orderService.GetOrderById(id);
+        var orderDto = await orderService.GetOrderById(id);
 
         return Ok(
-            new ResponseOrderDto
-        {
-            CustomerId = order.CustomerId,
-            DeliveryAddress = order.DeliveryAddress,
-            CreatedAt = order.CreatedAt,
-            Status = order.Status
-        }
+            orderDto
         );
     }
 

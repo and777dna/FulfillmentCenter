@@ -30,4 +30,9 @@ public class ProductMapper : IMapper<Product, ResponseProductDto>
 
         return pagedResult;
     }
+
+    public ResponseProductDto ToDto(Product items)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -18,6 +18,18 @@ public class OrderMapper : IMapper<Order, ResponseOrderDto>
         }).ToList();
         return responseOrderDtos;
     }
+    
+    public ResponseOrderDto ToDto(Order order)
+    {
+        return new ResponseOrderDto
+        {
+            CustomerId = order.CustomerId,
+            DeliveryAddress = order.DeliveryAddress,
+            CreatedAt = order.CreatedAt,
+            Status = order.Status
+        };
+    }
+    
     public PagedResult<ResponseOrderDto> ToPagedResult(int page, int pageSize, List<ResponseOrderDto> responseOrderDtos)
     {
         var pagedResult = new PagedResult<ResponseOrderDto>()
