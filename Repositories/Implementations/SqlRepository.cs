@@ -26,9 +26,18 @@ public class SqlRepository<T>(FulfillmentCenDbContext context, ILogger logger) :
         return items;
     }
 
-    public Task Add(T entity)
+    public async Task AddAsync(T? entity)
     {
-        throw new NotImplementedException();
+        if (entity == null) throw new ArgumentNullException(nameof(entity));
+        try
+        {
+            await context.Set<T>().AddAsync(entity);
+        }
+        catch (Exception)
+        {
+            logger.LogError("not possible to create an item");
+            throw;
+        }
     }
 
     public Task Update(T entity)
