@@ -77,6 +77,7 @@ builder.Services.AddScoped<OrderHandlerFactory>();
 builder.Services.AddScoped<IOrderStatusHandler, OrderCancelHandler>();
 builder.Services.AddScoped<IMapper<Product, ResponseProductDto>, ProductMapper>();
 builder.Services.AddScoped<IMapper<Order, ResponseOrderDto>, OrderMapper>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers();
 
