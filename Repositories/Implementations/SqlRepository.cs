@@ -1,20 +1,18 @@
 using FulfillmentCenter.Data;
+using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlRepository<T>(FulfillmentCenDbContext context, ILogger logger) : IRepository<T> where T : class
+public class SqlRepository<T>(FulfillmentCenDbContext context, ILogger logger) : IRepository<T> where T : BaseEntity
 {
     public async Task<T?> GetByIdAsync(Guid id)
     {
         var findByIdAsync = await context.Set<T>().FindAsync(id);
-        if (findByIdAsync == null)
-        {
-            logger.LogWarning("no item found: " + $"{typeof(T)}");
-            throw new KeyNotFoundException();
-        }
-        return findByIdAsync;
+        if (findByIdAsync != null) return findByIdAsync;
+        logger.LogWarning("no item found: " + $"{typeof(T)}");
+        throw new KeyNotFoundException();
     }
 
     public async Task<List<T>> GetAllAsync()
@@ -28,7 +26,7 @@ public class SqlRepository<T>(FulfillmentCenDbContext context, ILogger logger) :
 
     public async Task AddAsync(T? entity)
     {
-        if (entity == null) throw new ArgumentNullException(nameof(entity));
+        ArgumentNullException.ThrowIfNull(entity);
         try
         {
             await context.Set<T>().AddAsync(entity);
@@ -45,8 +43,9 @@ public class SqlRepository<T>(FulfillmentCenDbContext context, ILogger logger) :
         throw new NotImplementedException();
     }
 
-    public Task Delete(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var itemToDelete = await GetByIdAsync(id);
+        itemToDelete!.IsDeleted = true;
     }
 }
