@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlRepository<T>(FulfillmentCenDbContext context, ILogger logger) : IRepository<T> where T : BaseEntity
+public class SqlRepository<T>(FulfillmentCenDbContext context) : IRepository<T> where T : BaseEntity
 {
     public async Task<T?> GetByIdAsync(Guid id)
     {
         var findByIdAsync = await context.Set<T>().FindAsync(id);
         if (findByIdAsync != null) return findByIdAsync;
-        logger.LogWarning("no item found: " + $"{typeof(T)}");
+        //logger.LogWarning("no item found: " + $"{typeof(T)}");
         throw new KeyNotFoundException();
     }
 
@@ -19,7 +19,7 @@ public class SqlRepository<T>(FulfillmentCenDbContext context, ILogger logger) :
     {
         var items = await context.Set<T>().ToListAsync();
         if(items.Count == 0){
-            logger.LogWarning("no items found: " + $"{typeof(T)}");
+            //logger.LogWarning("no items found: " + $"{typeof(T)}");
         }
         return items;
     }
@@ -33,7 +33,7 @@ public class SqlRepository<T>(FulfillmentCenDbContext context, ILogger logger) :
         }
         catch (Exception)
         {
-            logger.LogError("not possible to create an item");
+            //logger.LogError("not possible to create an item");
             throw;
         }
     }

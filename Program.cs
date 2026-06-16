@@ -70,13 +70,15 @@ builder.Services.AddScoped<IFulfillmentCenterRepository, SqlFulfillmentCenterRep
 builder.Services.AddScoped<IInventoryRepository, SqlInventoryRepository>();
 builder.Services.AddScoped<IOrderItemRepository, SqlOrderItemRepository>();
 builder.Services.AddScoped<IOrderRepository, SqlOrderRepository>();
-builder.Services.AddScoped<IProductRepository, SqlProductRepository>();
+//builder.Services.AddScoped<IProductRepository, SqlProductRepository>();
 builder.Services.AddScoped<IShipmentRepository, SqlShipmentRepository>();
 
 builder.Services.AddScoped<OrderHandlerFactory>();
 builder.Services.AddScoped<IOrderStatusHandler, OrderCancelHandler>();
 builder.Services.AddScoped<IMapper<Product, ResponseProductDto>, ProductMapper>();
 builder.Services.AddScoped<IMapper<Order, ResponseOrderDto>, OrderMapper>();
+builder.Services.AddScoped<IMapper<Inventory, ResponseInventoryDto>,InventoryMapper>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(SqlRepository<>));
 
 builder.Services.AddControllers();
 

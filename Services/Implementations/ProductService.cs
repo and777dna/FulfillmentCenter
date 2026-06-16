@@ -8,11 +8,12 @@ using FulfillmentCenter.Services.MapperDto.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
-public class ProductService(IProductRepository productRepository, IMapper<Product, ResponseProductDto> productMapper) : IProductService
+public class ProductService(IRepository<Product> productRepository, IMapper<Product, ResponseProductDto> productMapper) : IProductService
 {
     public async Task<PagedResult<ResponseProductDto>> GetProducts(QueryParams productsQueryParams)
     {
-        var products = await productRepository.ReadAsync(productsQueryParams);
+        //var products = await productRepository.ReadAsync(productsQueryParams);
+        var products = await productRepository.GetAllAsync();
         var productDtos = productMapper.ToDto(products);
         var pagedResult = productMapper.ToPagedResult(productsQueryParams.Page, productsQueryParams.PageSize, productDtos);
         return pagedResult;
@@ -29,12 +30,14 @@ public class ProductService(IProductRepository productRepository, IMapper<Produc
             SKU = productDto.SKU,
             Weight = productDto.Weight
         };
-        await productRepository.CreateAsync(product);
+        //await productRepository.CreateAsync(product);
+        await productRepository.AddAsync(product);
     }
 
     private async Task CheckProductExist(string productSku)
     {
-        var products = await productRepository.ReadAsync();
+        //var products = await productRepository.ReadAsync();
+        var products = await productRepository.GetAllAsync();
         var productAlreadyExist = products.Any(product => product.SKU == productSku);
         if (productAlreadyExist)
         {
@@ -44,7 +47,8 @@ public class ProductService(IProductRepository productRepository, IMapper<Produc
 
     public async Task<Product> FindProduct(Guid productId)
     {
-        var products = await productRepository.ReadAsync();
+        //var products = await productRepository.ReadAsync();
+        var products = await productRepository.GetAllAsync();
         var product = products.FirstOrDefault(product => product.Id == productId);
         if (product != null)
         {

@@ -24,7 +24,6 @@ public class ProductsController(IProductService productService) : ControllerBase
             PageSize = pageSize
         };
         
-        //TODO: to make DTO here from repoistory
         var pagedResult = await _productService.GetProducts(productsQueryParams);
         return Ok(pagedResult);
     }

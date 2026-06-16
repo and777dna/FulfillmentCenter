@@ -4,7 +4,7 @@ using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
-using FulfillmentCenter.Services.MapperDto.Implementations;
+using FulfillmentCenter.Services.MapperDto.Interfaces;
 
 namespace FulfillmentCenter.Services.Implementations;
 
@@ -12,7 +12,7 @@ public class InventoryService(
     IInventoryRepository inventoryRepository,
     IFulfillmentCenterRepository fulfillmentCenterRepositor,
     IFulfillmentCenterService fulfillmentCenterService,
-    IProductService productService, InventoryMapper inventoryMapper) : IInventoryService
+    IProductService productService, IMapper<Inventory, ResponseInventoryDto> inventoryMapper) : IInventoryService
 {
     private IInventoryRepository _inventoryRepository = inventoryRepository;
 
