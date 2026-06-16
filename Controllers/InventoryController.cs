@@ -9,14 +9,12 @@ namespace FulfillmentCenter.Controllers;
 [Route("/api/inventory")]
 public class InventoryController(IInventoryService inventoryService) : ControllerBase
 {
-    private readonly IInventoryService _inventoryService = inventoryService;
-    
     [HttpPost]
     public async Task<IActionResult> AddStock([FromBody] RequestInventoryDto? inventoryDto)
     {
         if (inventoryDto != null)
         {
-            await _inventoryService.AddStock(inventoryDto, inventoryDto.DistributionCenterId);
+            await inventoryService.AddStock(inventoryDto, inventoryDto.DistributionCenterId);
             return Ok();
         }
 
@@ -31,7 +29,7 @@ public class InventoryController(IInventoryService inventoryService) : Controlle
             Page = page,
             PageSize = pageSize
         };
-        var pagedResult = await _inventoryService.RemainingsOnTheFulfillmentCenter(centerId, queryParams);
+        var pagedResult = await inventoryService.RemainingsOnTheFulfillmentCenter(centerId, queryParams);
         return Ok(pagedResult);
     }
 }
