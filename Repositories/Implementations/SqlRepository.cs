@@ -6,15 +6,23 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlRepository<T>(FulfillmentCenDbContext context, ILogger logger) : IRepository<T> where T : class
 {
-    public Task<T?> GetByIdAsync(Guid id)
+    public async Task<T?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var findByIdAsync = await context.Set<T>().FindAsync(id);
+        if (findByIdAsync == null)
+        {
+            logger.LogWarning("no item found: " + $"{typeof(T)}");
+            throw new KeyNotFoundException();
+        }
+        return findByIdAsync;
     }
 
     public async Task<List<T>> GetAllAsync()
     {
         var items = await context.Set<T>().ToListAsync();
-        if(items.Count == 0)logger.LogWarning("no items found: " + $"{typeof(T)}");
+        if(items.Count == 0){
+            logger.LogWarning("no items found: " + $"{typeof(T)}");
+        }
         return items;
     }
 
