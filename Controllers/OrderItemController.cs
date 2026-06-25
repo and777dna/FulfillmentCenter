@@ -6,7 +6,7 @@ namespace FulfillmentCenter.Controllers;
 
 [ApiController]
 [Route("/api/order-item")]
-public class OrderItemController(IOrderItemService orderItemService, IInventoryService inventoryService) : ControllerBase
+public class OrderItemController(IOrderItemService orderItemService) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> AddOrderItemToOrder([FromBody] RequestOrderItemDto? orderItemDto, [FromRoute] Guid centerId)
