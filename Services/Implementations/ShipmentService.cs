@@ -37,7 +37,7 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
         //Shipment.Order ICollection<OrderItem> Items => 
         //
         //var sufficientAmountOfInventory = _inventoryService.CheckSufficientAmountOfInventory(remainingsOnTheFulfillmentCenter, shipment.Order.Items);
-        var order = await _orderRepository.GetOrderById(requestShipmentDto.OrderId);
+        var order = await _orderRepository.GetByIdAsync(requestShipmentDto.OrderId);
         var distributionCenter = await _fulfillmentCenterService.FindFulfillmentCenter(requestShipmentDto.DistributionCenterId);
         
         var shipment =

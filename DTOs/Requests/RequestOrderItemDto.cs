@@ -5,8 +5,6 @@ namespace FulfillmentCenter.DTOs.Requests;
 public record RequestOrderItemDto
 {
     [Required]
-    public Guid OrderId { get; set; }
-    [Required]
     public Guid ProductId { get; set; }
     [Required]
     public int Quantity { get; set; }

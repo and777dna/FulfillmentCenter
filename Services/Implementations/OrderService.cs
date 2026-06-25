@@ -14,8 +14,9 @@ public class OrderService(
     IOrderRepository orderRepository,
     ICacheService cache,
     IShipmentAssignmentStrategy shipmentAssignmentStrategy,
-    IOrderItemService orderItemService,
-    IMapper<Order, ResponseOrderDto> orderMapper)
+    IMapper<Order, ResponseOrderDto> orderMapper,
+    IUnitOfWork unitOfWork,
+    InventoryService inventoryService)
     : IOrderService
 {
     private Lazy<Task<List<Order>>> _orders;
@@ -55,8 +56,7 @@ public class OrderService(
         }
         Order order = new Order
         {
-            //Id = Guid.NewGuid(),
-            Id = orderItemDto.OrderId,
+            Id = Guid.NewGuid(),
             CustomerId = orderDto.CustomerId,
             DeliveryAddress = orderDto.DeliveryAddress,
             //CreatedAt = DateTime.SpecifyKind(orderDto.CreatedAt, DateTimeKind.Unspecified),
@@ -68,9 +68,19 @@ public class OrderService(
         
         //TODO: to enable differenct level of isolation to make it workable
         //using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        OrderItem orderItem = new OrderItem
+        {
+            Id = Guid.NewGuid(),
+            OrderId = order.Id,
+            PricePerUnit = orderItemDto.PricePerUnit,
+            ProductId = orderItemDto.ProductId,
+            Quantity = orderItemDto.Quantity
+        };
         
-        await orderRepository.CreateAsync(order);
-        await orderItemService.AddOrderItemToOrder(orderItemDto, findCenterId);
+        await orderRepository.AddAsync(order);
+        //await orderItemService.AddOrderItemToOrder(orderItemDto, findCenterId);
+        order.Items.Add(orderItem);
+        await inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, findCenterId);
         cache.Set(idempotencyKey, order.Id, TimeSpan.FromMinutes(10));
         
         //scope.Complete();
@@ -89,7 +99,7 @@ public class OrderService(
     
     public async Task<ResponseOrderDto> GetOrderById(Guid orderId)
     {
-        var order = await orderRepository.GetOrderById(orderId);
+        var order = await orderRepository.GetByIdAsync(orderId);
         var orderDto = orderMapper.ToDto(order);
         /*new ResponseOrderDto
            {
@@ -107,5 +117,21 @@ public class OrderService(
         var orderDtos = orderMapper.ToDto(pagedOrders);
         var pagedResult = orderMapper.ToPagedResult(queryParams.Page, queryParams.PageSize, orderDtos); 
         return pagedResult;
+    }
+
+    public async Task AddOrderItemToOrder(Guid orderId, RequestOrderItemDto orderItemDto, Guid centerId)
+    {
+        OrderItem orderItem = new OrderItem
+        {
+            Id = Guid.NewGuid(),
+            PricePerUnit = orderItemDto.PricePerUnit,
+            ProductId = orderItemDto.ProductId,
+            Quantity = orderItemDto.Quantity
+        };
+        
+        var order = await orderRepository.GetOrderWithItemsAsync(orderId);
+        order.Items.Add(orderItem);
+        await inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, centerId);
+        await unitOfWork.SaveTransactionAsync();
     }
 }

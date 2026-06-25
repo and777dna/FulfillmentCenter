@@ -60,7 +60,6 @@ builder.Services.AddTransient<IShipmentAssignmentStrategy, HighestStockStrategy>
 builder.Services.AddSingleton<ICacheService, MemoryCacheService>();
 
 builder.Services.AddScoped<IInventoryService, InventoryService>();
-builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IFulfillmentCenterService, FulfillmentCenterService>();
@@ -68,7 +67,6 @@ builder.Services.AddScoped<IShipmentService, ShipmentService>();
 
 builder.Services.AddScoped<IFulfillmentCenterRepository, SqlFulfillmentCenterRepository>();
 builder.Services.AddScoped<IInventoryRepository, SqlInventoryRepository>();
-builder.Services.AddScoped<IOrderItemRepository, SqlOrderItemRepository>();
 builder.Services.AddScoped<IOrderRepository, SqlOrderRepository>();
 //builder.Services.AddScoped<IProductRepository, SqlProductRepository>();
 builder.Services.AddScoped<IShipmentRepository, SqlShipmentRepository>();

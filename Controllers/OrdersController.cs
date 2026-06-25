@@ -68,4 +68,14 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(orders);
     }
     
+    [HttpPost("{orderId}/items")]
+    public async Task<IActionResult> AddOrderItemToOrder([FromRoute] Guid orderId, [FromBody] RequestOrderItemDto? orderItemDto, [FromRoute] Guid centerId)
+    {
+        if (orderItemDto == null) throw new ArgumentNullException(nameof(orderItemDto), "OrderItemDto is null");
+        
+        await orderService.AddOrderItemToOrder(orderId, orderItemDto, centerId);
+      
+        return Ok();
+    }
+    
 }

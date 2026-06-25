@@ -9,7 +9,7 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrderRepository> logger) : IOrderRepository
 {
-    public async Task CreateAsync(Order order)
+    public async Task AddAsync(Order order)
     {
         try
         {
@@ -31,7 +31,7 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
             throw;
         }
     }
-
+    
     public async Task DeleteAsync(Guid id)
     {
         var orderToDelete = await context.Orders.FirstOrDefaultAsync(order => order.Id == id);
@@ -52,11 +52,11 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
         }
     }
     
-    public async Task<List<Order>> ReadAsync()
+    public async Task<List<Order>> GetAllAsync()
     {
         try
         {
-            List<Order> orders = await context.Orders
+            List<Order> orders = await context.Orders.Include(o => o.Items)
                 .OrderBy(p => p.Id)
                 .ToListAsync();
             if (orders == null) throw new FileNotFoundException();
@@ -108,14 +108,20 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
         }
     }
 
-    public async Task<Order> GetOrderById(Guid orderId)
+    public async Task<Order> GetByIdAsync(Guid orderId)
     {
-        var orders = await ReadAsync();
+        var orders = await GetAllAsync();
         
         var findBook = SearchById(orderId, orders);
         return findBook;
     }
-    
+
+    public async Task<Order?> GetOrderWithItemsAsync(Guid orderId)
+    {
+        return await context.Orders
+            .FirstOrDefaultAsync(o => o.Id == orderId);
+    }
+
     private Order SearchById(Guid orderId, List<Order> orders)
     {
         var findOrder = orders.FirstOrDefault(order => order.Id == orderId);
@@ -125,5 +131,10 @@ public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrde
         }
 
         throw new ArgumentNullException(nameof(orderId), "Order not found");
+    }
+    
+    public Task Update(Order entity)
+    {
+        throw new NotImplementedException();
     }
 }
