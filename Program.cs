@@ -1,6 +1,7 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Middleware;
 using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Implementations;
@@ -84,6 +85,7 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapControllers();
 
 if (app.Environment.IsDevelopment())
@@ -99,24 +101,6 @@ if (app.Environment.IsDevelopment())
         return canConnect ? "Database connection OK ✅" : "Database connection FAILED ❌";
     });
 }
-
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler();
-    app.UseStatusCodePages();
-}
-
-app.Map("/error", (HttpContext context) =>
-{
-    var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
-
-    return Results.Problem(
-        title: "Server error",
-        detail: exception?.Message
-    );
-});
-
 
 
 app.Run();
