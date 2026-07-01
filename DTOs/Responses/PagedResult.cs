@@ -10,6 +10,5 @@ public record PagedResult<T>
 
     public int TotalCount { get; set; }
 
-    public int TotalPages { get; set; } //=>
-        //(int)Math.Ceiling((double)TotalCount / PageSize);
+    public int TotalPages { get; set; }
 }

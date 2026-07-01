@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<SqlInventoryRepository> logger) : IInventoryRepository
+public class SqlInventoryRepository(FulfillmentCenterDbContext context, ILogger<SqlInventoryRepository> logger) : IInventoryRepository
 {
     public async Task CreateAsync(Inventory inventory)
     {
@@ -34,7 +34,7 @@ public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<Sql
     }
 
     public async Task<List<Inventory>> ReadAsync()
-    {//All Read() methods load the entire table into memory as a List<T>. No filtering, no Where, no pagination. This will not scale
+    {
         List<Inventory> inventories;
             try
             {
@@ -51,7 +51,7 @@ public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<Sql
     }
     
     public async Task<List<Inventory>> ReadAsync(QueryParams queryParams)
-    {//All Read() methods load the entire table into memory as a List<T>. No filtering, no Where, no pagination. This will not scale
+    {
         int page = queryParams.Page;
         int pageSize = queryParams.PageSize;
         
@@ -91,12 +91,6 @@ public class SqlInventoryRepository(FulfillmentCenDbContext context, ILogger<Sql
             logger.LogError(e, "not possible to update an inventory.");
             throw;
         }
-        /*UpdateInventoryQuantity(fulfillmentCenterId, inventory,
-            (inventory, fulfillmentCente) =>
-            {
-                var InventoryToUpdate = _context.Inventory.FirstOrDefault(inventor => { return inventor.Id == inventory.Id && inventor.DistributionCenter == inventory. } );
-                InventoryToUpdate = inventory;
-            });*/
     }
 
     public async Task UpdateInventoryQuantityAsync(UpdateInventoryDto inventory)

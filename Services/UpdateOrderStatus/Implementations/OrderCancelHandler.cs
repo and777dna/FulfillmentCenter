@@ -5,7 +5,7 @@ using FulfillmentCenter.Services.UpdateOrderStatus.Interfaces;
 
 namespace FulfillmentCenter.Services.UpdateOrderStatus.Implementations;
 
-public class OrderCancelHandler(IOrderRepository orderRepository, FulfillmentCenDbContext context, ILogger<OrderCancelHandler> logger) : IOrderStatusHandler
+public class OrderCancelHandler(IOrderRepository orderRepository, FulfillmentCenterDbContext context, ILogger<OrderCancelHandler> logger) : IOrderStatusHandler
 {
     private IOrderRepository _orderRepository = orderRepository;
 

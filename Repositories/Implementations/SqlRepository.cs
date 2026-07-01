@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlRepository<T>(FulfillmentCenDbContext context, ILogger<SqlRepository<T>> logger) : IRepository<T> where T : BaseEntity
+public class SqlRepository<T>(FulfillmentCenterDbContext context, ILogger<SqlRepository<T>> logger) : IRepository<T> where T : BaseEntity
 {
     public async Task<T?> GetByIdAsync(Guid id)
     {

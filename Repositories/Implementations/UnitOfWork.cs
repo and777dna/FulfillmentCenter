@@ -3,7 +3,7 @@ using FulfillmentCenter.Repositories.Interfaces;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class UnitOfWork(FulfillmentCenDbContext context, ILogger<SqlOrderRepository> logger) : IUnitOfWork
+public class UnitOfWork(FulfillmentCenterDbContext context, ILogger<SqlOrderRepository> logger) : IUnitOfWork
 {
     public async Task SaveTransactionAsync()
     {

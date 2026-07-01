@@ -7,10 +7,10 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
 {
-    private readonly FulfillmentCenDbContext _context;
+    private readonly FulfillmentCenterDbContext _context;
     int page = 1;
     int pageSize = 50;
-    public SqlFulfillmentCenterRepository(FulfillmentCenDbContext context)
+    public SqlFulfillmentCenterRepository(FulfillmentCenterDbContext context)
     {
         _context = context;
     }
@@ -33,10 +33,9 @@ public class SqlFulfillmentCenterRepository : IFulfillmentCenterRepository
     }
 
     public async Task<List<DistributionCenter>> ReadAsync()
-    {//All Read() methods load the entire table into memory as a List<T>. No filtering, no Where, no pagination. This will not scale
+    {
         List<DistributionCenter> fulfillmentCenters = await _context.DistributionCenters.Skip((page - 1) * pageSize)
             .Include(d => d.Inventories)//TODO: to take this into account, i didnt get thgotuh navigation properties "Inventories"
-            //THIS INCLUDE TO GET RID OF N+1 PROBLEM?
             .Take(pageSize).OrderBy(p => p.Id)
             .ToListAsync();
         return fulfillmentCenters;

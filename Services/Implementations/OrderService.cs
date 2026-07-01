@@ -1,3 +1,4 @@
+using System.Transactions;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
@@ -22,29 +23,9 @@ public class OrderService(
     private Lazy<Task<List<Order>>> _orders;
     
     private OrderHandlerFactory _orderHandlerFactory = new OrderHandlerFactory();
-
-    //ResetCache();
-
-    /*private void ResetCache()
-    {
-        _orders = new Lazy<Task<List<Order>>>(() => _orderRepository.Read());
-    }*/
     
     public async Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey, RequestOrderItemDto orderItemDto)
     {
-        /*if (GetOrderById(orderDto.Id) != null)//TODO: to fix this "Expression is always true according to nullable reference types' annotations"
-        {
-            Order order = new Order
-            {
-                Id = orderDto.Id,
-                CustomerName = orderDto.CustomerName,
-                DeliveryAddress = orderDto.DeliveryAddress,
-                CreatedAt = orderDto.CreatedAt,
-                Status = orderDto.Status,
-                //TODO: to add shippment here, by finding it in db
-            };
-            _orderRepository.Create(order);
-        }*/
         if (cache.TryGet<Guid>(idempotencyKey, out var cachedOrderId))
         {
             return;
@@ -59,7 +40,6 @@ public class OrderService(
             Id = Guid.NewGuid(),
             CustomerId = orderDto.CustomerId,
             DeliveryAddress = orderDto.DeliveryAddress,
-            //CreatedAt = DateTime.SpecifyKind(orderDto.CreatedAt, DateTimeKind.Unspecified),
             Status = OrderStatus.Created
             //TODO: to add shippment here, by finding it in db
         };
@@ -67,7 +47,7 @@ public class OrderService(
         var findCenterId = await shipmentAssignmentStrategy.SelectDistributionCenter(orderItemDto.ProductId, orderItemDto.Quantity);
         
         //TODO: to enable differenct level of isolation to make it workable
-        //using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         OrderItem orderItem = new OrderItem
         {
             Id = Guid.NewGuid(),
@@ -83,7 +63,7 @@ public class OrderService(
         await inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, findCenterId);
         cache.Set(idempotencyKey, order.Id, TimeSpan.FromMinutes(10));
         
-        //scope.Complete();
+        scope.Complete();
     }
 
     public async Task CancelOrder(Guid orderId)

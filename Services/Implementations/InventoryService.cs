@@ -24,8 +24,6 @@ public class InventoryService(
 
     public async Task AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)
     {
-        //TODO: if "fulfillmentCenterId" exist -> should be BOOL THIS ONE to delete?????
-        //var fulfillmentCenter = await FindProduct(fulfillmentCenterId, inventoryDto.ProductId);
         //TODO: if "productId" exist -> should be BOOL 
         var productOnFulfillmentCenter =
             await FindProduct(fulfillmentCenterId,

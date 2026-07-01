@@ -1,13 +1,13 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
-using FulfillmentCenter.Repositories.FilterV2.Implementations;
+using FulfillmentCenter.Repositories.Filter;
 using FulfillmentCenter.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlOrderRepository(FulfillmentCenDbContext context, ILogger<SqlOrderRepository> logger) : IOrderRepository
+public class SqlOrderRepository(FulfillmentCenterDbContext context, ILogger<SqlOrderRepository> logger) : IOrderRepository
 {
     public async Task AddAsync(Order order)
     {

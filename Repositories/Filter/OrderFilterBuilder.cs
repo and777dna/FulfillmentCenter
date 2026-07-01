@@ -1,6 +1,6 @@
 using FulfillmentCenter.Entities;
 
-namespace FulfillmentCenter.Repositories.FilterV2.Implementations;
+namespace FulfillmentCenter.Repositories.Filter;
 
 public class OrderFilterBuilder(IQueryable<Order> orders)
 {

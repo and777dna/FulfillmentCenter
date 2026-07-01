@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlShipmentRepository(FulfillmentCenDbContext context, ILogger<SqlShipmentRepository> logger) : IShipmentRepository
+public class SqlShipmentRepository(FulfillmentCenterDbContext context, ILogger<SqlShipmentRepository> logger) : IShipmentRepository
 {
     int page = 2;
     int pageSize = 50;
@@ -46,8 +46,6 @@ public class SqlShipmentRepository(FulfillmentCenDbContext context, ILogger<SqlS
 
     public async Task<List<Shipment>> ReadAsync()
     {
-        
-            //Shipments = await _context.Shipment.ToListAsync();
             return await context.Shipments.Where(shipment => shipment.IsDeleted != true && shipment.Status !=
                 ShipmentStatus.Cancelled && shipment.Status != ShipmentStatus.Failed).Skip((page - 1) * pageSize)
                 .Take(pageSize).OrderBy(p => p.Id).ToListAsync();
@@ -65,7 +63,7 @@ public class SqlShipmentRepository(FulfillmentCenDbContext context, ILogger<SqlS
         }
         else if (status == ShipmentStatus.Delivered)
         {
-            //await OrderStatus.Delivered TO IsDeleted = true
+            //TODO: await OrderStatus.Delivered TO IsDeleted = true
         }
         else
         {
@@ -74,8 +72,6 @@ public class SqlShipmentRepository(FulfillmentCenDbContext context, ILogger<SqlS
         
     }
     
-    /*Failed = 4,
-       Cancelled = 5*/
     public async Task UpdateShipmentAsync<TUpdateParameter>(Guid id, TUpdateParameter updateParameter, Action<TUpdateParameter, Shipment> up)
     {
         try

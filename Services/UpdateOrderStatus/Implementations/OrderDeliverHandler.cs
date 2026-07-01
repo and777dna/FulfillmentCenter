@@ -5,7 +5,7 @@ using FulfillmentCenter.Repositories.Interfaces;
 
 namespace FulfillmentCenter.Services.UpdateOrderStatus.Implementations;
 
-public class OrderDeliverHandler(FulfillmentCenDbContext context, IOrderRepository orderRepository, ILogger<OrderDeliverHandler> logger)
+public class OrderDeliverHandler(FulfillmentCenterDbContext context, IOrderRepository orderRepository, ILogger<OrderDeliverHandler> logger)
 {
     private IOrderRepository _orderRepository = orderRepository;
 

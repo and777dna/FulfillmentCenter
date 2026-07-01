@@ -23,7 +23,7 @@ builder.Services.AddSwaggerGen();
 
 
 var connectionString = builder.Configuration.GetConnectionString("FulfilmentCenterDatabase");
-builder.Services.AddDbContext<FulfillmentCenDbContext>(options =>
+builder.Services.AddDbContext<FulfillmentCenterDbContext>(options =>
         {
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 
@@ -49,7 +49,7 @@ builder.Services.AddDbContext<FulfillmentCenDbContext>(options =>
                         }
                     },
                     LogLevel.Information,
-                    DbContextLoggerOptions.Id// | DbContextLoggerOptions.SingleLine
+                    DbContextLoggerOptions.Id
                     ).EnableSensitiveDataLogging();
             }
         }
@@ -68,7 +68,6 @@ builder.Services.AddScoped<IShipmentService, ShipmentService>();
 builder.Services.AddScoped<IFulfillmentCenterRepository, SqlFulfillmentCenterRepository>();
 builder.Services.AddScoped<IInventoryRepository, SqlInventoryRepository>();
 builder.Services.AddScoped<IOrderRepository, SqlOrderRepository>();
-//builder.Services.AddScoped<IProductRepository, SqlProductRepository>();
 builder.Services.AddScoped<IShipmentRepository, SqlShipmentRepository>();
 
 builder.Services.AddScoped<OrderHandlerFactory>();
@@ -92,7 +91,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     
     app.MapGet("/testing", () => "TESTING");
-    app.MapGet("/db-test", async (FulfillmentCenDbContext db) =>
+    app.MapGet("/db-test", async (FulfillmentCenterDbContext db) =>
     {
         var canConnect = await db.Database.CanConnectAsync();
 

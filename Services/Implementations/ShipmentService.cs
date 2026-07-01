@@ -19,7 +19,7 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
     //TODO: DTOs here for _sqlShipmentRepository, _sqlInventoryRepository
     
     public Dictionary<Guid, int> ReturnShipmentAmount(ICollection<OrderItem> shipmentAmount)
-    {//ICollection<OrderItem> Items
+    {
         Dictionary<Guid, int> openWith = new Dictionary<Guid, int>();
         foreach (var shipment in shipmentAmount)
         {
@@ -30,13 +30,7 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
     }
     
     public async Task CreateShipment(RequestShipmentDto requestShipmentDto)
-    {//na FulfillmentCenter достаточно товара для каждой позиции Order
-        //TODO: to update remainingsOnTheFulfillmentCenter
-        //var remainingsOnTheFulfillmentCenter = _inventoryService.RemainingsOnTheFulfillmentCenter(requestShipmentDto.DistributionCenterId);
-        //Inventory.DistributionCenterId .Inventory => forEach()
-        //Shipment.Order ICollection<OrderItem> Items => 
-        //
-        //var sufficientAmountOfInventory = _inventoryService.CheckSufficientAmountOfInventory(remainingsOnTheFulfillmentCenter, shipment.Order.Items);
+    {
         var order = await _orderRepository.GetByIdAsync(requestShipmentDto.OrderId);
         var distributionCenter = await _fulfillmentCenterService.FindFulfillmentCenter(requestShipmentDto.DistributionCenterId);
         
@@ -50,10 +44,6 @@ public class ShipmentService(IShipmentRepository shipmentRepository, IInventoryR
                 EstimatedDelivery = DateTime.UtcNow
             };
         
-        /*if (CheckSufficientAmountOfInventoryToShipment(_inventoryService.ReturnProductAmount(remainingsOnTheFulfillmentCenter.Result), ReturnShipmentAmount(shipment.Order.Items)))
-        {
-            _shipmentRepository.Create(shipment);
-        }*/
         await _shipmentRepository.CreateAsync(shipment);
     }
     

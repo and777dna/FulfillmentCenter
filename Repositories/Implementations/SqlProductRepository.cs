@@ -1,13 +1,13 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
-using FulfillmentCenter.Repositories.FilterV2.Implementations;
+using FulfillmentCenter.Repositories.Filter;
 using FulfillmentCenter.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Repositories.Implementations;
 
-public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlProductRepository> logger)
+public class SqlProductRepository(FulfillmentCenterDbContext context, ILogger<SqlProductRepository> logger)
     : IProductRepository
 {
     public async Task CreateAsync(Product product)
@@ -79,24 +79,6 @@ public class SqlProductRepository(FulfillmentCenDbContext context, ILogger<SqlPr
             logger.LogError(e, "not possible to read products");
             throw;
         }
-
-        
-        /*var responseProductDtos = products.Select(product =>
-            new ResponseProductDto
-            {
-                Name = product.Name,
-                SKU = product.SKU,
-                Weight = product.Weight
-            }).ToList();
-
-        PagedResult<ResponseProductDto> pagedResult = new PagedResult<ResponseProductDto>()
-        {
-            Page = page,
-            PageSize = pageSize,
-            TotalCount = products.Count,
-            TotalPages = products.Count / page,
-            Items = responseProductDtos
-        };*/
         return products;
     }
 }

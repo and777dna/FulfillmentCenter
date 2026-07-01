@@ -4,13 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FulfillmentCenter.Data;
 
-
-//TODO review: use standart EF pattern for DbContext: public FulfillmentCenDbContext(DbContextOptions<FulfillmentCenDbContext> options) : base(options) { }
-//Without this, the context can't be properly registered with AddDbContext<>() in Program.cs, and the connection string can't be injected from configuration
-//Since the full word is used everywhere else, this should be FulfillmentCenterDbContext for consistency
-public class FulfillmentCenDbContext : DbContext
+public class FulfillmentCenterDbContext : DbContext
 {
-    public FulfillmentCenDbContext(DbContextOptions<FulfillmentCenDbContext> options)
+    public FulfillmentCenterDbContext(DbContextOptions<FulfillmentCenterDbContext> options)
         : base(options)
     {
     }
