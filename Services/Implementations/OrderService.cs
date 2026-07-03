@@ -17,12 +17,13 @@ public class OrderService(
     IShipmentAssignmentStrategy shipmentAssignmentStrategy,
     IMapper<Order, ResponseOrderDto> orderMapper,
     IUnitOfWork unitOfWork,
-    InventoryService inventoryService)
+    InventoryService inventoryService,
+    OrderHandlerFactory orderHandlerFactory)
     : IOrderService
 {
     private Lazy<Task<List<Order>>> _orders;
-    
-    private OrderHandlerFactory _orderHandlerFactory = new OrderHandlerFactory();
+
+    private OrderHandlerFactory _orderHandlerFactory = orderHandlerFactory;
     
     public async Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey, RequestOrderItemDto orderItemDto)
     {
@@ -47,7 +48,7 @@ public class OrderService(
         var findCenterId = await shipmentAssignmentStrategy.SelectDistributionCenter(orderItemDto.ProductId, orderItemDto.Quantity);
         
         //TODO: to enable differenct level of isolation to make it workable
-        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        
         OrderItem orderItem = new OrderItem
         {
             Id = Guid.NewGuid(),
@@ -58,12 +59,11 @@ public class OrderService(
         };
         
         await orderRepository.AddAsync(order);
-        //await orderItemService.AddOrderItemToOrder(orderItemDto, findCenterId);
-        order.Items.Add(orderItem);
+        await AddOrderItemToOrder(order.Id, orderItemDto, findCenterId);
         await inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, findCenterId);
         cache.Set(idempotencyKey, order.Id, TimeSpan.FromMinutes(10));
         
-        scope.Complete();
+        await unitOfWork.SaveTransactionAsync();
     }
 
     public async Task CancelOrder(Guid orderId)
@@ -108,6 +108,7 @@ public class OrderService(
             ProductId = orderItemDto.ProductId,
             Quantity = orderItemDto.Quantity
         };
+        
         
         var order = await orderRepository.GetOrderWithItemsAsync(orderId);
         order.Items.Add(orderItem);
