@@ -1,6 +1,7 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Middleware;
 using FulfillmentCenter.Repositories.Implementations;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Implementations;
@@ -12,7 +13,6 @@ using FulfillmentCenter.Services.UpdateOrderStatus.Implementations;
 using FulfillmentCenter.Services.UpdateOrderStatus.Interfaces;
 using FulfillmentCenter.Strategies.Implementations;
 using FulfillmentCenter.Strategies.Interfaces;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -69,6 +69,7 @@ builder.Services.AddScoped<IFulfillmentCenterRepository, SqlFulfillmentCenterRep
 builder.Services.AddScoped<IInventoryRepository, SqlInventoryRepository>();
 builder.Services.AddScoped<IOrderRepository, SqlOrderRepository>();
 builder.Services.AddScoped<IShipmentRepository, SqlShipmentRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<OrderHandlerFactory>();
 builder.Services.AddScoped<IOrderStatusHandler, OrderCancelHandler>();
@@ -83,13 +84,15 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.MapControllers();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    
+
     app.MapGet("/testing", () => "TESTING");
     app.MapGet("/db-test", async (FulfillmentCenterDbContext db) =>
     {
@@ -98,24 +101,5 @@ if (app.Environment.IsDevelopment())
         return canConnect ? "Database connection OK ✅" : "Database connection FAILED ❌";
     });
 }
-
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler();
-    app.UseStatusCodePages();
-}
-
-app.Map("/error", (HttpContext context) =>
-{
-    var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
-
-    return Results.Problem(
-        title: "Server error",
-        detail: exception?.Message
-    );
-});
-
-
 
 app.Run();

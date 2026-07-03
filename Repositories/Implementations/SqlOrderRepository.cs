@@ -1,6 +1,7 @@
 using FulfillmentCenter.Data;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Exceptions;
 using FulfillmentCenter.Repositories.Filter;
 using FulfillmentCenter.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -130,7 +131,7 @@ public class SqlOrderRepository(FulfillmentCenterDbContext context, ILogger<SqlO
             return findOrder;
         }
 
-        throw new ArgumentNullException(nameof(orderId), "Order not found");
+        throw new OrderNotFoundException(orderId);
     }
     
     public Task Update(Order entity)
