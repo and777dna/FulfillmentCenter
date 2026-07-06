@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Entities.Operation.Interfaces;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
 using FulfillmentCenter.Services.MapperDto.Interfaces;
@@ -90,40 +91,33 @@ public class InventoryService(
         return openWith;
     }
 
-    public async Task UpdateInventoryProduct(Guid productId, int quantity, Guid centerId)
-    {
-        var updatedInventory = new UpdateInventoryDto
+    public async Task UpdateInventoryProduct(Guid productId, IOperation<Inventory> operation, Guid centerId)
+    {//TODO: to implement IRepository to fix this duplicity
+        var remainingsOnTheFulfillmentCenter = await RemainingsOnTheFulfillmentCenter(centerId, new QueryParams { PageSize = 50, Page = 1 });
+
+        var currentInventory = remainingsOnTheFulfillmentCenter.Items
+            .FirstOrDefault(inventory => inventory.ProductId == productId);
+        if (currentInventory == null)
+        {
+            throw new ArgumentNullException(nameof(currentInventory),
+                "inventory with such productId doesnt exist on the given distribution center");
+        }
+
+        var inventory = new Inventory
+        {
+            ProductId = currentInventory.ProductId,
+            Quantity = currentInventory.Quantity,
+            DistributionCenterId = centerId
+        };
+        var quantityBefore = inventory.Quantity;
+
+        operation.Apply(inventory);
+
+        var delta = inventory.Quantity - quantityBefore;
+        await _inventoryRepository.UpdateInventoryQuantityAsync(new UpdateInventoryDto
         {
             ProductId = productId,
-            Quantity = quantity
-        };
-        var remainingsOnTheFulfillmentCenter = await RemainingsOnTheFulfillmentCenter(centerId, new QueryParams{ PageSize = 50, Page = 1});
-
-        if (CheckSufficientAmountOfInventory(remainingsOnTheFulfillmentCenter, updatedInventory))
-        {
-            await _inventoryRepository.UpdateInventoryQuantityAsync(updatedInventory);
-        }
-        else
-        {
-            throw new InvalidOperationException("not enough product on the given distribution center for the inventory");
-        }
-
-        
-    }
-
-    public bool CheckSufficientAmountOfInventory(PagedResult<ResponseInventoryDto> remainingsOnTheFulfillmentCenter, UpdateInventoryDto itemsToUpdate)
-    {
-        var findInventoryProduct = remainingsOnTheFulfillmentCenter.Items.FirstOrDefault(inventory => inventory.ProductId == itemsToUpdate.ProductId);
-        if (findInventoryProduct == null)
-        {
-            throw new ArgumentNullException(nameof(findInventoryProduct), "inventory with such productId doesnt exist on the given distribution center");
-        }
-
-        if (findInventoryProduct.Quantity - itemsToUpdate.Quantity > 0)
-        {
-            return true;
-        }
-
-        return false;
+            Quantity = delta
+        });
     }
 }

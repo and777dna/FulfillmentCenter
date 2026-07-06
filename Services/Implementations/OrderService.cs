@@ -2,6 +2,7 @@ using System.Transactions;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
+using FulfillmentCenter.Entities.Operation.Interfaces;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Repositories.Interfaces;
 using FulfillmentCenter.Services.Interfaces;
@@ -60,7 +61,6 @@ public class OrderService(
         
         await orderRepository.AddAsync(order);
         await UpdateOrder(order.Id, orderItemDto, findCenterId);
-        await inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, findCenterId);
         cache.Set(idempotencyKey, order.Id, TimeSpan.FromMinutes(10));
         
         await unitOfWork.SaveTransactionAsync();
@@ -114,7 +114,8 @@ public class OrderService(
         };
 
         orderItemDto.Operation.Apply(existingItem);
-        await inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, centerId);
+        await inventoryService.UpdateInventoryProduct(orderItemDto.ProductId,
+            (IOperation<Inventory>)orderItemDto.Operation, centerId);
 
         await unitOfWork.SaveTransactionAsync();
     }

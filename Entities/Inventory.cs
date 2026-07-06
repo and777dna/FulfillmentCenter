@@ -12,4 +12,17 @@ public class Inventory : BaseEntity
     public DistributionCenter DistributionCenter { get; set; } = null!;
     [Required]
     public int Quantity { get; set; }
+
+    public void Increase(int amount)
+    {
+        if (amount <= 0) throw new InvalidOperationException("Amount must be positive");
+        Quantity += amount;
+    }
+
+    public void Decrease(int amount)
+    {
+        if (amount <= 0) throw new InvalidOperationException("Amount must be positive");
+        if (Quantity - amount < 0) throw new InvalidOperationException("Insufficient available stock");
+        Quantity -= amount;
+    }
 }

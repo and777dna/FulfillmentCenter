@@ -1,6 +1,6 @@
 namespace FulfillmentCenter.Entities.Operation.Interfaces;
 
-public interface IOperation
+public interface IOperation<TEntity>
 {
-    public void Apply(OrderItem orderItem);
+    public void Apply(TEntity entity);
 }
