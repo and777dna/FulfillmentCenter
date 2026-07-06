@@ -1,5 +1,6 @@
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
+using FulfillmentCenter.Entities.Operation.Implementations;
 using FulfillmentCenter.Enums;
 using FulfillmentCenter.Services.Interfaces;
 using FulfillmentCenter.Services.UpdateOrderStatus;
@@ -68,14 +69,26 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(orders);
     }
     
-    [HttpPost("{orderId}/items")]
-    public async Task<IActionResult> UpdateOrder([FromRoute] Guid orderId, [FromBody] RequestOrderItemDto? orderItemDto, [FromRoute] Guid centerId)
+    [HttpPost("add/{orderId}/items")]
+    public async Task<IActionResult> AddOrderItem([FromRoute] Guid orderId, [FromBody] RequestOrderItemDto? orderItemDto, [FromRoute] Guid centerId)
     {
         if (orderItemDto == null) throw new ArgumentNullException(nameof(orderItemDto), "OrderItemDto is null");
 
+        orderItemDto.Operation = new AddOrderItemOperation(orderItemDto.Quantity);
         await orderService.UpdateOrder(orderId, orderItemDto, centerId);
 
         return Ok();
     }
     
+    [HttpPost("delete/{orderId}/items")]
+    public async Task<IActionResult> DeleteOrderItem([FromRoute] Guid orderId, [FromBody] RequestOrderItemDto? orderItemDto, [FromRoute] Guid centerId)
+    {
+        if (orderItemDto == null) throw new ArgumentNullException(nameof(orderItemDto), "OrderItemDto is null");
+
+        orderItemDto.Operation = new DeleteOrderItemOperation(orderItemDto.Quantity);
+        await orderService.UpdateOrder(orderId, orderItemDto, centerId);
+
+        return Ok();
+    }
+     
 }

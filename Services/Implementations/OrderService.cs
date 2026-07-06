@@ -105,35 +105,16 @@ public class OrderService(
 
         var existingItem = order.Items.FirstOrDefault(item => item.ProductId == orderItemDto.ProductId);
 
-        if (existingItem != null && orderItemDto.Quantity <= 0)
+        OrderItem orderItem = new OrderItem
         {
-            order.Items.Remove(existingItem);
-            await inventoryService.UpdateInventoryProduct(existingItem.ProductId, -existingItem.Quantity, centerId);
-        }
-        else if (existingItem != null)
-        {
-            var quantityDelta = orderItemDto.Quantity - existingItem.Quantity;
-            existingItem.Quantity = orderItemDto.Quantity;
-            existingItem.PricePerUnit = orderItemDto.PricePerUnit;
+            Id = Guid.NewGuid(),
+            PricePerUnit = orderItemDto.PricePerUnit,
+            ProductId = orderItemDto.ProductId,
+            Quantity = orderItemDto.Quantity
+        };
 
-            if (quantityDelta != 0)
-            {
-                await inventoryService.UpdateInventoryProduct(existingItem.ProductId, quantityDelta, centerId);
-            }
-        }
-        else
-        {
-            OrderItem orderItem = new OrderItem
-            {
-                Id = Guid.NewGuid(),
-                PricePerUnit = orderItemDto.PricePerUnit,
-                ProductId = orderItemDto.ProductId,
-                Quantity = orderItemDto.Quantity
-            };
-
-            order.Items.Add(orderItem);
-            await inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, centerId);
-        }
+        orderItemDto.Operation.Apply(existingItem);
+        await inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, centerId);
 
         await unitOfWork.SaveTransactionAsync();
     }
