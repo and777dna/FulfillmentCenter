@@ -59,7 +59,7 @@ public class OrderService(
         };
         
         await orderRepository.AddAsync(order);
-        await AddOrderItemToOrder(order.Id, orderItemDto, findCenterId);
+        await UpdateOrder(order.Id, orderItemDto, findCenterId);
         await inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, findCenterId);
         cache.Set(idempotencyKey, order.Id, TimeSpan.FromMinutes(10));
         
@@ -99,20 +99,42 @@ public class OrderService(
         return pagedResult;
     }
 
-    public async Task AddOrderItemToOrder(Guid orderId, RequestOrderItemDto orderItemDto, Guid centerId)
+    public async Task UpdateOrder(Guid orderId, RequestOrderItemDto orderItemDto, Guid centerId)
     {
-        OrderItem orderItem = new OrderItem
-        {
-            Id = Guid.NewGuid(),
-            PricePerUnit = orderItemDto.PricePerUnit,
-            ProductId = orderItemDto.ProductId,
-            Quantity = orderItemDto.Quantity
-        };
-        
-        
         var order = await orderRepository.GetOrderWithItemsAsync(orderId);
-        order.Items.Add(orderItem);
-        await inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, centerId);
+
+        var existingItem = order.Items.FirstOrDefault(item => item.ProductId == orderItemDto.ProductId);
+
+        if (existingItem != null && orderItemDto.Quantity <= 0)
+        {
+            order.Items.Remove(existingItem);
+            await inventoryService.UpdateInventoryProduct(existingItem.ProductId, -existingItem.Quantity, centerId);
+        }
+        else if (existingItem != null)
+        {
+            var quantityDelta = orderItemDto.Quantity - existingItem.Quantity;
+            existingItem.Quantity = orderItemDto.Quantity;
+            existingItem.PricePerUnit = orderItemDto.PricePerUnit;
+
+            if (quantityDelta != 0)
+            {
+                await inventoryService.UpdateInventoryProduct(existingItem.ProductId, quantityDelta, centerId);
+            }
+        }
+        else
+        {
+            OrderItem orderItem = new OrderItem
+            {
+                Id = Guid.NewGuid(),
+                PricePerUnit = orderItemDto.PricePerUnit,
+                ProductId = orderItemDto.ProductId,
+                Quantity = orderItemDto.Quantity
+            };
+
+            order.Items.Add(orderItem);
+            await inventoryService.UpdateInventoryProduct(orderItemDto.ProductId, orderItemDto.Quantity, centerId);
+        }
+
         await unitOfWork.SaveTransactionAsync();
     }
 }

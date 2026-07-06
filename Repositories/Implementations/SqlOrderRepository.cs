@@ -117,10 +117,18 @@ public class SqlOrderRepository(FulfillmentCenterDbContext context, ILogger<SqlO
         return findBook;
     }
 
-    public async Task<Order?> GetOrderWithItemsAsync(Guid orderId)
+    public async Task<Order> GetOrderWithItemsAsync(Guid orderId)
     {
-        return await context.Orders
+        var order = await context.Orders
+            .Include(o => o.Items)
             .FirstOrDefaultAsync(o => o.Id == orderId);
+
+        if (order == null)
+        {
+            throw new OrderNotFoundException(orderId);
+        }
+
+        return order;
     }
 
     private Order SearchById(Guid orderId, List<Order> orders)

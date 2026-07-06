@@ -11,5 +11,5 @@ public interface IOrderService
     public Task CancelOrder(Guid orderId);
     public Task<ResponseOrderDto> GetOrderById(Guid orderId);
     public Task<PagedResult<ResponseOrderDto>> GetOrders(QueryParams queryParams);
-    Task AddOrderItemToOrder(Guid orderId, RequestOrderItemDto orderItemDto, Guid centerId);
+    Task UpdateOrder(Guid orderId, RequestOrderItemDto orderItemDto, Guid centerId);
 }
