@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
@@ -10,30 +9,20 @@ using FulfillmentCenter.Services.MapperDto.Interfaces;
 namespace FulfillmentCenter.Services.Implementations;
 
 public class InventoryService(
-    IInventoryRepository inventoryRepository,
-    IFulfillmentCenterRepository fulfillmentCenterRepositor,
-    IFulfillmentCenterService fulfillmentCenterService,
-    IProductService productService, IMapper<Inventory, ResponseInventoryDto> inventoryMapper) : IInventoryService
+    IInventoryRepository inventoryRepository, 
+    IMapper<Inventory, ResponseInventoryDto> inventoryMapper) : IInventoryService
 {
     private IInventoryRepository _inventoryRepository = inventoryRepository;
-
-
-    private IFulfillmentCenterRepository _fulfillmentCenterRepositor = fulfillmentCenterRepositor;
-    private IFulfillmentCenterService _fulfillmentCenterService = fulfillmentCenterService;
-    private IProductService _productService = productService;
     
-
     public async Task AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)
     {
-        //TODO: if "productId" exist -> should be BOOL 
         var productOnFulfillmentCenter =
-            await FindProduct(fulfillmentCenterId,
+            await ProductExistsOnCenter(fulfillmentCenterId,
                 inventoryDto.ProductId); //TODO: to add then number of products if exists
 
 
-        Inventory inventory = new Inventory
+        var inventory = new Inventory
         {
-            Id = Guid.NewGuid(),
             ProductId = inventoryDto.ProductId,
             Quantity = inventoryDto.Quantity,
             DistributionCenterId = fulfillmentCenterId,
@@ -44,51 +33,27 @@ public class InventoryService(
         }
         else
         {
+            inventory.Id = Guid.NewGuid();
             //TODO: to check if SKU is unique, because SKU is the PK
-            await _inventoryRepository.CreateAsync(inventory);
+            await _inventoryRepository.AddAsync(inventory);
         }
     }
 
-    private async Task<bool> FindProduct(Guid fulfillmentCenterId, Guid productId)
+    private async Task<bool> ProductExistsOnCenter(Guid fulfillmentCenterId, Guid productId)
     {
-        var inventories = await _inventoryRepository.ReadAsync();
-        bool productWasFound = false;
-        var productOnFulfilCen = inventories.FirstOrDefault(inventory =>
-        {
-            return inventory.DistributionCenterId == fulfillmentCenterId && inventory.ProductId == productId;
-        });
-        if (productOnFulfilCen == null)
-        {
-            return false;
-        }
-
-        return true;
+        var inventories = await _inventoryRepository.GetAllAsync();
+        var productOnFulfilCen = inventories.FirstOrDefault(inventory => inventory.DistributionCenterId == fulfillmentCenterId && inventory.ProductId == productId);
+        return productOnFulfilCen != null;
     }
     
     public async Task<PagedResult<ResponseInventoryDto>> RemainingsOnTheFulfillmentCenter(Guid centerId, QueryParams queryParams)
-    {
+    {//TODO: to filter by ID first, only afterwards to apply pagination
         var inventories = await _inventoryRepository.ReadAsync(queryParams);
         var findInventoriesFromCenter = inventories.FindAll(inventory => inventory.DistributionCenterId == centerId);
-        if (findInventoriesFromCenter.Count > 0)
-        {
-            var findInventoriesFromCenterDto = inventoryMapper.ToDto(findInventoriesFromCenter);
-            var pagedResult = inventoryMapper.ToPagedResult(queryParams.Page, queryParams.PageSize, findInventoriesFromCenterDto);
+        var findInventoriesFromCenterDto = inventoryMapper.ToDto(findInventoriesFromCenter);
+        var pagedResult = inventoryMapper.ToPagedResult(queryParams.Page, queryParams.PageSize, findInventoriesFromCenterDto);
             
-            return pagedResult;
-        }
-
-        throw new ValidationException();
-    }
-
-    public Dictionary<Guid, int> ReturnProductAmount(ICollection<Inventory> inventories)
-    {
-        Dictionary<Guid, int> openWith = new Dictionary<Guid, int>();
-        foreach (var product in inventories)
-        {
-            openWith.Add(product.Id, product.Quantity);
-        }
-
-        return openWith;
+        return pagedResult;
     }
 
     public async Task UpdateInventoryProduct(Guid productId, IOperation<Inventory> operation, Guid centerId)

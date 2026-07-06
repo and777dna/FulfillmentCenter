@@ -39,7 +39,7 @@ public class SqlRepository<T>(FulfillmentCenterDbContext context, ILogger<SqlRep
         }
     }
 
-    public Task Update(T entity)
+    public Task UpdateAsync(T entity)
     {
         throw new NotImplementedException();
     }

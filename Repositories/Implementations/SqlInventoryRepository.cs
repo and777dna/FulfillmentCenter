@@ -8,7 +8,35 @@ namespace FulfillmentCenter.Repositories.Implementations;
 
 public class SqlInventoryRepository(FulfillmentCenterDbContext context, ILogger<SqlInventoryRepository> logger) : IInventoryRepository
 {
-    public async Task CreateAsync(Inventory inventory)
+    public Task<Inventory> GetByIdAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public Task UpdateAsync(Inventory entity)
+    {
+        throw new NotImplementedException();
+    }
+    
+    
+    public async Task<List<Inventory>> GetAllAsync()
+    {
+        List<Inventory> inventories;
+        try
+        {
+            inventories = await context.Inventories
+                .OrderBy(p => p.Id)
+                .ToListAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "not possible to read products.");
+            throw;
+        }
+        return inventories;
+    }
+    
+    public async Task AddAsync(Inventory inventory)
     {
         try
         {
@@ -32,23 +60,7 @@ public class SqlInventoryRepository(FulfillmentCenterDbContext context, ILogger<
         inventoryToDelete.IsDeleted = true;
         await context.SaveChangesAsync();
     }
-
-    public async Task<List<Inventory>> ReadAsync()
-    {
-        List<Inventory> inventories;
-            try
-            {
-                inventories = await context.Inventories
-                    .OrderBy(p => p.Id)
-                    .ToListAsync();
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, "not possible to read products.");
-                throw;
-            }
-            return inventories;
-    }
+    
     
     public async Task<List<Inventory>> ReadAsync(QueryParams queryParams)
     {

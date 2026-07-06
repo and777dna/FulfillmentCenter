@@ -142,7 +142,7 @@ public class SqlOrderRepository(FulfillmentCenterDbContext context, ILogger<SqlO
         throw new OrderNotFoundException(orderId);
     }
     
-    public Task Update(Order entity)
+    public Task UpdateAsync(Order entity)
     {
         throw new NotImplementedException();
     }
