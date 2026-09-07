@@ -1,0 +1,6 @@
+@FulfillmentCenter_HostAddress = http://localhost:3306
+
+GET {{FulfillmentCenter_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
