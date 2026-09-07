@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FulfillmentCenter.DTOs.Requests;
 using FulfillmentCenter.DTOs.Responses;
 using FulfillmentCenter.Entities;
@@ -112,7 +113,8 @@ public class ProductsServicesTests
     [Fact]
     public async Task FindProduct_WhenProductExists_ShouldReturnProduct()
     {
-        var repositoryMock = new Mock<IProductRepository>();
+        var repositoryMock = new Mock<IRepository<Product>>();
+        var mapperMock = new Mock<IMapper<Product, ResponseProductDto>>();
         var productId = Guid.NewGuid();
         var products = new List<Product>
         {
@@ -132,46 +134,35 @@ public class ProductsServicesTests
             }
         };
 
-        repositoryMock.Setup(r => r.ReadAsync()).ReturnsAsync(products);
+        repositoryMock.Setup(r => r.GetAllAsync()).ReturnsAsync(products);
 
-        /*//var service = new ProductService(repositoryMock.Object);
+        var service = new ProductService(repositoryMock.Object, mapperMock.Object);
 
-        //var result = await service.FindProduct(productId);
+        var result = await service.FindProduct(productId);
 
         Assert.NotNull(result);
         Assert.Equal(productId, result.Id);
         Assert.Equal("Laptop", result.Name);
         Assert.Equal("LP456", result.SKU);
         
-        repositoryMock.Verify(r => r.ReadAsync(), Times.Once);*/
+        repositoryMock.Verify(r => r.GetAllAsync(), Times.Once);
     }
 
     [Fact]
     public async Task FindProduct_WhenProductDoesNotExist_ShouldThrowValidationException()
     {
-        var repositoryMock = new Mock<IProductRepository>();
+        var repositoryMock = new Mock<IRepository<Product>>();
+        var mapperMock = new Mock<IMapper<Product, ResponseProductDto>>();
         var productId = Guid.NewGuid();
         var products = new List<Product>
         {
-            new Product
-            {
-                Id = productId,
-                Name = "Laptop",
-                SKU = "LP456",
-                Weight = 1500
-            },
-            new Product
-            {
-                Id = Guid.NewGuid(),
-                Name = "Phone",
-                SKU = "PH123",
-                Weight = 200
-            }
+            new Product { Name = "Phone", SKU = "PH123", Weight = 200 },
+            new Product { Name = "Laptop", SKU = "LP456", Weight = 1500 }
         };
-        /*repositoryMock.Setup(r => r.ReadAsync()).ReturnsAsync(products);
-        var service = new ProductService(repositoryMock.Object);
+        repositoryMock.Setup(r => r.GetAllAsync()).ReturnsAsync(products);
+        var service = new ProductService(repositoryMock.Object, mapperMock.Object);
 
         await Assert.ThrowsAsync<ValidationException>(() => service.FindProduct(Guid.NewGuid()));
-        repositoryMock.Verify(r => r.ReadAsync(), Times.Once);*/
+        repositoryMock.Verify(r => r.GetAllAsync(), Times.Once);
     }
 }
