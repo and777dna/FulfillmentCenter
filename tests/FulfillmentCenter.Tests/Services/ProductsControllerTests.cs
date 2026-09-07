@@ -63,60 +63,50 @@ public class ProductsServicesTests
     [Fact]
     public async Task CreateProduct_WhenSkuIsUnique_ShouldCreateProduct()
     {
-        var repositoryMock = new Mock<IProductRepository>();
+        var repositoryMock = new Mock<IRepository<Product>>();
+        var mapperMock = new Mock<IMapper<Product, ResponseProductDto>>();
         var requestDto = new RequestProductDto { Name = "Laptop", SKU = "LP456", Weight = 1500 };
 
         repositoryMock
-            .Setup(r => r.ReadAsync())
+            .Setup(r => r.GetAllAsync())
             .ReturnsAsync(new List<Product>());
         
-        /*var service = new ProductService(repositoryMock.Object);
+        var service = new ProductService(repositoryMock.Object, mapperMock.Object);
         
         await service.CreateProduct(requestDto);
 
-        repositoryMock.Verify(r => r.ReadAsync(), Times.Once);
+        repositoryMock.Verify(r => r.GetAllAsync(), Times.Once);
         
-        repositoryMock.Verify(r => r.CreateAsync(It.Is<Product>(p =>
+        repositoryMock.Verify(r => r.AddAsync(It.Is<Product>(p =>
             p.Name == requestDto.Name &&
             p.SKU == requestDto.SKU &&
             p.Weight == requestDto.Weight &&
             p.Id != Guid.Empty
-        )), Times.Once);*/
+        )), Times.Once);
     }
-
-    /*Если в Read() уже есть продукт с тем же SKU -
-     ожидается InvalidOperationException с ожидаемым текстом.*/
+    
     [Fact]
     public async Task CreateProduct_WhenSkuAlreadyExists_ShouldThrowInvalidOperationException()
     {
-        var repositoryMock = new Mock<IProductRepository>();
+        var repositoryMock = new Mock<IRepository<Product>>();
+        var mapperMock = new Mock<IMapper<Product, ResponseProductDto>>();
         var products = new List<Product>
         {
-            new Product
-            {
-                Name = "Phone",
-                SKU = "PH123",
-                Weight = 200
-            },
-            new Product
-            {
-                Name = "Laptop",
-                SKU = "LP456",
-                Weight = 1500
-            }
+            new Product { Name = "Phone", SKU = "PH123", Weight = 200 },
+            new Product { Name = "Laptop", SKU = "LP456", Weight = 1500 }
         };
-        /*var requestDto = new RequestProductDto { Name = "Laptop", SKU = "LP456", Weight = 1500 };
-        repositoryMock.Setup(r => r.ReadAsync()).ReturnsAsync(products);
-        var service = new ProductService(repositoryMock.Object);
+        var requestDto = new RequestProductDto { Name = "Laptop", SKU = "LP456", Weight = 1500 };
+        repositoryMock.Setup(r => r.GetAllAsync()).ReturnsAsync(products);
+        var service = new ProductService(repositoryMock.Object, mapperMock.Object);
         var exception = await Assert.ThrowsAsync<InvalidOperationException> (
             () => service.CreateProduct(requestDto));
         Assert.Equal("Запись с таким SKU уже существует в базе данных.",
             exception.Message);
         
-        repositoryMock.Verify(r => r.ReadAsync(), Times.Once);
+        repositoryMock.Verify(r => r.GetAllAsync(), Times.Once);
         repositoryMock.Verify(
-            r => r.CreateAsync(It.IsAny<Product>()),
-            Times.Never);*/
+            r => r.AddAsync(It.IsAny<Product>()),
+            Times.Never);
     }
 
     [Fact]
