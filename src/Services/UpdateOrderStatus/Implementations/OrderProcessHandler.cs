@@ -1,0 +1,27 @@
+using FulfillmentCenter.Data;
+using FulfillmentCenter.Enums;
+using FulfillmentCenter.Repositories.Interfaces;
+
+namespace FulfillmentCenter.Services.UpdateOrderStatus.Implementations;
+
+public class OrderProcessHandler(FulfillmentCenterDbContext context, IOrderRepository orderRepository, ILogger<OrderDeliverHandler> logger)
+{
+    private IOrderRepository _orderRepository = orderRepository;
+
+    public OrderStatus SupportedStatus => OrderStatus.Processing;
+    
+    public async Task HandleAsync(Guid orderId)
+    {
+        await _orderRepository.UpdateOrderAsync(SupportedStatus, orderId, (order, status) => { order.Status = status;});
+        
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "not possible to save updated status and afterwards soft deleted order");
+            throw;
+        }
+    }
+}
