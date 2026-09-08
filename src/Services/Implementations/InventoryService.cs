@@ -12,8 +12,12 @@ public class InventoryService(
     IInventoryRepository inventoryRepository, 
     IMapper<Inventory, ResponseInventoryDto> inventoryMapper) : IInventoryService
 {
-    public async Task AddStock(RequestInventoryDto inventoryDto, Guid fulfillmentCenterId)
+    public async Task AddStock(RequestInventoryDto inventoryDto)
     {
+        if (inventoryDto.DistributionCenterId == Guid.Empty)
+            throw new ArgumentException("DistributionCenterId is required", nameof(inventoryDto));
+
+        var fulfillmentCenterId = inventoryDto.DistributionCenterId;
         var productOnFulfillmentCenter =
             await ProductExistsOnCenter(fulfillmentCenterId,
                 inventoryDto.ProductId); //TODO: to add then number of products if exists

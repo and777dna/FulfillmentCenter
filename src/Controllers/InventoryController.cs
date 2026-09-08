@@ -6,19 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace FulfillmentCenter.Controllers;
 
 [ApiController]
-[Route("/api/inventory")]
+[Route("api/inventory")]
 public class InventoryController(IInventoryService inventoryService) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> AddStock([FromBody] RequestInventoryDto? inventoryDto)
+    public async Task<IActionResult> AddStock([FromBody] RequestInventoryDto inventoryDto)
     {
-        if (inventoryDto != null)
-        {
-            await inventoryService.AddStock(inventoryDto, inventoryDto.DistributionCenterId);
-            return Ok();
-        }
-
-        return BadRequest();
+        await inventoryService.AddStock(inventoryDto); 
+        return Ok();
     }
     
     [HttpGet("{centerId}")]
