@@ -12,5 +12,5 @@ public record RequestOrderDto
     [Required]
     public OrderStatus Status { get; set; }
     [Required] 
-    public RequestOrderItemDto? orderItemDto { get; set; }
+    public RequestOrderItemDto? OrderItemDto { get; set; }
 }

@@ -26,17 +26,18 @@ public class OrderService(
 
     private OrderHandlerFactory _orderHandlerFactory = orderHandlerFactory;
     
-    public async Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey, RequestOrderItemDto orderItemDto)
+    public async Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey)
     {
         if (cache.TryGet<Guid>(idempotencyKey, out var cachedOrderId))
         {
             return;
         }
-        
         if (orderDto.Status != OrderStatus.Created)
         {
             throw new ArgumentException("first status of order should be Created");
         }
+        var orderItemDto = orderDto.OrderItemDto;
+        
         Order order = new Order
         {
             Id = Guid.NewGuid(),

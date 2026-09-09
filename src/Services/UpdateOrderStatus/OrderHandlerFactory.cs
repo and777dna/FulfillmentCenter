@@ -3,12 +3,10 @@ using FulfillmentCenter.Services.UpdateOrderStatus.Interfaces;
 
 namespace FulfillmentCenter.Services.UpdateOrderStatus;
 
-public class OrderHandlerFactory
+public class OrderHandlerFactory(IEnumerable<IOrderStatusHandler> handlers)
 {
-    private readonly IEnumerable<IOrderStatusHandler> _handlers;
-
     public IOrderStatusHandler GetHandler(OrderStatus orderStatus)
     {
-        return _handlers.First(handler => handler.SupportedStatus == orderStatus);
+        return handlers.First(handler => handler.SupportedStatus == orderStatus);
     }
 }

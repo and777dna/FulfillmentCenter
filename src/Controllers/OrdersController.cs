@@ -9,24 +9,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace FulfillmentCenter.Controllers;
 
 [ApiController]
-[Route("/api/orders")]
-public class OrdersController(IOrderService orderService) : ControllerBase
+[Route("api/orders")]
+public class OrdersController(IOrderService orderService, OrderHandlerFactory orderHandlerFactory) : ControllerBase
 {
-    private OrderHandlerFactory _orderHandlerFactory = new OrderHandlerFactory();
-    
     [HttpPost]
     public async Task<IActionResult> CreateOrder(
         [FromHeader(Name = "Idempotency-Key")] string? idempotencyKey,
-        [FromBody] RequestOrderDto? orderDto)
+        [FromBody] RequestOrderDto orderDto)
     {
         if(idempotencyKey == null)return BadRequest("missing Idempotency-Key");
-        if (orderDto != null)
-        {
-            await orderService.CreateOrder(orderDto, idempotencyKey, orderDto.orderItemDto);
-            return Ok();
-        }
-
-        return BadRequest();
+        await orderService.CreateOrder(orderDto, idempotencyKey);
+        return Ok();
     }
     
     [HttpPut("{id}/status")]
@@ -37,7 +30,7 @@ public class OrdersController(IOrderService orderService) : ControllerBase
             return BadRequest("Invalid order status");
         }
 
-        var service = _orderHandlerFactory.GetHandler(status);
+        var service = orderHandlerFactory.GetHandler(status);
         await service.HandleAsync(id);
         
         return NoContent();
@@ -69,22 +62,18 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(orders);
     }
     
-    [HttpPost("add/{orderId}/items")]
-    public async Task<IActionResult> AddOrderItem([FromRoute] Guid orderId, [FromBody] RequestOrderItemDto? orderItemDto, [FromRoute] Guid centerId)
+    [HttpPost("add/{orderId}/items/{centerId}")]
+    public async Task<IActionResult> AddOrderItem([FromRoute] Guid orderId, [FromBody] RequestOrderItemDto orderItemDto, [FromRoute] Guid centerId)
     {
-        if (orderItemDto == null) throw new ArgumentNullException(nameof(orderItemDto), "OrderItemDto is null");
-
         orderItemDto.Operation = new AddOrderItemOperation(orderItemDto.Quantity);
         await orderService.UpdateOrder(orderId, orderItemDto, centerId);
 
         return Ok();
     }
     
-    [HttpPost("delete/{orderId}/items")]
-    public async Task<IActionResult> DeleteOrderItem([FromRoute] Guid orderId, [FromBody] RequestOrderItemDto? orderItemDto, [FromRoute] Guid centerId)
+    [HttpPost("delete/{orderId}/items/{centerId}")]
+    public async Task<IActionResult> DeleteOrderItem([FromRoute] Guid orderId, [FromBody] RequestOrderItemDto orderItemDto, [FromRoute] Guid centerId)
     {
-        if (orderItemDto == null) throw new ArgumentNullException(nameof(orderItemDto), "OrderItemDto is null");
-
         orderItemDto.Operation = new DeleteOrderItemOperation(orderItemDto.Quantity);
         await orderService.UpdateOrder(orderId, orderItemDto, centerId);
 

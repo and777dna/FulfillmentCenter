@@ -7,7 +7,7 @@ namespace FulfillmentCenter.Services.Interfaces;
 
 public interface IOrderService
 {
-    public Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey, RequestOrderItemDto orderItemDto);
+    public Task CreateOrder(RequestOrderDto orderDto, string idempotencyKey);
     public Task CancelOrder(Guid orderId);
     public Task<ResponseOrderDto> GetOrderById(Guid orderId);
     public Task<PagedResult<ResponseOrderDto>> GetOrders(QueryParams queryParams);
